@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,7 +10,7 @@ import (
 
 /*
 1. Create a "greet" route that sends back "Hello world!" as response, start and run server
-2. JSON encoding of response for "customers" route
+2. JSON or XML encoding of response for "customers" route, depending on request header
 */
 
 type Customer struct {
@@ -32,21 +33,24 @@ func main() {
 	}
 }
 
-//sends back "Hello world!" as response
 func greetHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Hello world!")
 }
 
-//returns a json response
+//returns a JSON (default) or XML response
 func customersHandler(w http.ResponseWriter, r *http.Request) {
 	customers := []Customer{
 		{"Dorothy", "Emerald City", "12345"},
 		{"Luke", "Tatooine", "67890"},
 	}
 
-	//modify response header (otherwise response will still be in application/text form even though encode in json)
-	//return Header object of the ResponseWriter w, add to it this key-value pair
-	w.Header().Add("Content-Type", "application/json")
-
-	json.NewEncoder(w).Encode(customers)
+	if r.Header.Get("Content-Type") == "application/xml" {
+		w.Header().Add("Content-Type", "application/xml")
+		xml.NewEncoder(w).Encode(customers)
+	} else {
+		//modify response header (otherwise response will still be in application/text form even though encode in json)
+		//return Header object of the ResponseWriter w, add to it this key-value pair
+		w.Header().Add("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(customers)
+	}
 }

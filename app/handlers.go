@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"github.com/gorilla/mux"
 	"net/http"
 )
 
@@ -17,7 +18,7 @@ func greetHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Hello world!")
 }
 
-//returns a JSON (default) or XML response
+//sends a JSON (default) or XML response
 func customersHandler(w http.ResponseWriter, r *http.Request) {
 	customers := []Customer{
 		{"Dorothy", "Emerald City", "12345"},
@@ -33,4 +34,14 @@ func customersHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(customers)
 	}
+}
+
+func customerIDHandler(w http.ResponseWriter, r *http.Request) {
+	//get a map of variables in the path of the current request
+	vars := mux.Vars(r)
+	fmt.Fprint(w, vars["customer_id"])
+}
+
+func createCustomerHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "Post request received")
 }

@@ -1,0 +1,31 @@
+// This package (domain) represents the Business domain in the diagram.
+// Hexagonal architecture: User - Business - Server
+
+
+/* 1. Business object */
+// inside the domain, hence inside this package
+
+/* 2. repo i.e. secondary port (facing Server) i.e. interface */
+// on the boundary of the domain, hence inside this package?
+//      or because Business object has dependency on it?
+// function: find all customers from Server side
+
+/* 3. stub i.e. adapter (facing Server) */
+// implements repo which is inside the domain, hence inside this package?
+//      different ways of grouping into packages? it could be in a separate package e.g. test package?
+// function: stubbing the actual repo (contains list of dummy customers, its implementation of FindAll() returns this list inside itself)
+// notes: mock is for behaviour testing, stub is to simulate or act as dummy data?
+// notes: stub implements repo i.e. interface (duck typing) by implementing FindAll(), hence becomes type repo
+
+/* 4a. service i.e. primary port (facing User) i.e. interface */
+// different package (service)
+// function: get all customers
+//		4b. Business logic (Business object) implements service
+//		4c. service has dependency on repo through Business logic
+// function: connect primary port to secondary port
+
+/* 5. REST handler i.e. adapter (facing User) */
+// outside the domain, hence different package (app)
+// function: handle requests to "customers" route
+//		6. REST handler has dependency on service
+//		7. wire the app (REST handler - service - Business logic - repo - stub)

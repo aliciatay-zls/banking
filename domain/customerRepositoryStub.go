@@ -16,5 +16,5 @@ func NewCustomerRepositoryStub() CustomerRepositoryStub {
 		{"2", "Luke", "Tatooine", "67890", "12/12/2012", "jedi"},
 	}
 
-	return CustomerRepositoryStub{customers} //helper function to create a stub
+	return CustomerRepositoryStub{customers} //helper function to create a stub (setter too)
 }

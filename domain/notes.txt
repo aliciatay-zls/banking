@@ -20,12 +20,23 @@
 /* 4a. service i.e. primary port (facing User) i.e. interface */
 // different package (service)
 // function: get all customers
-//		4b. Business logic (Business object) implements service
-//		4c. service has dependency on repo through Business logic
+//		4b. Business logic implements service = another Business object
+//		4c. this Business object also has dependency on repo (instead of implementing repo directly)
 // function: connect primary port to secondary port
 
-/* 5. REST handler i.e. adapter (facing User) */
+/* 5. REST handler i.e. adapter (facing User) */        // already done actually: handlers#customersHandler
 // outside the domain, hence different package (app)
 // function: handle requests to "customers" route
 //		6. REST handler has dependency on service
 //		7. wire the app (REST handler - service - Business logic - repo - stub)
+
+
+/* 1. to 3. */
+// find all customers from the repository (which retrieves from db)
+// create dummy repo
+// can now call FindAll() on dummy repo to get dummy data
+
+/* 4. */
+// service: user side now has a way to get all customers via finding all customers from the repo
+// create default service
+// can now create default service passing in dummy repo and call GetAllCustomers() on default service to get dummy data

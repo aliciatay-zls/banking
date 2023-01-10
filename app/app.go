@@ -1,6 +1,8 @@
 package app
 
 import (
+	"github.com/aliciatay-zls/banking/domain"
+	"github.com/aliciatay-zls/banking/service"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -9,14 +11,14 @@ import (
 func Start() {
 	router := mux.NewRouter()
 
+	//wiring
+	//create stub of the repo, create default service passing in the stub repo, create instance of
+	ch := CustomerHandlers{service.NewCustomerService(domain.NewCustomerRepositoryStub())}
+
 	//routes
 	//register handler function (handles responses) for the pattern (url) with the custom multiplexer (router)
 	//gorilla mux: paths can have variables
-	router.HandleFunc("/greet", greetHandler).Methods(http.MethodGet)
-	router.HandleFunc("/customers", customersHandler).Methods(http.MethodGet)
-	router.HandleFunc("/customers/{customer_id:[0-9]+}", customerIDHandler).Methods(http.MethodGet)
-
-	router.HandleFunc("/customers", createCustomerHandler).Methods(http.MethodPost)
+	router.HandleFunc("/customers", ch.customersHandler).Methods(http.MethodGet)
 
 	//start and run server
 	//listen on localhost and pass mux (custom multiplexer/handler) to Serve()

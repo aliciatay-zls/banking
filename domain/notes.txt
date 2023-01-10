@@ -39,4 +39,7 @@
 /* 4. */
 // service: user side now has a way to get all customers via finding all customers from the repo
 // create default service
-// can now create default service passing in dummy repo and call GetAllCustomers() on default service to get dummy data
+// can now create default service passing in dummy repo and call GetAllCustomers() on default service to get dummy data     /* 5., 7. */
+
+/* customer.go --> customerRepositoryStub.go --> customerService.go --> handlers.go */
+//struct containing detail of 1 customer --> struct containing slice of customers --> struct containing repo --> struct containing service

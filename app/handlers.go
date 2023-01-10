@@ -3,8 +3,7 @@ package app
 import (
 	"encoding/json"
 	"encoding/xml"
-	"fmt"
-	"github.com/gorilla/mux"
+	"github.com/aliciatay-zls/banking/service"
 	"net/http"
 )
 
@@ -14,16 +13,13 @@ type Customer struct {
 	Zipcode string `json:"zipCode"`
 }
 
-func greetHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Hello world!")
+type CustomerHandlers struct {
+	customerService service.CustomerService //REST handler has dependency on service
 }
 
 //sends a JSON (default) or XML response
-func customersHandler(w http.ResponseWriter, r *http.Request) {
-	customers := []Customer{
-		{"Dorothy", "Emerald City", "12345"},
-		{"Luke", "Tatooine", "67890"},
-	}
+func (c CustomerHandlers) customersHandler(w http.ResponseWriter, r *http.Request) {
+	customers, _ := c.customerService.GetAllCustomers()
 
 	if r.Header.Get("Content-Type") == "application/xml" {
 		w.Header().Add("Content-Type", "application/xml")
@@ -34,14 +30,4 @@ func customersHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(customers)
 	}
-}
-
-func customerIDHandler(w http.ResponseWriter, r *http.Request) {
-	//get a map of variables in the path of the current request
-	vars := mux.Vars(r)
-	fmt.Fprint(w, vars["customer_id"])
-}
-
-func createCustomerHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Post request received")
 }

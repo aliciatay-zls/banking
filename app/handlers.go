@@ -7,14 +7,8 @@ import (
 	"net/http"
 )
 
-type Customer struct {
-	Name    string `json:"name"`
-	City    string `json:"city"`
-	Zipcode string `json:"zipCode"`
-}
-
 type CustomerHandlers struct {
-	customerService service.CustomerService //REST handler has dependency on service
+	customerService service.CustomerService //REST handler has dependency on service (service is a field)
 }
 
 //sends a JSON (default) or XML response

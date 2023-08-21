@@ -14,6 +14,6 @@ func (s DefaultCustomerService) GetAllCustomers() ([]domain.Customer, error) { /
 	return s.repo.FindAll() //Business has dependency on repo (calls its method, which for now calls a stubbed implementation of the method)
 }
 
-func NewCustomerService(repository domain.CustomerRepository) DefaultCustomerService {
-	return DefaultCustomerService{repository} //helper function to create a business object (setter too)
+func NewCustomerService(repository domain.CustomerRepository) DefaultCustomerService { //helper function to create and initialize a business object
+	return DefaultCustomerService{repository}
 }

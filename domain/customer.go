@@ -13,6 +13,6 @@ type Customer struct { //business object
 
 //Server
 
-type CustomerRepository interface { //repo (port)
+type CustomerRepository interface { //repo (secondary port)
 	FindAll() ([]Customer, error)
 }

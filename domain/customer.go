@@ -15,4 +15,5 @@ type Customer struct { //business object
 
 type CustomerRepository interface { //repo (secondary port)
 	FindAll() ([]Customer, error)
+	FindById(string) (*Customer, error) //allows nil customer, useful for checking
 }

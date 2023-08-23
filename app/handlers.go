@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"github.com/aliciatay-zls/banking/service"
+	"github.com/gorilla/mux"
 	"net/http"
 )
 
@@ -24,4 +25,16 @@ func (c CustomerHandlers) customersHandler(w http.ResponseWriter, r *http.Reques
 		w.Header().Add("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(customers)
 	}
+}
+
+func (c CustomerHandlers) customerIdHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	customer, err := c.customerService.GetCustomer(vars["customer_id"])
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Add("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(customer)
 }

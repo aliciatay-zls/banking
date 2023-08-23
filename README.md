@@ -2,11 +2,11 @@
 https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang/
 
 ## Startup
-1. To start the db, in terminal, `cd` to `build/package` and run:
+1. To start the db, first start the Docker app. Then in terminal, `cd` to `build/package` and run:
 ```
 docker-compose up
 ```
-2. To start the app, open another tab and run:
+2. To start the app, open another tab in terminal and run:
 ```
 go run main.go
 ```

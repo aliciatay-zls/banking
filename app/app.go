@@ -18,8 +18,9 @@ func Start() {
 	ch := CustomerHandlers{service.NewCustomerService(domain.NewCustomerRepositoryDb())}
 
 	//using the custom multiplexer, register route (pattern (url) --> handler method (writes response))
-	//gorilla mux: paths can have variables
+	//gorilla mux: paths can have variables + if given vars don't match regex, mux sends error, req doesn't reach app
 	router.HandleFunc("/customers", ch.customersHandler).Methods(http.MethodGet)
+	router.HandleFunc("/customers/{customer_id:[0-9]+}", ch.customerIdHandler).Methods(http.MethodGet)
 
 	//start and run server
 	//listen on localhost and pass mux (custom multiplexer/handler) to Serve()

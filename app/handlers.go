@@ -20,10 +20,7 @@ func (c CustomerHandlers) customersHandler(w http.ResponseWriter, r *http.Reques
 		w.Header().Add("Content-Type", "application/xml")
 		xml.NewEncoder(w).Encode(customers)
 	} else {
-		//modify response header (otherwise response will still be in application/text form even though encode in json)
-		//return Header object of the ResponseWriter w, add to it this key-value pair
-		w.Header().Add("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(customers)
+		writeJsonResponse(w, http.StatusOK, customers)
 	}
 }
 
@@ -31,10 +28,26 @@ func (c CustomerHandlers) customerIdHandler(w http.ResponseWriter, r *http.Reque
 	vars := mux.Vars(r)
 	customer, err := c.customerService.GetCustomer(vars["customer_id"])
 	if err != nil {
-		http.Error(w, err.Message, err.Code)
-		return
+		writeJsonResponse(w, err.Code, err.AsMessage()) // (*)
+	} else {
+		writeJsonResponse(w, http.StatusOK, customer)
 	}
-
-	w.Header().Add("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(customer)
 }
+
+func writeJsonResponse(w http.ResponseWriter, code int, data interface{}) {
+	w.Header().Add("Content-Type", "application/json") // (**)
+	w.WriteHeader(code)
+	err := json.NewEncoder(w).Encode(data)
+	if err != nil {
+		panic(err)
+	}
+}
+
+// (*)
+//json.NewEncoder(w).Encode(err) causes status code to be included in json response
+//	unnecessary, already in http status code
+//	if do Encode(err.Message), will not produce json //not a struct!
+
+// (**)
+//modify response header (otherwise response will still be in application/text form even though encode in json)
+//return Header object of the ResponseWriter w, add to it this key-value pair

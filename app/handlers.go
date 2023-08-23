@@ -31,7 +31,7 @@ func (c CustomerHandlers) customerIdHandler(w http.ResponseWriter, r *http.Reque
 	vars := mux.Vars(r)
 	customer, err := c.customerService.GetCustomer(vars["customer_id"])
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		http.Error(w, err.Message, err.Code)
 		return
 	}
 

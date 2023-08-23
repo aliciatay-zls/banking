@@ -1,5 +1,7 @@
 package domain
 
+import "github.com/aliciatay-zls/banking/errs"
+
 //Business
 
 type Customer struct { //business object
@@ -15,5 +17,5 @@ type Customer struct { //business object
 
 type CustomerRepository interface { //repo (secondary port)
 	FindAll() ([]Customer, error)
-	FindById(string) (*Customer, error) //allows nil customer, useful for checking
+	FindById(string) (*Customer, *errs.AppError) //allows nil customer, useful for checking
 }

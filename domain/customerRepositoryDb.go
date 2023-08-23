@@ -4,6 +4,7 @@ package domain
 
 import (
 	"database/sql"
+	"github.com/aliciatay-zls/banking/errs"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"time"
@@ -27,7 +28,7 @@ func (d CustomerRepositoryDb) FindAll() ([]Customer, error) { //DB implements re
 		var c Customer
 		err = rows.Scan(&c.Id, &c.Name, &c.City, &c.Zipcode, &c.DateOfBirth, &c.Status)
 		if err != nil {
-			log.Println("Error while scanning customers", err.Error())
+			log.Println("Error while scanning customers: " + err.Error())
 		}
 		customers = append(customers, c)
 	}
@@ -35,15 +36,20 @@ func (d CustomerRepositoryDb) FindAll() ([]Customer, error) { //DB implements re
 	return customers, nil
 }
 
-func (d CustomerRepositoryDb) FindById(id string) (*Customer, error) {
+func (d CustomerRepositoryDb) FindById(id string) (*Customer, *errs.AppError) {
 	findCustomerSql := "SELECT customer_id, name, city, zipcode, date_of_birth, status FROM customers WHERE customer_id = ?"
 	row := d.client.QueryRow(findCustomerSql, id)
 
 	var c Customer
 	err := row.Scan(&c.Id, &c.Name, &c.City, &c.Zipcode, &c.DateOfBirth, &c.Status)
 	if err != nil {
-		log.Println("Error while scanning customer", err.Error())
-		return nil, err
+		log.Println("Error while scanning customer: " + err.Error())
+
+		if err == sql.ErrNoRows { // (*)
+			return nil, errs.NewNotFoundError("Customer not found")
+		} else {
+			return nil, errs.NewUnexpectedError("Unexpected database error")
+		}
 	}
 
 	return &c, nil
@@ -62,3 +68,7 @@ func NewCustomerRepositoryDb() CustomerRepositoryDb { //helper function
 	//initialize new DB object and return it
 	return CustomerRepositoryDb{db}
 }
+
+// (*)
+//different error types and hence different error message and status code pairs reflected in REST handler
+//(will read the fields of the custom app error received from calling this method)

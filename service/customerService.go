@@ -1,10 +1,13 @@
 package service
 
-import "github.com/aliciatay-zls/banking/domain"
+import (
+	"github.com/aliciatay-zls/banking/domain"
+	"github.com/aliciatay-zls/banking/errs"
+)
 
 type CustomerService interface { //service (primary port)
 	GetAllCustomers() ([]domain.Customer, error)
-	GetCustomer(string) (*domain.Customer, error)
+	GetCustomer(string) (*domain.Customer, *errs.AppError)
 }
 
 type DefaultCustomerService struct { //business object
@@ -15,7 +18,7 @@ func (s DefaultCustomerService) GetAllCustomers() ([]domain.Customer, error) { /
 	return s.repo.FindAll() //Business has dependency on repo (*) //connects primary port to secondary port (**)
 }
 
-func (s DefaultCustomerService) GetCustomer(id string) (*domain.Customer, error) {
+func (s DefaultCustomerService) GetCustomer(id string) (*domain.Customer, *errs.AppError) {
 	return s.repo.FindById(id)
 }
 

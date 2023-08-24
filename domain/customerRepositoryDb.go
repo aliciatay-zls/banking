@@ -14,10 +14,26 @@ type CustomerRepositoryDb struct { //DB (adapter)
 	client *sql.DB
 }
 
-func (d CustomerRepositoryDb) FindAll() ([]Customer, *errs.AppError) { //DB implements repo
+func (d CustomerRepositoryDb) FindAll(status string) ([]Customer, *errs.AppError) { //DB implements repo
 	//query db
-	findAllSql := "SELECT customer_id, name, city, zipcode, date_of_birth, status FROM customers"
-	rows, err := d.client.Query(findAllSql)
+	var rows *sql.Rows
+	var err error
+	if status == "" {
+		findAllSql := "SELECT customer_id, name, city, zipcode, date_of_birth, status FROM customers"
+		rows, err = d.client.Query(findAllSql)
+	} else {
+		findAllSql := "SELECT customer_id, name, city, zipcode, date_of_birth, status FROM customers WHERE status = ?"
+		var statusNumber string
+		if status == "active" {
+			statusNumber = "1"
+		} else if status == "inactive" {
+			statusNumber = "0"
+		} else {
+			return nil, errs.NewNotFoundError("Invalid status")
+		}
+		rows, err = d.client.Query(findAllSql, statusNumber)
+	}
+
 	if rows == nil || err != nil {
 		log.Println("Error while querying customer table: " + err.Error())
 		return nil, errs.NewUnexpectedError("Unexpected database error")

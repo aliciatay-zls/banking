@@ -12,7 +12,9 @@ type CustomerHandlers struct {
 }
 
 func (c CustomerHandlers) customersHandler(w http.ResponseWriter, r *http.Request) {
-	customers, err := c.customerService.GetAllCustomers()
+	q := r.URL.Query().Get("status")
+
+	customers, err := c.customerService.GetAllCustomers(q)
 	if err != nil {
 		writeJsonResponse(w, err.Code, err.AsMessage())
 	} else {

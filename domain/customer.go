@@ -16,6 +16,6 @@ type Customer struct { //business object
 //Server
 
 type CustomerRepository interface { //repo (secondary port)
-	FindAll() ([]Customer, *errs.AppError)
+	FindAll(string) ([]Customer, *errs.AppError)
 	FindById(string) (*Customer, *errs.AppError) //allows nil customer, useful for checking
 }

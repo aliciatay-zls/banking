@@ -23,6 +23,8 @@ go run main.go
    4. service/primary port `CustomerService`
    5. REST handler/adapter `CustomerHandlers`
    6. DB/adapter `CustomerRepositoryDb`
+6. Add ability to handle errors: `errs` package
+7. Add logger: `zap`, `logger` package
 
 ## Other Notes
 * `build/package` files taken from instructor's repo

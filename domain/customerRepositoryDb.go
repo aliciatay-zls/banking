@@ -5,8 +5,8 @@ package domain
 import (
 	"database/sql"
 	"github.com/aliciatay-zls/banking/errs"
+	"github.com/aliciatay-zls/banking/logger"
 	_ "github.com/go-sql-driver/mysql"
-	"log"
 	"time"
 )
 
@@ -40,7 +40,7 @@ func (d CustomerRepositoryDb) FindAll(status string) ([]Customer, *errs.AppError
 		rows, err = d.client.Query(findAllSql, status)
 	}
 	if rows == nil || err != nil {
-		log.Println("Error while querying customer table: " + err.Error())
+		logger.Error("Error while querying customer table: " + err.Error())
 		return nil, errs.NewUnexpectedError("Unexpected database error")
 	}
 
@@ -49,7 +49,7 @@ func (d CustomerRepositoryDb) FindAll(status string) ([]Customer, *errs.AppError
 		var c Customer
 		err = rows.Scan(&c.Id, &c.Name, &c.City, &c.Zipcode, &c.DateOfBirth, &c.Status)
 		if err != nil {
-			log.Println("Error while scanning customers: " + err.Error())
+			logger.Error("Error while scanning customers: " + err.Error())
 			return nil, errs.NewUnexpectedError("Unexpected database error")
 		}
 		customers = append(customers, c)
@@ -65,7 +65,7 @@ func (d CustomerRepositoryDb) FindById(id string) (*Customer, *errs.AppError) {
 	var c Customer
 	err := row.Scan(&c.Id, &c.Name, &c.City, &c.Zipcode, &c.DateOfBirth, &c.Status)
 	if err != nil {
-		log.Println("Error while scanning customer: " + err.Error())
+		logger.Error("Error while scanning customer: " + err.Error())
 
 		if err == sql.ErrNoRows { // (*)
 			return nil, errs.NewNotFoundError("Customer not found")

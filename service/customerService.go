@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/aliciatay-zls/banking/domain"
 	"github.com/aliciatay-zls/banking/errs"
-	"log"
+	"github.com/aliciatay-zls/banking/logger"
 )
 
 type CustomerService interface { //service (primary port)
@@ -23,7 +23,7 @@ func (s DefaultCustomerService) GetAllCustomers(status string) ([]domain.Custome
 	} else if status == "inactive" {
 		status = "0"
 	} else {
-		log.Println("Invalid value for status query param")
+		logger.Error("Invalid value for status query param")
 		return nil, errs.NewNotFoundError("Invalid status")
 	}
 	return s.repo.FindAll(status) //Business has dependency on repo (*) //connects primary port to secondary port (**)

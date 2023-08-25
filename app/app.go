@@ -2,9 +2,9 @@ package app
 
 import (
 	"github.com/aliciatay-zls/banking/domain"
+	"github.com/aliciatay-zls/banking/logger"
 	"github.com/aliciatay-zls/banking/service"
 	"github.com/gorilla/mux"
-	"log"
 	"net/http"
 )
 
@@ -18,7 +18,7 @@ func Start() {
 
 	err := http.ListenAndServe("localhost:8080", router)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err.Error())
 	}
 }
 

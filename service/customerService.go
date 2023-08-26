@@ -11,11 +11,11 @@ type CustomerService interface { //service (primary port)
 	GetCustomer(string) (*domain.Customer, *errs.AppError)
 }
 
-type DefaultCustomerService struct { //business object
-	repo domain.CustomerRepository //Business has dependency on repo (repo is a field)
+type DefaultCustomerService struct { //business/domain object
+	repo domain.CustomerRepository //Business Domain has dependency on repo (repo is a field)
 }
 
-func (s DefaultCustomerService) GetAllCustomers(status string) ([]domain.Customer, *errs.AppError) { //Business implements service
+func (s DefaultCustomerService) GetAllCustomers(status string) ([]domain.Customer, *errs.AppError) { //Business Domain implements service
 	if status == "" {
 		status = ""
 	} else if status == "active" {
@@ -23,7 +23,7 @@ func (s DefaultCustomerService) GetAllCustomers(status string) ([]domain.Custome
 	} else if status == "inactive" {
 		status = "0"
 	} else {
-		logger.Error("Invalid value for status query param")
+		logger.Error("Invalid value given for status query param")
 		return nil, errs.NewNotFoundError("Invalid status")
 	}
 	return s.repo.FindAll(status) //Business has dependency on repo (*) //connects primary port to secondary port (**)

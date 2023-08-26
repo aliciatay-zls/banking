@@ -12,19 +12,21 @@ go run main.go
 ```
 
 ## Tasks
-1. Create GET `greet` route that sends back "Hello world!" as response, start and run server
+1. Start and run server, create routes: GET `greet`, GET `customers`
 2. JSON or XML encoding of response for GET `customers` route, depending on request header
-3. Create and use a custom multiplexer: `http`, `gorilla/mux`
+3. Replace standard library request multiplexer: `gorilla/mux`
 4. Create routes: GET `customers/{id}`,  POST `customers`
 5. Restructure code into hexagonal architecture (and into packages):
-   1. business objects `Customer`, `DefaultCustomerService`
+   1. business domain objects `Customer`, `DefaultCustomerService`
    2. repo/secondary port `CustomerRepository`
    3. stub/adapter `CustomerRepositoryStub`
    4. service/primary port `CustomerService`
    5. REST handler/adapter `CustomerHandlers`
    6. DB/adapter `CustomerRepositoryDb`
 6. Add ability to handle errors: `errs` package
-7. Add logger: `zap`, `logger` package
+7. Enhance route: GET `customers?status=...`
+8. Replace standard library logger with structured leveled logging: `logger` package, `zap`
+9. Replace standard library SQL database package: `sqlx`
 
 ## Other Notes
 * `build/package` files taken from instructor's repo

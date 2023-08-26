@@ -2,14 +2,14 @@ package domain
 
 import "github.com/aliciatay-zls/banking/errs"
 
-//Business
+//Business Domain
 
-type Customer struct { //business object
-	Id          string `json:"id"`
+type Customer struct { //business/domain object
+	Id          string `json:"id" db:"customer_id"`
 	Name        string `json:"name"`
 	City        string `json:"city"`
 	Zipcode     string `json:"zipCode"`
-	DateOfBirth string `json:"dateOfBirth"`
+	DateOfBirth string `json:"dateOfBirth" db:"date_of_birth"`
 	Status      string `json:"status"`
 }
 

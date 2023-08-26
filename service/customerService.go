@@ -2,20 +2,21 @@ package service
 
 import (
 	"github.com/aliciatay-zls/banking/domain"
+	"github.com/aliciatay-zls/banking/dto"
 	"github.com/aliciatay-zls/banking/errs"
 	"github.com/aliciatay-zls/banking/logger"
 )
 
 type CustomerService interface { //service (primary port)
-	GetAllCustomers(string) ([]domain.Customer, *errs.AppError)
-	GetCustomer(string) (*domain.Customer, *errs.AppError)
+	GetAllCustomers(string) ([]dto.CustomerResponse, *errs.AppError)
+	GetCustomer(string) (*dto.CustomerResponse, *errs.AppError)
 }
 
 type DefaultCustomerService struct { //business/domain object
 	repo domain.CustomerRepository //Business Domain has dependency on repo (repo is a field)
 }
 
-func (s DefaultCustomerService) GetAllCustomers(status string) ([]domain.Customer, *errs.AppError) { //Business Domain implements service
+func (s DefaultCustomerService) GetAllCustomers(status string) ([]dto.CustomerResponse, *errs.AppError) { //Business Domain implements service
 	if status == "" {
 		status = ""
 	} else if status == "active" {
@@ -26,11 +27,29 @@ func (s DefaultCustomerService) GetAllCustomers(status string) ([]domain.Custome
 		logger.Error("Invalid value given for status query param")
 		return nil, errs.NewNotFoundError("Invalid status")
 	}
-	return s.repo.FindAll(status) //Business has dependency on repo (*) //connects primary port to secondary port (**)
+
+	customers, err := s.repo.FindAll(status) //Business has dependency on repo (*) //connects primary port to secondary port (**)
+	if err != nil {
+		return nil, err
+	}
+
+	response := make([]dto.CustomerResponse, 0)
+	for _, c := range customers {
+		response = append(response, c.ToDTO())
+	}
+
+	return response, nil
 }
 
-func (s DefaultCustomerService) GetCustomer(id string) (*domain.Customer, *errs.AppError) {
-	return s.repo.FindById(id)
+func (s DefaultCustomerService) GetCustomer(id string) (*dto.CustomerResponse, *errs.AppError) {
+	c, err := s.repo.FindById(id)
+	if err != nil {
+		return nil, err
+	}
+
+	response := c.ToDTO()
+
+	return &response, nil
 }
 
 func NewCustomerService(repository domain.CustomerRepository) DefaultCustomerService { //helper function to create and initialize a business object

@@ -27,6 +27,7 @@ go run main.go
 7. Enhance route: GET `customers?status=...`
 8. Replace standard library logger with structured leveled logging: `logger` package, `zap`
 9. Replace standard library SQL database package: `sqlx`
+10. Add DTO to separate data used within Domain-Server layers and data exposed to User layer
 
 ## Other Notes
 * `build/package` files taken from instructor's repo

@@ -1,16 +1,41 @@
 package domain
 
-import "github.com/aliciatay-zls/banking/errs"
+import (
+	"github.com/aliciatay-zls/banking/dto"
+	"github.com/aliciatay-zls/banking/errs"
+)
 
 //Business Domain
 
 type Customer struct { //business/domain object
-	Id          string `json:"id" db:"customer_id"`
-	Name        string `json:"name"`
-	City        string `json:"city"`
-	Zipcode     string `json:"zipCode"`
-	DateOfBirth string `json:"dateOfBirth" db:"date_of_birth"`
-	Status      string `json:"status"`
+	Id          string `db:"customer_id"`
+	Name        string
+	City        string
+	Zipcode     string
+	DateOfBirth string `db:"date_of_birth"`
+	Status      string
+}
+
+// ToDTO does the conversion of domain object to Data Transfer Object.
+func (c Customer) ToDTO() dto.CustomerResponse {
+	return dto.CustomerResponse{
+		Id:          c.Id,
+		Name:        c.Name,
+		City:        c.City,
+		Zipcode:     c.Zipcode,
+		DateOfBirth: c.DateOfBirth,
+		Status:      c.AsStatusName(),
+	}
+}
+
+// AsStatusName gets the string representation of database values for customer status.
+func (c Customer) AsStatusName() string {
+	statusName := "active"
+	if c.Status == "0" {
+		statusName = "inactive"
+	}
+
+	return statusName
 }
 
 //Server

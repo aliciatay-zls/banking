@@ -28,6 +28,7 @@ go run main.go
 8. Replace standard library logger with structured leveled logging: `logger` package, `zap`
 9. Replace standard library SQL database package: `sqlx`
 10. Add DTO to separate data used within Domain-Server layers and data exposed to User layer
+11. Use environment variables
 
 ## Other Notes
 * `build/package` files taken from instructor's repo

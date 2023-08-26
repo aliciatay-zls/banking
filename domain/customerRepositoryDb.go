@@ -4,10 +4,12 @@ package domain
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/aliciatay-zls/banking/errs"
 	"github.com/aliciatay-zls/banking/logger"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+	"os"
 	"time"
 )
 
@@ -18,7 +20,14 @@ type CustomerRepositoryDb struct { //DB (adapter)
 // NewCustomerRepositoryDb connects to the database/gets a database handle, initializes a new DB adapter with the
 // handle and returns DB.
 func NewCustomerRepositoryDb() CustomerRepositoryDb { //helper function
-	db, err := sqlx.Open("mysql", "root:codecamp@tcp(localhost:3306)/banking") //from docker yml file and sql script
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbAddress := os.Getenv("DB_ADDRESS")
+	dbPort := os.Getenv("DB_PORT")
+	dbName := os.Getenv("DB_NAME")
+
+	dataSource := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbAddress, dbPort, dbName)
+	db, err := sqlx.Open("mysql", dataSource)
 	if err != nil {
 		panic(err)
 	}

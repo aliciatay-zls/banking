@@ -1,14 +1,36 @@
 package app
 
 import (
+	"fmt"
 	"github.com/aliciatay-zls/banking/domain"
 	"github.com/aliciatay-zls/banking/logger"
 	"github.com/aliciatay-zls/banking/service"
 	"github.com/gorilla/mux"
 	"net/http"
+	"os"
 )
 
+func checkEnvVars() {
+	envVars := []string{
+		"SERVER_ADDRESS",
+		"SERVER_PORT",
+		"DB_USER",
+		"DB_PASSWORD",
+		"DB_ADDRESS",
+		"DB_PORT",
+		"DB_NAME",
+	}
+
+	for _, key := range envVars {
+		if os.Getenv(key) == "" {
+			logger.Fatal(fmt.Sprintf("Environment variable %s was not defined", key))
+		}
+	}
+}
+
 func Start() {
+	checkEnvVars()
+
 	router := mux.NewRouter()
 
 	ch := CustomerHandlers{service.NewCustomerService(domain.NewCustomerRepositoryDb())}
@@ -16,7 +38,9 @@ func Start() {
 	router.HandleFunc("/customers", ch.customersHandler).Methods(http.MethodGet)
 	router.HandleFunc("/customers/{customer_id:[0-9]+}", ch.customerIdHandler).Methods(http.MethodGet)
 
-	err := http.ListenAndServe("localhost:8080", router)
+	addr := os.Getenv("SERVER_ADDRESS")
+	port := os.Getenv("SERVER_PORT")
+	err := http.ListenAndServe(fmt.Sprintf("%s:%s", addr, port), router)
 	if err != nil {
 		logger.Fatal(err.Error())
 	}

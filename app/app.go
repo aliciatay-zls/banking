@@ -6,8 +6,10 @@ import (
 	"github.com/aliciatay-zls/banking/logger"
 	"github.com/aliciatay-zls/banking/service"
 	"github.com/gorilla/mux"
+	"github.com/jmoiron/sqlx"
 	"net/http"
 	"os"
+	"time"
 )
 
 func checkEnvVars() {
@@ -33,26 +35,51 @@ func Start() {
 
 	router := mux.NewRouter()
 
-	ch := CustomerHandlers{service.NewCustomerService(domain.NewCustomerRepositoryDb())}
+	dbClient := getDbClient()
+	customerRepositoryDb := domain.NewCustomerRepositoryDb(dbClient)
+	ch := CustomerHandlers{service.NewCustomerService(customerRepositoryDb)}
 
 	router.HandleFunc("/customers", ch.customersHandler).Methods(http.MethodGet)
 	router.HandleFunc("/customers/{customer_id:[0-9]+}", ch.customerIdHandler).Methods(http.MethodGet)
 
-	addr := os.Getenv("SERVER_ADDRESS")
+	address := os.Getenv("SERVER_ADDRESS")
 	port := os.Getenv("SERVER_PORT")
-	err := http.ListenAndServe(fmt.Sprintf("%s:%s", addr, port), router)
+	err := http.ListenAndServe(fmt.Sprintf("%s:%s", address, port), router)
 	if err != nil {
 		logger.Fatal(err.Error())
 	}
 }
 
+func getDbClient() *sqlx.DB {
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbAddress := os.Getenv("DB_ADDRESS")
+	dbPort := os.Getenv("DB_PORT")
+	dbName := os.Getenv("DB_NAME")
+
+	dataSource := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbAddress, dbPort, dbName)
+	db, err := sqlx.Open("mysql", dataSource)
+	if err != nil {
+		panic(err)
+	}
+	db.SetConnMaxLifetime(time.Minute * 3)
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(10)
+
+	return db
+}
+
 //Notes
+//once the app is started, check that environment variables required for the app to function have been set
+
 //create custom multiplexer/handler using mux package
 
 //wiring = create REST handler
-//a. create actual repo using the DB/adapter (initializes a repo with data queried from db)
-//b. create service by passing in the repo (initialize its repo field with the actual repo)
-//c. create instance of REST handler by passing in the service (initializes its service field)
+//0. connect to the database/get a database handle
+//1. create instance of DB/adapter (initialize adapter with database handle)
+//2. create instance of service by passing in the adapter as the repo implementation
+//(initialize service's repo field with adapter)
+//3. create instance of REST handler by passing in the service (initialize handler's service field)
 
 //using the custom multiplexer, register route (pattern (url) --> handler method (writes response))
 //gorilla mux: paths can have variables + if given vars don't match regex, mux sends error, req doesn't reach app

@@ -6,17 +6,16 @@ https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang
 ```
 docker-compose up
 ```
-2. To start the app, open another tab in terminal and run:
-```
-go run main.go
-```
+2. To start the app, open another tab in terminal and run one of the following:
+   * `./run.ps1` if using Powershell (e.g. Intellij terminal)
+   * `./run.sh`
 
 ## Tasks
 1. Start and run server, create routes: GET `greet`, GET `customers`
 2. JSON or XML encoding of response for GET `customers` route, depending on request header
 3. Replace standard library request multiplexer: `gorilla/mux`
 4. Create routes: GET `customers/{id}`,  POST `customers`
-5. Restructure code into hexagonal architecture (and into packages):
+5. Restructure code into hexagonal architecture (and into packages): add ability to find customers
    1. business domain objects `Customer`, `DefaultCustomerService`
    2. repo/secondary port `CustomerRepository`
    3. stub/adapter `CustomerRepositoryStub`
@@ -29,6 +28,8 @@ go run main.go
 9. Replace standard library SQL database package: `sqlx`
 10. Add DTO to separate data used within Domain-Server layers and data exposed to User layer
 11. Use environment variables
+12. Add ability to open bank account (domain object `Account`, repo `AccountRepository`, 
+DB/adapter `AccountRepositoryDb`)
 
 ## Other Notes
-* `build/package` files taken from instructor's repo
+* Files in `build/package` taken from instructor's repo

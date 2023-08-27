@@ -1,41 +1,22 @@
 package domain
 
-//Server
-
 import (
 	"database/sql"
-	"fmt"
 	"github.com/aliciatay-zls/banking/errs"
 	"github.com/aliciatay-zls/banking/logger"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"os"
-	"time"
 )
+
+//Server
 
 type CustomerRepositoryDb struct { //DB (adapter)
 	client *sqlx.DB
 }
 
-// NewCustomerRepositoryDb connects to the database/gets a database handle, initializes a new DB adapter with the
-// handle and returns DB.
-func NewCustomerRepositoryDb() CustomerRepositoryDb { //helper function
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	dbAddress := os.Getenv("DB_ADDRESS")
-	dbPort := os.Getenv("DB_PORT")
-	dbName := os.Getenv("DB_NAME")
-
-	dataSource := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbAddress, dbPort, dbName)
-	db, err := sqlx.Open("mysql", dataSource)
-	if err != nil {
-		panic(err)
-	}
-	db.SetConnMaxLifetime(time.Minute * 3)
-	db.SetMaxOpenConns(10)
-	db.SetMaxIdleConns(10)
-
-	return CustomerRepositoryDb{db}
+// NewCustomerRepositoryDb initializes a new DB adapter with the given database handle and returns DB.
+func NewCustomerRepositoryDb(dbClient *sqlx.DB) CustomerRepositoryDb { //helper function
+	return CustomerRepositoryDb{dbClient}
 }
 
 // FindAll queries the database and reads results into return object.
@@ -64,7 +45,7 @@ func (d CustomerRepositoryDb) FindById(id string) (*Customer, *errs.AppError) {
 	findCustomerSql := "SELECT customer_id, name, city, zipcode, date_of_birth, status FROM customers WHERE customer_id = ?"
 	err := d.client.Get(&c, findCustomerSql, id) // (**)
 	if err != nil {
-		logger.Error("Error while scanning customer: " + err.Error())
+		logger.Error("Error while querying/scanning customer: " + err.Error())
 		if err == sql.ErrNoRows { // (*)
 			return nil, errs.NewNotFoundError("Customer not found")
 		} else {

@@ -1,6 +1,9 @@
 package domain
 
-import "github.com/aliciatay-zls/banking/errs"
+import (
+	"github.com/aliciatay-zls/banking/dto"
+	"github.com/aliciatay-zls/banking/errs"
+)
 
 //Business Domain
 
@@ -11,6 +14,10 @@ type Account struct { //business/domain object
 	AccountType string  `db:"account_type"`
 	Amount      float64 `db:"amount"`
 	Status      string  `db:"status"`
+}
+
+func (a Account) ToNewAccountResponseDTO() dto.NewAccountResponse {
+	return dto.NewAccountResponse{AccountId: a.AccountId}
 }
 
 //Server

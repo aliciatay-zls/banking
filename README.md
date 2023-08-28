@@ -29,7 +29,8 @@ docker-compose up
 10. Add DTO to separate data used within Domain-Server layers and data exposed to User layer
 11. Use environment variables
 12. Add ability to open bank account (domain object `Account`, repo `AccountRepository`, 
-DB/adapter `AccountRepositoryDb`)
+DB/adapter `AccountRepositoryDb`, service `AccountService`, REST handler `AccountHandler`, 
+DTOs `NewAccountRequest` and `NewAccountResponse`)
 
 ## Other Notes
 * Files in `build/package` taken from instructor's repo

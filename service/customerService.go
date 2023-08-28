@@ -41,7 +41,7 @@ func (s DefaultCustomerService) GetAllCustomers(status string) ([]dto.CustomerRe
 	return response, nil
 }
 
-func (s DefaultCustomerService) GetCustomer(id string) (*dto.CustomerResponse, *errs.AppError) {
+func (s DefaultCustomerService) GetCustomer(id string) (*dto.CustomerResponse, *errs.AppError) { //Business Domain implements service
 	c, err := s.repo.FindById(id)
 	if err != nil {
 		return nil, err

@@ -11,10 +11,10 @@ type CustomerHandlers struct {
 	customerService service.CustomerService //REST handler has dependency on service (service is a field)
 }
 
-func (c CustomerHandlers) customersHandler(w http.ResponseWriter, r *http.Request) {
+func (h CustomerHandlers) customersHandler(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query().Get("status")
 
-	customers, err := c.customerService.GetAllCustomers(q)
+	customers, err := h.customerService.GetAllCustomers(q)
 	if err != nil {
 		writeJsonResponse(w, err.Code, err.AsMessage())
 	} else {
@@ -22,9 +22,9 @@ func (c CustomerHandlers) customersHandler(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-func (c CustomerHandlers) customerIdHandler(w http.ResponseWriter, r *http.Request) {
+func (h CustomerHandlers) customerIdHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	customer, err := c.customerService.GetCustomer(vars["customer_id"])
+	customer, err := h.customerService.GetCustomer(vars["customer_id"])
 	if err != nil {
 		writeJsonResponse(w, err.Code, err.AsMessage()) // (*)
 	} else {
@@ -35,8 +35,7 @@ func (c CustomerHandlers) customerIdHandler(w http.ResponseWriter, r *http.Reque
 func writeJsonResponse(w http.ResponseWriter, code int, data interface{}) {
 	w.Header().Add("Content-Type", "application/json") // (**)
 	w.WriteHeader(code)
-	err := json.NewEncoder(w).Encode(data)
-	if err != nil {
+	if err := json.NewEncoder(w).Encode(data); err != nil {
 		panic(err)
 	}
 }

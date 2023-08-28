@@ -9,7 +9,7 @@ import (
 )
 
 type AccountHandler struct {
-	service service.AccountService
+	service service.AccountService //REST handler has dependency on service (service is a field)
 }
 
 func (h AccountHandler) newAccountHandler(w http.ResponseWriter, r *http.Request) {

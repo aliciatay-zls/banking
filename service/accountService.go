@@ -12,7 +12,7 @@ type AccountService interface { //service (primary port)
 }
 
 type DefaultAccountService struct { //business/domain object
-	repo domain.AccountRepository
+	repo domain.AccountRepository //Business Domain has dependency on repo (repo is a field)
 }
 
 func (s DefaultAccountService) CreateNewAccount(request dto.NewAccountRequest) (*dto.NewAccountResponse, *errs.AppError) { //Business Domain implements service

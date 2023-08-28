@@ -4,7 +4,6 @@ import (
 	"github.com/aliciatay-zls/banking/domain"
 	"github.com/aliciatay-zls/banking/dto"
 	"github.com/aliciatay-zls/banking/errs"
-	"github.com/aliciatay-zls/banking/logger"
 )
 
 type CustomerService interface { //service (primary port)
@@ -24,7 +23,6 @@ func (s DefaultCustomerService) GetAllCustomers(status string) ([]dto.CustomerRe
 	} else if status == "inactive" {
 		status = "0"
 	} else {
-		logger.Error("Invalid value given for status query param")
 		return nil, errs.NewNotFoundError("Invalid status")
 	}
 

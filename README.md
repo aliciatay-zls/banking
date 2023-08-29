@@ -1,14 +1,47 @@
 # Go Banking Web App
 https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang/
 
-## Startup
+## Setup
+1. Install Go
+   * Uninstall previous Go (if any): https://go.dev/doc/manage-install under section “Uninstalling Go” 
+   * Download installer for newest Go version and follow steps to install: https://go.dev/doc/install
+
+2. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+
+3. Configure environment variables in `run.ps1` or `run.sh`, such as `DB_USER` and `DB_PASSWORD`
+
+## Running the app
 1. To start the db, first start the Docker app. Then in terminal, `cd` to `build/package` and run:
-```
-docker-compose up
-```
+   ```
+   docker-compose up
+   ```
+
 2. To start the app, open another tab in terminal and run one of the following:
    * `./run.ps1` if using Powershell (e.g. Intellij terminal)
    * `./run.sh`
+
+   An info-level log with the message "Starting the app..." will be printed to console on success.
+<br/><br/>
+3. [Postman](https://www.postman.com/) can be used to send requests to the app. Sample requests:
+
+| Method | URL                                                   | Body                                                                                   | Result                                                                                                                                                    |
+|--------|-------------------------------------------------------|----------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| GET    | http://localhost:8080/customers                       |                                                                                        | Will display details of customers with id 2000 to 2005                                                                                                    |
+| GET    | http://localhost:8080/customers/2000                  |                                                                                        | Will display details of the customer with id 2000                                                                                                         |
+| POST   | http://localhost:8080/customers/2000/account          | {"account_type": "saving", <br/>"amount": 7000.00}                                     | Will open a new bank account for the customer with id 2000, then display the new bank account id                                                          |
+| POST   | http://localhost:8080/customers/2000/account/transact | {"account_id": "95470", <br/>"amount": 1000.00, <br/>"transaction_type": "withdrawal"} | Will make a withdrawal for the customer with id 2000 for the account with id 95470, then display the updated account balance and completed transaction id |
+
+4. To check changes made to the app database, open another tab in terminal and start an interactive shell in 
+the container for querying the db:
+   ```
+   docker exec -it mysql sh
+   # mysql -u root -p
+   Enter password: (enter password "codecamp")
+   mysql> show databases;
+   mysql> use banking;
+   mysql> show tables;
+   mysql> select * from accounts;
+   ```
 
 ## Tasks
 1. Start and run server, create routes: GET `greet`, GET `customers`
@@ -31,6 +64,7 @@ docker-compose up
 12. Add ability to open bank account (domain object `Account`, repo `AccountRepository`, 
 DB/adapter `AccountRepositoryDb`, service `AccountService`, REST handler `AccountHandler`, 
 DTOs `NewAccountRequest` and `NewAccountResponse`)
+13. Add ability to make transaction (similar additions to the application as 12.)
 
 ## Other Notes
 * Files in `build/package` taken from instructor's repo

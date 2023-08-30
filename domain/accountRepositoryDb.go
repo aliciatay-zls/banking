@@ -39,13 +39,11 @@ func (d AccountRepositoryDb) Save(account Account) (*Account, *errs.AppError) { 
 	return &account, nil
 }
 
-// Transact retrieves details of the account with the given id to check if the given transaction is allowed.
-// If so, it updates the account balance, creates a new entry in the database for the transaction, sets its ID
-// using the database-generated ID and returns the completed transaction.
-func (d AccountRepositoryDb) Transact(transaction Transaction) (*Transaction, *errs.AppError) { //DB implements repo
+// FindById retrieves the account with the given id.
+func (d AccountRepositoryDb) FindById(id string) (*Account, *errs.AppError) {
 	var account Account
 	findAccountSql := "SELECT * FROM accounts WHERE account_id = ?"
-	err := d.client.Get(&account, findAccountSql, transaction.AccountId)
+	err := d.client.Get(&account, findAccountSql, id)
 	if err != nil {
 		logger.Error("Error while retrieving account: " + err.Error())
 		if err == sql.ErrNoRows {
@@ -55,41 +53,67 @@ func (d AccountRepositoryDb) Transact(transaction Transaction) (*Transaction, *e
 		}
 	}
 
-	var newAmount float64
-	if transaction.TransactionType == "withdrawal" {
-		if account.Amount < transaction.Amount {
-			return nil, errs.NewForbiddenError("Account does not contain enough funds to withdraw given amount")
-		}
-		newAmount = account.Amount - transaction.Amount
-	} else {
-		newAmount = account.Amount + transaction.Amount
+	return &account, nil
+}
+
+// Transact starts a database transaction, updates the account balance, creates a new entry in the database for
+// the given bank transaction and commits the database transaction. It then fills the missing fields of the given
+// bank transaction by retrieving the ID of the new entry as well as the new account balance.
+// Transact returns the modified given bank transaction.
+func (d AccountRepositoryDb) Transact(transaction Transaction) (*Transaction, *errs.AppError) { //DB implements repo
+	tx, err := d.client.Begin()
+	if err != nil {
+		logger.Error("Error while starting db transaction for making transaction in bank account: " + err.Error())
+		return nil, errs.NewUnexpectedError("Unexpected database error")
 	}
 
-	updateAccountSql := "UPDATE accounts SET amount = ? WHERE account_id = ?"
-	_, err = d.client.Exec(updateAccountSql, newAmount, account.AccountId)
+	var updateAccountSql string
+	if transaction.IsWithdrawal() {
+		updateAccountSql = "UPDATE accounts SET amount = amount - ? WHERE account_id = ?"
+	} else {
+		updateAccountSql = "UPDATE accounts SET amount = amount + ? WHERE account_id = ?"
+	}
+	_, err = tx.Exec(updateAccountSql, transaction.Amount, transaction.AccountId)
 	if err != nil {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			logger.Fatal("Error while rolling back updating of account: " + rollbackErr.Error())
+		}
 		logger.Error("Error while updating account: " + err.Error())
 		return nil, errs.NewUnexpectedError("Unexpected database error")
 	}
 
 	var result sql.Result
 	addTransactionSql := "INSERT INTO transactions (account_id, amount, transaction_type, transaction_date) VALUES (?, ?, ?, ?)"
-	result, err = d.client.Exec(addTransactionSql,
+	result, err = tx.Exec(addTransactionSql,
 		transaction.AccountId, transaction.Amount, transaction.TransactionType, transaction.TransactionDate)
 	if err != nil {
-		logger.Error("Error while creating new transaction: " + err.Error())
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			logger.Fatal("Error while rolling back creating of new bank account transaction: " + rollbackErr.Error())
+		}
+		logger.Error("Error while creating new bank account transaction: " + err.Error())
 		return nil, errs.NewUnexpectedError("Unexpected database error")
 	}
 
-	var id int64
-	id, err = result.LastInsertId()
+	if err = tx.Commit(); err != nil {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			logger.Fatal("Error while rolling back committing of db transaction: " + rollbackErr.Error())
+		}
+		logger.Error("Error while committing db transaction: " + err.Error())
+		return nil, errs.NewUnexpectedError("Unexpected database error")
+	}
+
+	id, err := result.LastInsertId()
 	if err != nil {
 		logger.Error("Error while getting id of newly inserted transaction: " + err.Error())
 		return nil, errs.NewUnexpectedError("Unexpected database error")
 	}
-
 	transaction.TransactionId = strconv.FormatInt(id, 10)
-	transaction.Balance = newAmount
+
+	account, appErr := d.FindById(transaction.AccountId)
+	if appErr != nil {
+		return nil, appErr
+	}
+	transaction.Balance = account.Amount
 
 	return &transaction, nil
 }

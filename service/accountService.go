@@ -44,9 +44,23 @@ func (s DefaultAccountService) CreateNewAccount(request dto.NewAccountRequest) (
 	return &response, nil
 }
 
+// MakeTransaction checks whether the values in the given request's body are valid, whether the given account exists,
+// and whether the current account balance allows for the request to be fulfilled. If so, it passes the request down
+// to the server side as an Account object and passes the returned Account DTO back up to the REST handler.
 func (s DefaultAccountService) MakeTransaction(request dto.TransactionRequest) (*dto.TransactionResponse, *errs.AppError) { //Business Domain implements service
 	if err := request.Validate(); err != nil {
 		return nil, err
+	}
+
+	account, err := s.repo.FindById(request.AccountId)
+	if err != nil {
+		return nil, err
+	}
+
+	if request.TransactionType == "withdrawal" {
+		if !account.CanWithdraw(request.Amount) {
+			return nil, errs.NewValidationError("Account balance insufficient to withdraw given amount")
+		}
 	}
 
 	transaction := domain.Transaction{

@@ -21,3 +21,10 @@ func (t Transaction) ToTransactionResponseDTO() *dto.TransactionResponse {
 		Balance:       t.Balance,
 	}
 }
+
+func (t Transaction) IsWithdrawal() bool {
+	if t.TransactionType != "withdrawal" {
+		return false
+	}
+	return true
+}

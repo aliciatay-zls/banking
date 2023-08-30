@@ -24,4 +24,5 @@ func (a Account) ToNewAccountResponseDTO() dto.NewAccountResponse {
 
 type AccountRepository interface { //repo (secondary port)
 	Save(Account) (*Account, *errs.AppError)
+	Transact(Transaction) (*Transaction, *errs.AppError)
 }

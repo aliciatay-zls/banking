@@ -2,7 +2,6 @@ package domain
 
 import (
 	"github.com/aliciatay-zls/banking/dto"
-	"github.com/aliciatay-zls/banking/errs"
 )
 
 //Business Domain
@@ -21,8 +20,4 @@ func (t Transaction) ToTransactionResponseDTO() *dto.TransactionResponse {
 		TransactionId: t.TransactionId,
 		Balance:       t.Balance,
 	}
-}
-
-type TransactionRepository interface { //repo (secondary port)
-	Transact(Transaction) (*Transaction, *errs.AppError)
 }

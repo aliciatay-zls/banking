@@ -20,7 +20,8 @@ func (r TransactionRequest) Validate() *errs.AppError {
 
 // (*)
 //Chose not to use strings.ToLower() here unlike in the lecture, because will have to ensure case-insensitivity
-//throughout entire app (e.g. need to use it in transactionRepositoryDb.go as well), otherwise can have errors +
-//records in database can get messed up due to uppercase/lowercase variations of "withdrawal" and "deposit" allowed in.
+//throughout entire app (e.g. do for customers APIs --> need to use it in customerRepositoryDb.go as well),
+//otherwise can have errors + records in database can get messed up due to uppercase/lowercase variations of
+//"withdrawal" and "deposit" allowed in.
 //Becomes more of job of input sanitization at the very start (e.g. handler?) before passing down these json values
 //to the rest of the app.

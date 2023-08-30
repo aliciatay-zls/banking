@@ -31,3 +31,23 @@ func (h AccountHandler) newAccountHandler(w http.ResponseWriter, r *http.Request
 
 	writeJsonResponse(w, http.StatusCreated, response)
 }
+
+func (h AccountHandler) transactionHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	transactionRequest := dto.TransactionRequest{
+		AccountId: vars["account_id"],
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&transactionRequest); err != nil {
+		writeJsonResponse(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	response, err := h.service.MakeTransaction(transactionRequest)
+	if err != nil {
+		writeJsonResponse(w, err.Code, err.AsMessage())
+		return
+	}
+
+	writeJsonResponse(w, http.StatusCreated, response)
+}

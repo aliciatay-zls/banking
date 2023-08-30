@@ -9,10 +9,15 @@ import (
 
 type AccountService interface { //service (primary port)
 	CreateNewAccount(dto.NewAccountRequest) (*dto.NewAccountResponse, *errs.AppError)
+	MakeTransaction(dto.TransactionRequest) (*dto.TransactionResponse, *errs.AppError)
 }
 
 type DefaultAccountService struct { //business/domain object
 	repo domain.AccountRepository //Business Domain has dependency on repo (repo is a field)
+}
+
+func NewAccountService(repo domain.AccountRepository) DefaultAccountService {
+	return DefaultAccountService{repo}
 }
 
 func (s DefaultAccountService) CreateNewAccount(request dto.NewAccountRequest) (*dto.NewAccountResponse, *errs.AppError) { //Business Domain implements service
@@ -39,6 +44,24 @@ func (s DefaultAccountService) CreateNewAccount(request dto.NewAccountRequest) (
 	return &response, nil
 }
 
-func NewAccountService(repo domain.AccountRepository) DefaultAccountService {
-	return DefaultAccountService{repo}
+func (s DefaultAccountService) MakeTransaction(request dto.TransactionRequest) (*dto.TransactionResponse, *errs.AppError) { //Business Domain implements service
+	if err := request.Validate(); err != nil {
+		return nil, err
+	}
+
+	transaction := domain.Transaction{
+		AccountId:       request.AccountId,
+		Amount:          request.Amount,
+		TransactionType: request.TransactionType,
+		TransactionDate: time.Now().Format("2006-01-02 15:04:05"),
+	}
+
+	completedTransaction, err := s.repo.Transact(transaction)
+	if err != nil {
+		return nil, err
+	}
+
+	response := completedTransaction.ToTransactionResponseDTO()
+
+	return response, nil
 }

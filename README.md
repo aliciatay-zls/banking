@@ -24,12 +24,12 @@ https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang
 <br/><br/>
 3. [Postman](https://www.postman.com/) can be used to send requests to the app. Sample requests:
 
-| Method | URL                                                   | Body                                                                                   | Result                                                                                                                                                    |
-|--------|-------------------------------------------------------|----------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| GET    | http://localhost:8080/customers                       |                                                                                        | Will display details of customers with id 2000 to 2005                                                                                                    |
-| GET    | http://localhost:8080/customers/2000                  |                                                                                        | Will display details of the customer with id 2000                                                                                                         |
-| POST   | http://localhost:8080/customers/2000/account          | {"account_type": "saving", <br/>"amount": 7000.00}                                     | Will open a new bank account for the customer with id 2000, then display the new bank account id                                                          |
-| POST   | http://localhost:8080/customers/2000/account/transact | {"account_id": "95470", <br/>"amount": 1000.00, <br/>"transaction_type": "withdrawal"} | Will make a withdrawal for the customer with id 2000 for the account with id 95470, then display the updated account balance and completed transaction id |
+| Method | URL                                                | Body                                                    | Result                                                                                                                                                                                  |
+|--------|----------------------------------------------------|---------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| GET    | http://localhost:8080/customers                    |                                                         | Will display details of customers with id 2000 to 2005                                                                                                                                  |
+| GET    | http://localhost:8080/customers/2000               |                                                         | Will display details of the customer with id 2000                                                                                                                                       |
+| POST   | http://localhost:8080/customers/2000/account       | {"account_type": "saving", <br/>"amount": 7000}         | Will open a new bank account containing $7000 for the customer with id 2000, then display the new bank account id                                                                       |
+| POST   | http://localhost:8080/customers/2000/account/95470 | {"transaction_type": "withdrawal", <br/>"amount": 1000} | Will make a withdrawal of $1000 for the customer with id 2000 for the account with id 95470, then display details of the updated account including balance and completed transaction id |
 
 4. To check changes made to the app database, open another tab in terminal and start an interactive shell in 
 the container for querying the db:
@@ -49,7 +49,7 @@ the container for querying the db:
 3. Replace standard library request multiplexer: `gorilla/mux`
 4. Create routes: GET `customers/{id}`,  POST `customers`
 5. Restructure code into hexagonal architecture (and into packages): add ability to find customers
-   1. business domain objects `Customer`, `DefaultCustomerService`
+   1. business domain objects `Customer` and `DefaultCustomerService`
    2. repo/secondary port `CustomerRepository`
    3. stub/adapter `CustomerRepositoryStub`
    4. service/primary port `CustomerService`
@@ -61,10 +61,11 @@ the container for querying the db:
 9. Replace standard library SQL database package: `sqlx`
 10. Add DTO to separate data used within Domain-Server layers and data exposed to User layer
 11. Use environment variables
-12. Add ability to open bank account (domain object `Account`, repo `AccountRepository`, 
-DB/adapter `AccountRepositoryDb`, service `AccountService`, REST handler `AccountHandler`, 
-DTOs `NewAccountRequest` and `NewAccountResponse`)
-13. Add ability to make transaction (similar additions to the application as 12.)
+12. Add ability to open bank account (domain objects `Account` and `DefaultAccountService`, 
+repo `AccountRepository`, DB/adapter `AccountRepositoryDb`, service `AccountService`, 
+REST handler `AccountHandler`, DTOs `NewAccountRequest` and `NewAccountResponse`)
+13. Add ability to make transaction in a bank account (domain object `Transaction`, 
+DTOs `TransactionRequest` and `TransactionResponse`)
 
 ## Other Notes
 * Files in `build/package` taken from instructor's repo

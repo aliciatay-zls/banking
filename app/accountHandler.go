@@ -22,6 +22,11 @@ func (h AccountHandler) newAccountHandler(w http.ResponseWriter, r *http.Request
 		writeJsonResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
+	if newAccountRequest.AccountType == nil || newAccountRequest.Amount == nil {
+		writeJsonResponse(w, http.StatusBadRequest,
+			"Field(s) missing or null in request body: account_type, amount")
+		return
+	}
 
 	response, err := h.service.CreateNewAccount(newAccountRequest)
 	if err != nil {
@@ -35,11 +40,17 @@ func (h AccountHandler) newAccountHandler(w http.ResponseWriter, r *http.Request
 func (h AccountHandler) transactionHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	transactionRequest := dto.TransactionRequest{
-		AccountId: vars["account_id"],
+		AccountId:  vars["account_id"],
+		CustomerId: vars["customer_id"],
 	}
 
-	if err := json.NewDecoder(r.Body).Decode(&transactionRequest); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&transactionRequest); err != nil { // (*)
 		writeJsonResponse(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	if transactionRequest.TransactionType == nil || transactionRequest.Amount == nil {
+		writeJsonResponse(w, http.StatusBadRequest,
+			"Field(s) missing or null in request body: transaction_type, amount")
 		return
 	}
 
@@ -51,3 +62,8 @@ func (h AccountHandler) transactionHandler(w http.ResponseWriter, r *http.Reques
 
 	writeJsonResponse(w, http.StatusCreated, response)
 }
+
+// (*)
+//json.Decoder.Decode uses json.Unmarshal internally
+//json.Unmarshal docs: "By default, object keys which don't have a corresponding struct field are ignored
+//(see Decoder.DisallowUnknownFields for an alternative)."

@@ -15,6 +15,10 @@ type DefaultCustomerService struct { //business/domain object
 	repo domain.CustomerRepository //Business Domain has dependency on repo (repo is a field)
 }
 
+func NewCustomerService(repository domain.CustomerRepository) DefaultCustomerService { //helper function to create and initialize a business object
+	return DefaultCustomerService{repository}
+}
+
 func (s DefaultCustomerService) GetAllCustomers(status string) ([]dto.CustomerResponse, *errs.AppError) { //Business Domain implements service
 	if status == "" {
 		status = ""
@@ -48,10 +52,6 @@ func (s DefaultCustomerService) GetCustomer(id string) (*dto.CustomerResponse, *
 	response := c.ToDTO()
 
 	return &response, nil
-}
-
-func NewCustomerService(repository domain.CustomerRepository) DefaultCustomerService { //helper function to create and initialize a business object
-	return DefaultCustomerService{repository}
 }
 
 // (*)

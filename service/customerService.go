@@ -1,9 +1,9 @@
 package service
 
 import (
-	"github.com/aliciatay-zls/banking/domain"
-	"github.com/aliciatay-zls/banking/dto"
 	"github.com/udemy-go-1/banking-lib/errs"
+	"github.com/udemy-go-1/banking/domain"
+	"github.com/udemy-go-1/banking/dto"
 )
 
 type CustomerService interface { //service (primary port)

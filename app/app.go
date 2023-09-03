@@ -2,12 +2,12 @@ package app
 
 import (
 	"fmt"
-	"github.com/aliciatay-zls/banking/domain"
-	"github.com/aliciatay-zls/banking/service"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 	"github.com/udemy-go-1/banking-lib/logger"
+	"github.com/udemy-go-1/banking/domain"
+	"github.com/udemy-go-1/banking/service"
 	"net/http"
 	"os"
 	"time"

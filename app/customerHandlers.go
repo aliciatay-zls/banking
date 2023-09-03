@@ -2,8 +2,8 @@ package app
 
 import (
 	"encoding/json"
-	"github.com/aliciatay-zls/banking/service"
 	"github.com/gorilla/mux"
+	"github.com/udemy-go-1/banking/service"
 	"net/http"
 )
 

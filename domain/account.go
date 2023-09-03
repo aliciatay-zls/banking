@@ -1,8 +1,8 @@
 package domain
 
 import (
-	"github.com/aliciatay-zls/banking/dto"
 	"github.com/udemy-go-1/banking-lib/errs"
+	"github.com/udemy-go-1/banking/dto"
 )
 
 //Business Domain

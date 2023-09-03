@@ -66,6 +66,8 @@ repo `AccountRepository`, DB/adapter `AccountRepositoryDb`, service `AccountServ
 REST handler `AccountHandler`, DTOs `NewAccountRequest` and `NewAccountResponse`)
 13. Add ability to make transaction in a bank account (domain object `Transaction`, 
 DTOs `TransactionRequest` and `TransactionResponse`)
+14. (Extra) Add login API: https://github.com/udemy-go-1/banking-auth
+15. (Extra) Shift `errs` and `logger` packages to new repo: https://github.com/udemy-go-1/banking-lib
 
 ## Other Notes
 * Files in `build/package` taken from instructor's repo

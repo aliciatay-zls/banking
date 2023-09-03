@@ -1,4 +1,4 @@
-module github.com/aliciatay-zls/banking
+module github.com/udemy-go-1/banking
 
 go 1.20
 

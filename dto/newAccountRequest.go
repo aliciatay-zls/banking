@@ -1,6 +1,6 @@
 package dto
 
-import "github.com/aliciatay-zls/banking/errs"
+import "github.com/udemy-go-1/banking-lib/errs"
 
 type NewAccountRequest struct {
 	CustomerId  string   `json:"customer_id"`

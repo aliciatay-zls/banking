@@ -9,6 +9,7 @@ require (
 
 require (
 	github.com/jmoiron/sqlx v1.3.5 // indirect
+	github.com/udemy-go-1/banking-lib v0.0.0-20230903092420-adfb2934a319 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.25.0 // indirect
 )

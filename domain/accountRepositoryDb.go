@@ -2,9 +2,9 @@ package domain
 
 import (
 	"database/sql"
-	"github.com/aliciatay-zls/banking/errs"
-	"github.com/aliciatay-zls/banking/logger"
 	"github.com/jmoiron/sqlx"
+	"github.com/udemy-go-1/banking-lib/errs"
+	"github.com/udemy-go-1/banking-lib/logger"
 	"strconv"
 )
 

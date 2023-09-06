@@ -17,6 +17,8 @@ func checkEnvVars() {
 	envVars := []string{
 		"SERVER_ADDRESS",
 		"SERVER_PORT",
+		"AUTH_SERVER_ADDRESS",
+		"AUTH_SERVER_PORT",
 		"DB_USER",
 		"DB_PASSWORD",
 		"DB_ADDRESS",
@@ -42,10 +44,24 @@ func Start() {
 	ch := CustomerHandlers{service.NewCustomerService(customerRepositoryDb)}
 	ah := AccountHandler{service.NewAccountService(accountRepositoryDb)}
 
-	router.HandleFunc("/customers", ch.customersHandler).Methods(http.MethodGet)
-	router.HandleFunc("/customers/{customer_id:[0-9]+}", ch.customerIdHandler).Methods(http.MethodGet)
-	router.HandleFunc("/customers/{customer_id:[0-9]+}/account", ah.newAccountHandler).Methods(http.MethodPost)
-	router.HandleFunc("/customers/{customer_id:[0-9]+}/account/{account_id:[0-9]+}", ah.transactionHandler).Methods(http.MethodPost)
+	router.
+		HandleFunc("/customers", ch.customersHandler).
+		Methods(http.MethodGet).
+		Name("GetAllCustomers")
+	router.
+		HandleFunc("/customers/{customer_id:[0-9]+}", ch.customerIdHandler).
+		Methods(http.MethodGet).
+		Name("GetCustomer")
+	router.
+		HandleFunc("/customers/{customer_id:[0-9]+}/account", ah.newAccountHandler).
+		Methods(http.MethodPost).
+		Name("NewAccount")
+	router.
+		HandleFunc("/customers/{customer_id:[0-9]+}/account/{account_id:[0-9]+}", ah.transactionHandler).
+		Methods(http.MethodPost).
+		Name("NewTransaction")
+
+	router.Use(AuthMiddlewareHandler)
 
 	address := os.Getenv("SERVER_ADDRESS")
 	port := os.Getenv("SERVER_PORT")
@@ -88,6 +104,8 @@ func getDbClient() *sqlx.DB {
 
 //using the custom multiplexer, register route (pattern (url) --> handler method (writes response))
 //gorilla mux: paths can have variables + if given vars don't match regex, mux sends error, req doesn't reach app
+
+//introduce middleware
 
 //start and run server
 //listen on localhost and pass multiplexer to Serve()

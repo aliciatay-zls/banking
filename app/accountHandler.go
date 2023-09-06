@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"github.com/udemy-go-1/banking-lib/logger"
 	"github.com/udemy-go-1/banking/dto"
 	"github.com/udemy-go-1/banking/service"
 	"net/http"
@@ -19,6 +20,7 @@ func (h AccountHandler) newAccountHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&newAccountRequest); err != nil {
+		logger.Error("Error while decoding json body of new account request: " + err.Error())
 		writeJsonResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -45,6 +47,7 @@ func (h AccountHandler) transactionHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&transactionRequest); err != nil { // (*)
+		logger.Error("Error while decoding json body of transaction request: " + err.Error())
 		writeJsonResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}

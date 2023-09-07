@@ -1,4 +1,4 @@
-# Go Banking Web App
+# Go Banking Web App - Resource Server
 https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang/
 
 ## Setup
@@ -66,8 +66,12 @@ repo `AccountRepository`, DB/adapter `AccountRepositoryDb`, service `AccountServ
 REST handler `AccountHandler`, DTOs `NewAccountRequest` and `NewAccountResponse`)
 13. Add ability to make transaction in a bank account (domain object `Transaction`, 
 DTOs `TransactionRequest` and `TransactionResponse`)
-14. (Extra) Add login API: https://github.com/udemy-go-1/banking-auth
-15. (Extra) Shift `errs` and `logger` packages to new repo: https://github.com/udemy-go-1/banking-lib
+14. (Extra) Create Authentication Server using hexagonal architecture:
+    1. Add ability to log in a client: generate a token for the client which acts as a session token 
+    ([banking-auth repo]( https://github.com/udemy-go-1/banking-auth))
+    2. Add ability to verify client's right to access route: require the token from i. for requests to all routes 
+    (middleware `AuthMiddlewareHandler`), verify the token and role privileges of the client 
+    ([banking-auth repo](https://github.com/udemy-go-1/banking-auth))
 
 ## Other Notes
 * Files in `build/package` taken from instructor's repo

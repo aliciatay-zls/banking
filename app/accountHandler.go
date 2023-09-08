@@ -25,6 +25,7 @@ func (h AccountHandler) newAccountHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 	if newAccountRequest.AccountType == nil || newAccountRequest.Amount == nil {
+		logger.Error("Field(s) missing or null in request body")
 		writeJsonResponse(w, http.StatusBadRequest,
 			"Field(s) missing or null in request body: account_type, amount")
 		return
@@ -52,6 +53,7 @@ func (h AccountHandler) transactionHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	if transactionRequest.TransactionType == nil || transactionRequest.Amount == nil {
+		logger.Error("Field(s) missing or null in request body")
 		writeJsonResponse(w, http.StatusBadRequest,
 			"Field(s) missing or null in request body: transaction_type, amount")
 		return

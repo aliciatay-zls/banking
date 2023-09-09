@@ -61,7 +61,8 @@ func Start() {
 		Methods(http.MethodPost).
 		Name("NewTransaction")
 
-	router.Use(AuthMiddlewareHandler)
+	amw := AuthMiddleware{domain.NewDefaultAuthRepository()}
+	router.Use(amw.AuthMiddlewareHandler)
 
 	address := os.Getenv("SERVER_ADDRESS")
 	port := os.Getenv("SERVER_PORT")

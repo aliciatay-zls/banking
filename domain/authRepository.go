@@ -25,25 +25,25 @@ func NewDefaultAuthRepository() DefaultAuthRepository {
 func (r DefaultAuthRepository) IsAuthorized(tokenString string, routeName string, routeVars map[string]string) bool {
 	token := extractToken(tokenString)
 
-	authURL := buildURL(token, routeName, routeVars)
+	verifyURL := buildURL(token, routeName, routeVars)
 
-	response, err := http.Get(authURL)
+	response, err := http.Get(verifyURL)
 	if err != nil {
 		logger.Error("Error while sending request to verification URL: " + err.Error())
 		return false
 	}
 
-	result := map[string]bool{}
+	result := map[string]interface{}{}
 	if err = json.NewDecoder(response.Body).Decode(&result); err != nil {
-		logger.Error("Error while reading response from auth server")
+		logger.Error("Error while reading response from auth server: " + err.Error())
 		return false
 	}
 	if response.StatusCode != http.StatusOK {
-		logger.Error("Request verification failed with status " + response.Status)
+		logger.Error("Request verification failed: " + result["message"].(string))
 		return false
 	}
 
-	return result["isAuthorized"]
+	return result["is_authorized"].(bool)
 }
 
 func extractToken(tokenString string) string {
@@ -56,7 +56,7 @@ func extractToken(tokenString string) string {
 func buildURL(token string, routeName string, routeVars map[string]string) string {
 	addr := os.Getenv("AUTH_SERVER_ADDRESS")
 	port := os.Getenv("AUTH_SERVER_PORT")
-	authURL := url.URL{
+	verifyURL := url.URL{
 		Scheme: "http",
 		Host:   fmt.Sprintf("%s:%s", addr, port),
 		Path:   "auth/verify",
@@ -67,9 +67,9 @@ func buildURL(token string, routeName string, routeVars map[string]string) strin
 	v.Add("route_name", routeName)
 	v.Add("account_id", routeVars["account_id"])
 	v.Add("customer_id", routeVars["customer_id"])
-	authURL.RawQuery = v.Encode()
+	verifyURL.RawQuery = v.Encode()
 
-	return authURL.String()
+	return verifyURL.String()
 }
 
 //authRepository.go is a repo but follows usual code for a service (primary port) instead of usual code for a repo:

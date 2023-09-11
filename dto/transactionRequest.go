@@ -1,9 +1,14 @@
 package dto
 
 import (
+	"fmt"
 	"github.com/udemy-go-1/banking-lib/errs"
 	"github.com/udemy-go-1/banking-lib/logger"
 )
+
+const TransactionTypeWithdrawal = "withdrawal"
+const TransactionTypeDeposit = "deposit"
+const TransactionMinAmountAllowed float64 = 0
 
 type TransactionRequest struct { // (**)
 	AccountId       string   `json:"account_id"`
@@ -13,13 +18,13 @@ type TransactionRequest struct { // (**)
 }
 
 func (r TransactionRequest) Validate() *errs.AppError {
-	if *r.Amount < 0 {
+	if *r.Amount < TransactionMinAmountAllowed {
 		logger.Error("Transaction amount is invalid")
-		return errs.NewValidationError("Transaction amount cannot be negative")
+		return errs.NewValidationError(fmt.Sprintf("Transaction amount cannot be less than %v", TransactionMinAmountAllowed))
 	}
-	if *r.TransactionType != "withdrawal" && *r.TransactionType != "deposit" { // (*)
+	if *r.TransactionType != TransactionTypeWithdrawal && *r.TransactionType != TransactionTypeDeposit { // (*)
 		logger.Error("Transaction type is invalid")
-		return errs.NewValidationError("Transaction type should be withdrawal or deposit")
+		return errs.NewValidationError(fmt.Sprintf("Transaction type should be %s or %s", TransactionTypeWithdrawal, TransactionTypeDeposit))
 	}
 	return nil
 }

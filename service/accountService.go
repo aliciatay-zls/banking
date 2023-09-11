@@ -57,7 +57,7 @@ func (s DefaultAccountService) MakeTransaction(request dto.TransactionRequest) (
 		return nil, err
 	}
 
-	if *request.TransactionType == "withdrawal" {
+	if *request.TransactionType == dto.TransactionTypeWithdrawal {
 		if !account.CanWithdraw(*request.Amount) {
 			return nil, errs.NewValidationError("Account balance insufficient to withdraw given amount")
 		}

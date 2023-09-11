@@ -14,7 +14,7 @@ type AuthRepository interface { //repo (secondary port)
 	IsAuthorized(string, string, map[string]string) bool
 }
 
-type DefaultAuthRepository struct { //business/domain object
+type DefaultAuthRepository struct { //adapter
 
 }
 
@@ -22,7 +22,7 @@ func NewDefaultAuthRepository() DefaultAuthRepository {
 	return DefaultAuthRepository{}
 }
 
-func (r DefaultAuthRepository) IsAuthorized(tokenString string, routeName string, routeVars map[string]string) bool {
+func (r DefaultAuthRepository) IsAuthorized(tokenString string, routeName string, routeVars map[string]string) bool { //adapter implements repo
 	token := extractToken(tokenString)
 
 	verifyURL := buildURL(token, routeName, routeVars)
@@ -72,5 +72,7 @@ func buildURL(token string, routeName string, routeVars map[string]string) strin
 	return verifyURL.String()
 }
 
-//authRepository.go is a repo but follows usual code for a service (primary port) instead of usual code for a repo:
-//port, "Default*" domain object, "New*()" constructor, make domain object implement port
+//repo (port) + adapter all in one source file, not separate (DefaultAuthRepository would usually be AuthRepositoryDb)
+//authRepository.go is a repo but similar code as a service (primary port) instead of usual code for a repo:
+//here   : port, "Default*" adapter, "New*()" constructor, make adapter implement port
+//service: port, "Default*" domain object, "New*()" constructor, make domain object implement port

@@ -1,9 +1,14 @@
 package dto
 
 import (
+	"fmt"
 	"github.com/udemy-go-1/banking-lib/errs"
 	"github.com/udemy-go-1/banking-lib/logger"
 )
+
+const AccountTypeSaving = "saving"
+const AccountTypeChecking = "checking"
+const NewAccountMinAmountAllowed float64 = 5000
 
 type NewAccountRequest struct {
 	CustomerId  string   `json:"customer_id"`
@@ -12,13 +17,13 @@ type NewAccountRequest struct {
 }
 
 func (r NewAccountRequest) Validate() *errs.AppError {
-	if *r.Amount < 5000.00 {
+	if *r.Amount < NewAccountMinAmountAllowed {
 		logger.Error("New account amount is invalid")
-		return errs.NewValidationError("To open an account you must deposit at least 5000")
+		return errs.NewValidationError(fmt.Sprintf("To open an account you must deposit at least %v", NewAccountMinAmountAllowed))
 	}
-	if *r.AccountType != "saving" && *r.AccountType != "checking" {
+	if *r.AccountType != AccountTypeSaving && *r.AccountType != AccountTypeChecking {
 		logger.Error("New account type is invalid")
-		return errs.NewValidationError("Account type should be saving or checking")
+		return errs.NewValidationError(fmt.Sprintf("Account type should be %s or %s", AccountTypeSaving, AccountTypeChecking))
 	}
 	return nil
 }

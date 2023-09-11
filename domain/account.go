@@ -21,10 +21,7 @@ func (a Account) ToNewAccountResponseDTO() dto.NewAccountResponse {
 }
 
 func (a Account) CanWithdraw(withdrawalAmount float64) bool {
-	if a.Amount < withdrawalAmount {
-		return false
-	}
-	return true
+	return a.Amount >= withdrawalAmount
 }
 
 //Server

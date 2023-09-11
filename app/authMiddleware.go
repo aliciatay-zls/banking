@@ -8,7 +8,7 @@ import (
 )
 
 type AuthMiddleware struct {
-	repo domain.DefaultAuthRepository
+	repo domain.DefaultAuthRepository //middleware handler has dependency on repo directly, skipped service
 }
 
 // AuthMiddlewareHandler is a middleware that retrieves the token, route name and any vars in the route from the

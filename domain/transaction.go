@@ -23,8 +23,5 @@ func (t Transaction) ToTransactionResponseDTO() *dto.TransactionResponse {
 }
 
 func (t Transaction) IsWithdrawal() bool {
-	if t.TransactionType != "withdrawal" {
-		return false
-	}
-	return true
+	return t.TransactionType == dto.TransactionTypeWithdrawal
 }

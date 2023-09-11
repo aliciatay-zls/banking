@@ -72,6 +72,7 @@ DTOs `TransactionRequest` and `TransactionResponse`)
     2. Add ability to verify client's right to access route: require the token from i. for requests to all routes 
     (middleware `AuthMiddlewareHandler`), verify the token and role privileges of the client 
     ([banking-auth repo](https://github.com/udemy-go-1/banking-auth))
+15. Add state-based tests for domain objects, DTOs
 
 ## Other Notes
 * Files in `build/package` taken from instructor's repo

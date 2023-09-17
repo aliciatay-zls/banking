@@ -6,6 +6,7 @@ import (
 	"github.com/udemy-go-1/banking/dto"
 )
 
+//go:generate mockgen -destination=../mocks/service/mock_customerService.go -package=service github.com/udemy-go-1/banking/service CustomerService
 type CustomerService interface { //service (primary port)
 	GetAllCustomers(string) ([]dto.CustomerResponse, *errs.AppError)
 	GetCustomer(string) (*dto.CustomerResponse, *errs.AppError)

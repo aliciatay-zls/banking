@@ -10,6 +10,7 @@ import (
 	"strings"
 )
 
+//go:generate mockgen -destination=../mocks/domain/mock_authRepository.go -package=domain github.com/udemy-go-1/banking/domain AuthRepository
 type AuthRepository interface { //repo (secondary port)
 	IsAuthorized(string, string, map[string]string) bool
 }
@@ -43,14 +44,19 @@ func (r DefaultAuthRepository) IsAuthorized(tokenString string, routeName string
 		return false
 	}
 
-	return result["is_authorized"].(bool)
+	val, ok := result["is_authorized"].(bool)
+	if !ok {
+		logger.Error("Error while getting value of the `is_authorized` key: value is not of type bool")
+		return false
+	}
+	return val
 }
 
 func extractToken(tokenString string) string {
 	if strings.Contains(tokenString, "Bearer ") { //Bearer <token>
 		tokenString = strings.Split(tokenString, "Bearer ")[1] //<token>
 	}
-	return tokenString
+	return strings.TrimSpace(tokenString)
 }
 
 func buildURL(token string, routeName string, routeVars map[string]string) string {

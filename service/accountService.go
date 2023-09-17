@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+//go:generate mockgen -destination=../mocks/service/mock_accountService.go -package=service github.com/udemy-go-1/banking/service AccountService
 type AccountService interface { //service (primary port)
 	CreateNewAccount(dto.NewAccountRequest) (*dto.NewAccountResponse, *errs.AppError)
 	MakeTransaction(dto.TransactionRequest) (*dto.TransactionResponse, *errs.AppError)

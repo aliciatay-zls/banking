@@ -73,6 +73,7 @@ DTOs `TransactionRequest` and `TransactionResponse`)
     (middleware `AuthMiddlewareHandler`), verify the token and role privileges of the client 
     ([banking-auth repo](https://github.com/udemy-go-1/banking-auth))
 15. Add state-based tests for domain objects, DTOs
+16. Test routes
 
 ## Other Notes
 * Files in `build/package` taken from instructor's repo

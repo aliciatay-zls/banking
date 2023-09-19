@@ -14,14 +14,21 @@ import (
 	"testing"
 )
 
-// Test variables
-var mockCustomerService *service.MockCustomerService
-var ch CustomerHandlers
-
-// Package variables
+// Package variables and common inputs
 var router *mux.Router
 var recorder *httptest.ResponseRecorder
 var request *http.Request
+
+const dummyCustomerId = "2"
+
+// Test variables and common inputs
+var mockCustomerService *service.MockCustomerService
+var ch CustomerHandlers
+var dummyCustomers []dto.CustomerResponse
+
+const customersPath = "/customers"
+const customerIdPath = "/customers/{customer_id:[0-9]+}"
+const dummyCustomerIdPath = "/customers/2"
 
 // setupCustomerHandlersTest initializes the above variables and returns a function that should be called at the end
 // of each test to reset the variables and other cleanup tasks. setup takes in a path string for building request.
@@ -35,6 +42,8 @@ func setupCustomerHandlersTest(t *testing.T, path string) func() {
 	recorder = httptest.NewRecorder()
 	request = httptest.NewRequest(http.MethodGet, path, nil)
 
+	setVariableDummyCustomers()
+
 	return func() {
 		router = nil
 		recorder = nil
@@ -43,16 +52,19 @@ func setupCustomerHandlersTest(t *testing.T, path string) func() {
 	}
 }
 
-func TestCustomerHandlers_customersHandler_CustomersWithStatusCode200WhenServiceSucceeds(t *testing.T) {
-	//Arrange
-	teardown := setupCustomerHandlersTest(t, "/customers")
-	defer teardown()
-	router.HandleFunc("/customers", ch.customersHandler)
-
-	dummyCustomers := []dto.CustomerResponse{
+func setVariableDummyCustomers() {
+	dummyCustomers = []dto.CustomerResponse{
 		{"1", "Dorothy", "Emerald City", "12345", "11/11/2011", "1"},
 		{"2", "Luke", "Tatooine", "67890", "12/12/2012", "0"},
 	}
+}
+
+func TestCustomerHandlers_customersHandler_CustomersWithStatusCode200WhenServiceSucceeds(t *testing.T) {
+	//Arrange
+	teardown := setupCustomerHandlersTest(t, customersPath)
+	defer teardown()
+	router.HandleFunc(customersPath, ch.customersHandler)
+
 	mockCustomerService.EXPECT().GetAllCustomers("").Return(dummyCustomers, nil)
 	expectedStatusCode := http.StatusOK
 
@@ -71,9 +83,9 @@ func TestCustomerHandlers_customersHandler_CustomersWithStatusCode200WhenService
 
 func TestCustomerHandlers_customersHandler_NoCustomersWithErrorStatusCodeWhenServiceFails(t *testing.T) {
 	//Arrange
-	teardown := setupCustomerHandlersTest(t, "/customers")
+	teardown := setupCustomerHandlersTest(t, customersPath)
 	defer teardown()
-	router.HandleFunc("/customers", ch.customersHandler)
+	router.HandleFunc(customersPath, ch.customersHandler)
 
 	dummyAppError := errs.NewUnexpectedError("some error message")
 	mockCustomerService.EXPECT().GetAllCustomers("").Return(nil, dummyAppError)
@@ -93,13 +105,11 @@ func TestCustomerHandlers_customersHandler_NoCustomersWithErrorStatusCodeWhenSer
 
 func TestCustomerHandlers_customerIdHandler_CustomerWithStatusCode200WhenServiceSucceeds(t *testing.T) {
 	//Arrange
-	teardown := setupCustomerHandlersTest(t, "/customers/2")
+	teardown := setupCustomerHandlersTest(t, dummyCustomerIdPath)
 	defer teardown()
-	router.HandleFunc("/customers/{customer_id:[0-9]+}", ch.customerIdHandler)
+	router.HandleFunc(customerIdPath, ch.customerIdHandler)
 
-	var dummyCustomerId = "2"
-	dummyCustomer := dto.CustomerResponse{Id: dummyCustomerId, Name: "Luke", City: "Tatooine", Zipcode: "67890",
-		DateOfBirth: "12/12/2012", Status: "0"}
+	dummyCustomer := dummyCustomers[1]
 	mockCustomerService.EXPECT().GetCustomer(dummyCustomerId).Return(&dummyCustomer, nil)
 	expectedStatusCode := http.StatusOK
 
@@ -118,12 +128,12 @@ func TestCustomerHandlers_customerIdHandler_CustomerWithStatusCode200WhenService
 
 func TestCustomerHandlers_customerIdHandler_NoCustomerWithErrorStatusCodeWhenServiceFails(t *testing.T) {
 	//Arrange
-	teardown := setupCustomerHandlersTest(t, "/customers/2")
+	teardown := setupCustomerHandlersTest(t, dummyCustomerIdPath)
 	defer teardown()
-	router.HandleFunc("/customers/{customer_id:[0-9]+}", ch.customerIdHandler)
+	router.HandleFunc(customerIdPath, ch.customerIdHandler)
 
 	dummyAppError := errs.NewUnexpectedError("some error message")
-	mockCustomerService.EXPECT().GetCustomer("2").Return(nil, dummyAppError)
+	mockCustomerService.EXPECT().GetCustomer(dummyCustomerId).Return(nil, dummyAppError)
 
 	//Act
 	router.ServeHTTP(recorder, request)
@@ -140,11 +150,11 @@ func TestCustomerHandlers_customerIdHandler_NoCustomerWithErrorStatusCodeWhenSer
 
 func TestCustomerHandlers_writeJsonResponse(t *testing.T) {
 	//Arrange
-	recorder = httptest.NewRecorder() //instead of calling setup()
+	setVariableDummyCustomers()
+	recorder = httptest.NewRecorder()
 
 	var dummyStatusCode = 200
-	dummyData := dto.CustomerResponse{Id: "2", Name: "Luke", City: "Tatooine", Zipcode: "67890",
-		DateOfBirth: "12/12/2012", Status: "0"}
+	dummyData := dummyCustomers[1]
 	var expectedHeaderKey = "Content-Type"
 	var expectedHeaderVal = "application/json"
 
@@ -161,7 +171,7 @@ func TestCustomerHandlers_writeJsonResponse(t *testing.T) {
 	}
 	var actualData dto.CustomerResponse
 	if err := json.NewDecoder(recorder.Result().Body).Decode(&actualData); err != nil {
-		t.Error("Failed to decode dummy response")
+		t.Fatal("Failed to decode dummy response")
 	}
 	if actualData != dummyData {
 		t.Errorf("Expected response to be %s but got %s", dummyData, actualData)

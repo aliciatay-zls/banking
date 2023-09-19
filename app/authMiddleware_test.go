@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/udemy-go-1/banking-lib/logger"
 	"github.com/udemy-go-1/banking/mocks/domain"
 	"go.uber.org/mock/gomock"
 	"io"
@@ -11,31 +12,39 @@ import (
 	"testing"
 )
 
-// Test variables
+// Test variables and common inputs
 var mockAuthRepo *domain.MockAuthRepository
 var amw AuthMiddleware
+var dummyRouteVars map[string]string
 
-func setupAuthMiddlewareTest(t *testing.T, hasTokenHeader bool) func() {
+const dummyPath = "/some/path"
+const dummyToken = "header.payload.signature"
+const dummyRouteName = "SomeRoute"
+const dummyStatusCodeFromHandler = http.StatusContinue
+const dummyResponseMessage = "Entered next handler"
+
+func setupAuthMiddlewareTest(t *testing.T, isTokenGiven bool) func() {
 	router = mux.NewRouter()
 
 	ctrl := gomock.NewController(t)
 	mockAuthRepo = domain.NewMockAuthRepository(ctrl)
 	amw = AuthMiddleware{mockAuthRepo}
 
-	dummyToken, dummyRouteName, _, dummyStatusCode, dummyResponse := getAuthMiddlewareHandlerDefaultDummyInputs()
+	dummyRouteVars = map[string]string{}
+
 	dummyHandler := func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/text")
-		w.WriteHeader(dummyStatusCode)
-		if _, err := w.Write([]byte(dummyResponse)); err != nil {
-			t.Error("Error during testing setup: " + err.Error())
+		w.WriteHeader(dummyStatusCodeFromHandler)
+		if _, err := w.Write([]byte(dummyResponseMessage)); err != nil {
+			t.Fatal("Error during testing setup: " + err.Error())
 		}
 	}
-	router.HandleFunc("/some/path", dummyHandler).Name(dummyRouteName)
+	router.HandleFunc(dummyPath, dummyHandler).Name(dummyRouteName)
 	router.Use(amw.AuthMiddlewareHandler)
 
 	recorder = httptest.NewRecorder()
-	request = httptest.NewRequest(http.MethodGet, "/some/path", nil)
-	if hasTokenHeader {
+	request = httptest.NewRequest(http.MethodGet, dummyPath, nil)
+	if isTokenGiven {
 		request.Header.Add("Authorization", dummyToken)
 	}
 
@@ -47,15 +56,6 @@ func setupAuthMiddlewareTest(t *testing.T, hasTokenHeader bool) func() {
 	}
 }
 
-func getAuthMiddlewareHandlerDefaultDummyInputs() (string, string, map[string]string, int, string) {
-	dummyToken := "header.payload.signature"
-	dummyRouteName := "SomeRoute"
-	dummyRouteVars := map[string]string{}
-	dummyStatusCode := http.StatusContinue
-	dummyMessage := "Entered next handler"
-	return dummyToken, dummyRouteName, dummyRouteVars, dummyStatusCode, dummyMessage
-}
-
 func TestAuthMiddleware_AuthMiddlewareHandler_ErrorStatusCodeWhenTokenMissing(t *testing.T) {
 	//Arrange
 	teardownAll := setupAuthMiddlewareTest(t, false)
@@ -63,6 +63,9 @@ func TestAuthMiddleware_AuthMiddlewareHandler_ErrorStatusCodeWhenTokenMissing(t 
 
 	expectedStatusCode := http.StatusUnauthorized
 	expectedMessage := "Missing token"
+
+	logs := logger.ReplaceWithTestLogger()
+	expectedLogMessage := "Client did not provide a token"
 
 	//Act
 	router.ServeHTTP(recorder, request)
@@ -75,6 +78,13 @@ func TestAuthMiddleware_AuthMiddlewareHandler_ErrorStatusCodeWhenTokenMissing(t 
 	if !strings.Contains(string(actualResponse), expectedMessage) {
 		t.Errorf("Expecting response to contain %s but got %s", expectedMessage, actualResponse)
 	}
+	if logs.Len() != 1 {
+		t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
+	}
+	actualLogMessage := logs.All()[0].Message
+	if actualLogMessage != expectedLogMessage {
+		t.Errorf("Expected log message to be \"%s\" but got \"%s\"", expectedLogMessage, actualLogMessage)
+	}
 }
 
 func TestAuthMiddleware_AuthMiddlewareHandler_RunsNextHandlerFuncWhenRepoSucceeds(t *testing.T) {
@@ -82,19 +92,18 @@ func TestAuthMiddleware_AuthMiddlewareHandler_RunsNextHandlerFuncWhenRepoSucceed
 	teardownAll := setupAuthMiddlewareTest(t, true)
 	defer teardownAll()
 
-	dummyToken, dummyRouteName, _, dummyStatusCode, dummyMessage := getAuthMiddlewareHandlerDefaultDummyInputs()
-	mockAuthRepo.EXPECT().IsAuthorized(dummyToken, dummyRouteName, map[string]string{}).Return(true)
+	mockAuthRepo.EXPECT().IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars).Return(true)
 
 	//Act
 	router.ServeHTTP(recorder, request)
 
 	//Assert
-	if recorder.Result().StatusCode != dummyStatusCode {
-		t.Errorf("Expected status code %d but got %d", dummyStatusCode, recorder.Result().StatusCode)
+	if recorder.Result().StatusCode != dummyStatusCodeFromHandler {
+		t.Errorf("Expected status code %d but got %d", dummyStatusCodeFromHandler, recorder.Result().StatusCode)
 	}
 	actualResponse, _ := io.ReadAll(recorder.Result().Body)
-	if !strings.Contains(string(actualResponse), dummyMessage) {
-		t.Errorf("Expecting response to contain %s but got %s", dummyMessage, actualResponse)
+	if !strings.Contains(string(actualResponse), dummyResponseMessage) {
+		t.Errorf("Expecting response to contain %s but got %s", dummyResponseMessage, actualResponse)
 	}
 }
 
@@ -103,7 +112,6 @@ func TestAuthMiddleware_AuthMiddlewareHandler_ErrorStatusCodeWhenRepoFails(t *te
 	teardownAll := setupAuthMiddlewareTest(t, true)
 	defer teardownAll()
 
-	dummyToken, dummyRouteName, dummyRouteVars, _, _ := getAuthMiddlewareHandlerDefaultDummyInputs()
 	mockAuthRepo.EXPECT().IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars).Return(false)
 	expectedStatusCode := http.StatusForbidden
 	expectedMessage := "Access forbidden"

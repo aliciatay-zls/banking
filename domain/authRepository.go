@@ -52,9 +52,10 @@ func (r DefaultAuthRepository) IsAuthorized(tokenString string, routeName string
 	return val
 }
 
+// extractToken converts the value of the Authorization header from the form "Bearer <token>" to "<token>"
 func extractToken(tokenString string) string {
-	if strings.Contains(tokenString, "Bearer ") { //Bearer <token>
-		tokenString = strings.Split(tokenString, "Bearer ")[1] //<token>
+	if strings.Contains(tokenString, "Bearer ") {
+		tokenString = strings.Split(tokenString, "Bearer ")[1]
 	}
 	return strings.TrimSpace(tokenString)
 }

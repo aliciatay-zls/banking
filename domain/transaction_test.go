@@ -1,14 +1,9 @@
 package domain
 
 import (
-	"github.com/udemy-go-1/banking-lib/logger"
 	"github.com/udemy-go-1/banking/dto"
 	"testing"
 )
-
-func init() {
-	logger.MuteLogger()
-}
 
 func TestTransaction_IsWithdrawal_GetCorrectResult(t *testing.T) {
 	//Arrange

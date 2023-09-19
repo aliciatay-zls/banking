@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"github.com/gorilla/mux"
 	"github.com/udemy-go-1/banking-lib/errs"
+	"github.com/udemy-go-1/banking-lib/logger"
 	"github.com/udemy-go-1/banking/dto"
 	"github.com/udemy-go-1/banking/mocks/service"
 	"go.uber.org/mock/gomock"
@@ -15,9 +16,26 @@ import (
 	"testing"
 )
 
-// Test variables
+// Test variables and common inputs
+// customer with id as 2 wants to open new saving account with amount 6000
+// customer with id as 2 and account number as 1977 wants to make a deposit of amount 6000
 var mockAccountService *service.MockAccountService
 var ah AccountHandler
+var dummyNewAccountRequestObject dto.NewAccountRequest
+var dummyNewTransactionRequestObject dto.TransactionRequest
+var dummyAccountType = dto.AccountTypeSaving
+var dummyTransactionType = dto.TransactionTypeDeposit
+var dummyAmount float64 = 6000
+
+const newAccountPath = "/customers/{customer_id:[0-9]+}/account"
+const newTransactionPath = "/customers/{customer_id:[0-9]+}/account/{account_id:[0-9]+}"
+const dummyNewAccountPath = "/customers/2/account"
+const dummyNewTransactionPath = "/customers/2/account/1977"
+const dummyAccountId = "1977"
+const dummyNewAccountRequestPayload = `{"account_type": "saving", "amount": 6000}`
+const dummyNewTransactionPayload = `{"transaction_type": "deposit", "amount": 6000}`
+const dummyTransactionId = "7791"
+const dummyBalance float64 = 12000
 
 func setupAccountHandlerTest(t *testing.T, path string, payload string) func() {
 	ctrl := gomock.NewController(t)
@@ -29,6 +47,18 @@ func setupAccountHandlerTest(t *testing.T, path string, payload string) func() {
 	recorder = httptest.NewRecorder()
 	request = httptest.NewRequest(http.MethodPost, path, bytes.NewBuffer([]byte(payload)))
 
+	dummyNewAccountRequestObject = dto.NewAccountRequest{
+		CustomerId:  dummyCustomerId,
+		AccountType: &dummyAccountType,
+		Amount:      &dummyAmount,
+	}
+	dummyNewTransactionRequestObject = dto.TransactionRequest{
+		AccountId:       dummyAccountId,
+		Amount:          &dummyAmount,
+		TransactionType: &dummyTransactionType,
+		CustomerId:      dummyCustomerId,
+	}
+
 	return func() {
 		router = nil
 		recorder = nil
@@ -37,45 +67,17 @@ func setupAccountHandlerTest(t *testing.T, path string, payload string) func() {
 	}
 }
 
-// customer with id as 2 wants to open new saving account with amount 6000
-func getNewAccountDefaultDummyInputs() (string, dto.NewAccountRequest) {
-	dummyPayload := `{"account_type": "saving", "amount": 6000}`
-
-	var dummyAccountType = "saving"
-	var dummyAmount float64 = 6000
-	dummyNewAccountRequest := dto.NewAccountRequest{
-		CustomerId:  "2",
-		AccountType: &dummyAccountType,
-		Amount:      &dummyAmount,
-	}
-
-	return dummyPayload, dummyNewAccountRequest
-}
-
-// customer with id as 2 and account number as 1977 wants to make a deposit of amount 6000
-func getNewTransactionDefaultDummyInputs() (string, dto.TransactionRequest) {
-	dummyPayload := `{"transaction_type": "deposit", "amount": 6000}`
-
-	var dummyTransactionType = "deposit"
-	var dummyAmount float64 = 6000
-	dummyNewTransactionRequest := dto.TransactionRequest{
-		AccountId:       "1977",
-		Amount:          &dummyAmount,
-		TransactionType: &dummyTransactionType,
-		CustomerId:      "2",
-	}
-
-	return dummyPayload, dummyNewTransactionRequest
-}
-
 func TestAccountHandler_newAccountHandler_NoAccountWithErrorStatusCodeWhenPayloadMalformed(t *testing.T) {
 	//Arrange
 	badPayload := `{"account_type": "saving", "amount": "string instead of number"}`
-	teardown := setupAccountHandlerTest(t, "/customers/2/account", badPayload)
+	teardown := setupAccountHandlerTest(t, dummyNewAccountPath, badPayload)
 	defer teardown()
-	router.HandleFunc("/customers/{customer_id:[0-9]+}/account", ah.newAccountHandler).Methods(http.MethodPost)
+	router.HandleFunc(newAccountPath, ah.newAccountHandler).Methods(http.MethodPost)
 
 	expectedStatusCode := http.StatusBadRequest
+
+	logs := logger.ReplaceWithTestLogger()
+	expectedLogMessagePrefix := "Error while decoding json body of new account request: "
 
 	//Act
 	router.ServeHTTP(recorder, request)
@@ -84,20 +86,29 @@ func TestAccountHandler_newAccountHandler_NoAccountWithErrorStatusCodeWhenPayloa
 	if recorder.Result().StatusCode != expectedStatusCode {
 		t.Errorf("Expecting status code %d but got %d", expectedStatusCode, recorder.Result().StatusCode)
 	}
+	if logs.Len() != 1 {
+		t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
+	}
+	actualLogMessage := logs.All()[0].Message
+	if !strings.Contains(actualLogMessage, expectedLogMessagePrefix) {
+		t.Errorf("Expected log message to contain \"%s\" but got log message: \"%s\"", expectedLogMessagePrefix, actualLogMessage)
+	}
 }
 
 func TestAccountHandler_newAccountHandler_NoAccountWithErrorWhenPayloadFieldMissingOrNull(t *testing.T) {
 	badPayloads := []string{`{"account_type": "saving"}`, `{"account_type": "saving", "amount": null}`}
+	expectedStatusCode := http.StatusBadRequest
+	expectedResponse := "\"Field(s) missing or null in request body: account_type, amount\""
+	expectedLogMessage := "Field(s) missing or null in request body"
 
 	for index, payload := range badPayloads {
 		log.Printf("Testing with payload number %d: %s", index+1, payload)
 
 		//Arrange
-		teardown := setupAccountHandlerTest(t, "/customers/2/account", payload)
-		router.HandleFunc("/customers/{customer_id:[0-9]+}/account", ah.newAccountHandler).Methods(http.MethodPost)
+		teardown := setupAccountHandlerTest(t, dummyNewAccountPath, payload)
+		router.HandleFunc(newAccountPath, ah.newAccountHandler).Methods(http.MethodPost)
 
-		expectedStatusCode := http.StatusBadRequest
-		expectedResponse := "\"Field(s) missing or null in request body: account_type, amount\""
+		logs := logger.ReplaceWithTestLogger()
 
 		//Act
 		router.ServeHTTP(recorder, request)
@@ -110,6 +121,13 @@ func TestAccountHandler_newAccountHandler_NoAccountWithErrorWhenPayloadFieldMiss
 		if !strings.Contains(string(actualResponse), expectedResponse) {
 			t.Errorf("Expecting response to contain %s but got %s", expectedResponse, actualResponse)
 		}
+		if logs.Len() != 1 {
+			t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
+		}
+		actualLogMessage := logs.All()[0].Message
+		if actualLogMessage != expectedLogMessage {
+			t.Errorf("Expected log message to be \"%s\" but got \"%s\"", expectedLogMessage, actualLogMessage)
+		}
 
 		//Cleanup
 		teardown()
@@ -119,13 +137,12 @@ func TestAccountHandler_newAccountHandler_NoAccountWithErrorWhenPayloadFieldMiss
 
 func TestAccountHandler_newAccountHandler_NewAccountWithStatusCode200WhenServiceSucceeds(t *testing.T) {
 	//Arrange
-	dummyPayload, dummyNewAccountRequest := getNewAccountDefaultDummyInputs()
-	teardown := setupAccountHandlerTest(t, "/customers/2/account", dummyPayload)
+	teardown := setupAccountHandlerTest(t, dummyNewAccountPath, dummyNewAccountRequestPayload)
 	defer teardown()
-	router.HandleFunc("/customers/{customer_id:[0-9]+}/account", ah.newAccountHandler).Methods(http.MethodPost)
+	router.HandleFunc(newAccountPath, ah.newAccountHandler).Methods(http.MethodPost)
 
-	dummyAccount := dto.NewAccountResponse{AccountId: "1977"}
-	mockAccountService.EXPECT().CreateNewAccount(dummyNewAccountRequest).Return(&dummyAccount, nil)
+	dummyAccount := dto.NewAccountResponse{AccountId: dummyAccountId}
+	mockAccountService.EXPECT().CreateNewAccount(dummyNewAccountRequestObject).Return(&dummyAccount, nil)
 	expectedStatusCode := http.StatusCreated
 
 	//Act
@@ -143,13 +160,12 @@ func TestAccountHandler_newAccountHandler_NewAccountWithStatusCode200WhenService
 
 func TestAccountHandler_newAccountHandler_NoAccountWithErrorStatusCodeWhenServiceFails(t *testing.T) {
 	//Arrange
-	dummyPayload, dummyNewAccountRequest := getNewAccountDefaultDummyInputs()
-	teardown := setupAccountHandlerTest(t, "/customers/2/account", dummyPayload)
+	teardown := setupAccountHandlerTest(t, dummyNewAccountPath, dummyNewAccountRequestPayload)
 	defer teardown()
-	router.HandleFunc("/customers/{customer_id:[0-9]+}/account", ah.newAccountHandler).Methods(http.MethodPost)
+	router.HandleFunc(newAccountPath, ah.newAccountHandler).Methods(http.MethodPost)
 
 	dummyAppError := errs.NewUnexpectedError("some error message")
-	mockAccountService.EXPECT().CreateNewAccount(dummyNewAccountRequest).Return(nil, dummyAppError)
+	mockAccountService.EXPECT().CreateNewAccount(dummyNewAccountRequestObject).Return(nil, dummyAppError)
 
 	//Act
 	router.ServeHTTP(recorder, request)
@@ -167,11 +183,14 @@ func TestAccountHandler_newAccountHandler_NoAccountWithErrorStatusCodeWhenServic
 func TestAccountHandler_transactionHandler_NoTransactionWithErrorStatusCodeWhenPayloadMalformed(t *testing.T) {
 	//Arrange
 	badPayload := `{"transaction_type": "deposit", "amount": "string instead of number"}`
-	teardown := setupAccountHandlerTest(t, "/customers/2/account/1977", badPayload)
+	teardown := setupAccountHandlerTest(t, dummyNewTransactionPath, badPayload)
 	defer teardown()
-	router.HandleFunc("/customers/{customer_id:[0-9]+}/account/{account_id:[0-9]+}", ah.transactionHandler).Methods(http.MethodPost)
+	router.HandleFunc(newTransactionPath, ah.transactionHandler).Methods(http.MethodPost)
 
 	expectedStatusCode := http.StatusBadRequest
+
+	logs := logger.ReplaceWithTestLogger()
+	expectedLogMessagePrefix := "Error while decoding json body of transaction request: "
 
 	//Act
 	router.ServeHTTP(recorder, request)
@@ -180,20 +199,29 @@ func TestAccountHandler_transactionHandler_NoTransactionWithErrorStatusCodeWhenP
 	if recorder.Result().StatusCode != expectedStatusCode {
 		t.Errorf("Expecting status code %d but got %d", expectedStatusCode, recorder.Result().StatusCode)
 	}
+	if logs.Len() != 1 {
+		t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
+	}
+	actualLogMessage := logs.All()[0].Message
+	if !strings.Contains(actualLogMessage, expectedLogMessagePrefix) {
+		t.Errorf("Expected log message to contain \"%s\" but got log message: \"%s\"", expectedLogMessagePrefix, actualLogMessage)
+	}
 }
 
 func TestAccountHandler_transactionHandler_NoTransactionWithErrorWhenPayloadFieldMissingOrNull(t *testing.T) {
 	badPayloads := []string{`{"amount": 6000}`, `{"transaction_type": null, "amount": 6000}`}
+	expectedStatusCode := http.StatusBadRequest
+	expectedResponse := "\"Field(s) missing or null in request body: transaction_type, amount\""
+	expectedLogMessage := "Field(s) missing or null in request body"
 
 	for index, payload := range badPayloads {
 		log.Printf("Testing with payload number %d: %s", index+1, payload)
 
 		//Arrange
-		teardown := setupAccountHandlerTest(t, "/customers/2/account/1977", payload)
-		router.HandleFunc("/customers/{customer_id:[0-9]+}/account/{account_id:[0-9]+}", ah.transactionHandler).Methods(http.MethodPost)
+		teardown := setupAccountHandlerTest(t, dummyNewTransactionPath, payload)
+		router.HandleFunc(newTransactionPath, ah.transactionHandler).Methods(http.MethodPost)
 
-		expectedStatusCode := http.StatusBadRequest
-		expectedResponse := "\"Field(s) missing or null in request body: transaction_type, amount\""
+		logs := logger.ReplaceWithTestLogger()
 
 		//Act
 		router.ServeHTTP(recorder, request)
@@ -206,6 +234,13 @@ func TestAccountHandler_transactionHandler_NoTransactionWithErrorWhenPayloadFiel
 		if !strings.Contains(string(actualResponse), expectedResponse) {
 			t.Errorf("Expecting response to contain %s but got %s", expectedResponse, actualResponse)
 		}
+		if logs.Len() != 1 {
+			t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
+		}
+		actualLogMessage := logs.All()[0].Message
+		if actualLogMessage != expectedLogMessage {
+			t.Errorf("Expected log message to be \"%s\" but got \"%s\"", expectedLogMessage, actualLogMessage)
+		}
 
 		//Cleanup
 		teardown()
@@ -215,13 +250,12 @@ func TestAccountHandler_transactionHandler_NoTransactionWithErrorWhenPayloadFiel
 
 func TestAccountHandler_transactionHandler_NewTransactionWithStatusCode200WhenServiceSucceeds(t *testing.T) {
 	//Arrange
-	dummyPayload, dummyNewTransactionRequest := getNewTransactionDefaultDummyInputs()
-	teardown := setupAccountHandlerTest(t, "/customers/2/account/1977", dummyPayload)
+	teardown := setupAccountHandlerTest(t, dummyNewTransactionPath, dummyNewTransactionPayload)
 	defer teardown()
-	router.HandleFunc("/customers/{customer_id:[0-9]+}/account/{account_id:[0-9]+}", ah.transactionHandler)
+	router.HandleFunc(newTransactionPath, ah.transactionHandler)
 
-	dummyTransaction := dto.TransactionResponse{TransactionId: "7791", Balance: 12000}
-	mockAccountService.EXPECT().MakeTransaction(dummyNewTransactionRequest).Return(&dummyTransaction, nil)
+	dummyTransaction := dto.TransactionResponse{TransactionId: dummyTransactionId, Balance: dummyBalance}
+	mockAccountService.EXPECT().MakeTransaction(dummyNewTransactionRequestObject).Return(&dummyTransaction, nil)
 	expectedStatusCode := http.StatusCreated
 
 	//Act
@@ -239,13 +273,12 @@ func TestAccountHandler_transactionHandler_NewTransactionWithStatusCode200WhenSe
 
 func TestAccountHandler_transactionHandler_NoTransactionWithErrorStatusCodeWhenServiceFails(t *testing.T) {
 	//Arrange
-	dummyPayload, dummyNewTransactionRequest := getNewTransactionDefaultDummyInputs()
-	teardown := setupAccountHandlerTest(t, "/customers/2/account/1977", dummyPayload)
+	teardown := setupAccountHandlerTest(t, dummyNewTransactionPath, dummyNewTransactionPayload)
 	defer teardown()
-	router.HandleFunc("/customers/{customer_id:[0-9]+}/account/{account_id:[0-9]+}", ah.transactionHandler)
+	router.HandleFunc(newTransactionPath, ah.transactionHandler)
 
 	dummyAppError := errs.NewUnexpectedError("some error message")
-	mockAccountService.EXPECT().MakeTransaction(dummyNewTransactionRequest).Return(nil, dummyAppError)
+	mockAccountService.EXPECT().MakeTransaction(dummyNewTransactionRequestObject).Return(nil, dummyAppError)
 
 	//Act
 	router.ServeHTTP(recorder, request)

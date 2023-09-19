@@ -5,29 +5,25 @@ import (
 	"testing"
 )
 
-func init() {
-	logger.MuteLogger()
-}
-
 func TestCustomerRepositoryStub_FindAll_CorrectCustomersSet(t *testing.T) {
 	//Arrange
 	customerRepositoryStub := NewCustomerRepositoryStub()
 	status := ""
-	expectedCustomersSlice := []Customer{
+	expectedCustomers := []Customer{
 		{"1", "Dorothy", "Emerald City", "12345", "11/11/2011", "1"},
 		{"2", "Luke", "Tatooine", "67890", "12/12/2012", "0"},
 	}
 
 	//Act
-	actualCustomersSlice, err := customerRepositoryStub.FindAll(status)
+	actualCustomers, err := customerRepositoryStub.FindAll(status)
 	if err != nil {
 		t.Error("expected no error but got error while testing default dummy data: " + err.Message)
 	}
 
 	//Assert
-	for k, _ := range expectedCustomersSlice {
-		if actualCustomersSlice[k] != expectedCustomersSlice[k] {
-			t.Errorf("expected customer %s but got customer %s", expectedCustomersSlice[k], actualCustomersSlice[k])
+	for k, _ := range expectedCustomers {
+		if actualCustomers[k] != expectedCustomers[k] {
+			t.Errorf("expected customer %s but got customer %s", expectedCustomers[k], actualCustomers[k])
 		}
 	}
 }
@@ -50,7 +46,7 @@ func TestCustomerRepositoryStub_FindById_CorrectCustomerWhenIdExists(t *testing.
 
 	//Assert
 	if err != nil {
-		t.Error("expected no error but got error while testing existent customer id: " + err.Message)
+		t.Fatal("expected no error but got error while testing existent customer id: " + err.Message)
 	}
 	if *actualCustomer != *expectedCustomer {
 		t.Error("expected customer is different from actual customer")
@@ -62,6 +58,9 @@ func TestCustomerRepositoryStub_FindById_ErrorWhenIdDoesNotExist(t *testing.T) {
 	customerRepositoryStub := NewCustomerRepositoryStub()
 	id := "321"
 
+	logs := logger.ReplaceWithTestLogger()
+	expectedLogMessage := "Error while finding customer by id using stub for CustomerRepository: not found"
+
 	//Act
 	actualCustomer, err := customerRepositoryStub.FindById(id)
 
@@ -71,5 +70,12 @@ func TestCustomerRepositoryStub_FindById_ErrorWhenIdDoesNotExist(t *testing.T) {
 	}
 	if actualCustomer != nil {
 		t.Error("expected no customer to be returned but got a customer")
+	}
+	if logs.Len() != 1 {
+		t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
+	}
+	actualLogMessage := logs.All()[0].Message
+	if actualLogMessage != expectedLogMessage {
+		t.Errorf("Expected log message to be \"%s\" but got \"%s\"", expectedLogMessage, actualLogMessage)
 	}
 }

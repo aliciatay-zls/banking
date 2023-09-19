@@ -1,13 +1,6 @@
 package domain
 
-import (
-	"github.com/udemy-go-1/banking-lib/logger"
-	"testing"
-)
-
-func init() {
-	logger.MuteLogger()
-}
+import "testing"
 
 func TestAccount_CanWithdraw_TrueWhenAccountBalanceSufficient(t *testing.T) {
 	//Arrange

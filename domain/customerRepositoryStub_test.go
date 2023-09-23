@@ -5,14 +5,18 @@ import (
 	"testing"
 )
 
+func getDefaultCustomers() []Customer {
+	return []Customer{
+		{"1", "Dorothy", "Emerald City", "12345", "11/11/2011", "1"},
+		{"2", "Luke", "Tatooine", "67890", "12/12/2012", "0"},
+	}
+}
+
 func TestCustomerRepositoryStub_FindAll_CorrectCustomersSet(t *testing.T) {
 	//Arrange
 	customerRepositoryStub := NewCustomerRepositoryStub()
 	status := ""
-	expectedCustomers := []Customer{
-		{"1", "Dorothy", "Emerald City", "12345", "11/11/2011", "1"},
-		{"2", "Luke", "Tatooine", "67890", "12/12/2012", "0"},
-	}
+	expectedCustomers := getDefaultCustomers()
 
 	//Act
 	actualCustomers, err := customerRepositoryStub.FindAll(status)
@@ -31,18 +35,10 @@ func TestCustomerRepositoryStub_FindAll_CorrectCustomersSet(t *testing.T) {
 func TestCustomerRepositoryStub_FindById_CorrectCustomerWhenIdExists(t *testing.T) {
 	//Arrange
 	customerRepositoryStub := NewCustomerRepositoryStub()
-	id := "1"
-	expectedCustomer := &Customer{
-		Id:          id,
-		Name:        "Dorothy",
-		City:        "Emerald City",
-		Zipcode:     "12345",
-		DateOfBirth: "11/11/2011",
-		Status:      "1",
-	}
+	expectedCustomer := &getDefaultCustomers()[0]
 
 	//Act
-	actualCustomer, err := customerRepositoryStub.FindById(id)
+	actualCustomer, err := customerRepositoryStub.FindById(expectedCustomer.Id)
 
 	//Assert
 	if err != nil {
@@ -53,23 +49,24 @@ func TestCustomerRepositoryStub_FindById_CorrectCustomerWhenIdExists(t *testing.
 	}
 }
 
-func TestCustomerRepositoryStub_FindById_ErrorWhenIdDoesNotExist(t *testing.T) {
+func TestCustomerRepositoryStub_FindById_ErrorWhenNonExistentCustomer(t *testing.T) {
 	//Arrange
 	customerRepositoryStub := NewCustomerRepositoryStub()
 	id := "321"
+	expectedErrMessage := "Customer not found"
 
 	logs := logger.ReplaceWithTestLogger()
 	expectedLogMessage := "Error while finding customer by id using stub for CustomerRepository: not found"
 
 	//Act
-	actualCustomer, err := customerRepositoryStub.FindById(id)
+	_, actualErr := customerRepositoryStub.FindById(id)
 
 	//Assert
-	if err == nil {
+	if actualErr == nil {
 		t.Error("expected error but got none while testing non-existent customer id")
 	}
-	if actualCustomer != nil {
-		t.Error("expected no customer to be returned but got a customer")
+	if actualErr.Message != expectedErrMessage {
+		t.Errorf("Expected error message to be \"%s\" but got \"%s\"", expectedErrMessage, actualErr.Message)
 	}
 	if logs.Len() != 1 {
 		t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())

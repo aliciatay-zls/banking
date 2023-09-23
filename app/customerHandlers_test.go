@@ -14,14 +14,14 @@ import (
 	"testing"
 )
 
-// Package variables and common inputs
+// Package common variables and inputs
 var router *mux.Router
 var recorder *httptest.ResponseRecorder
 var request *http.Request
 
 const dummyCustomerId = "2"
 
-// Test variables and common inputs
+// Test common variables and inputs
 var mockCustomerService *service.MockCustomerService
 var ch CustomerHandlers
 var dummyCustomers []dto.CustomerResponse

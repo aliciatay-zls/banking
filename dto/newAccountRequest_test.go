@@ -33,24 +33,24 @@ func TestNewAccountRequest_Validate_ErrorWhenAmountInvalid(t *testing.T) {
 	//Arrange
 	request := getDefaultValidNewAccountRequest()
 	*request.Amount = 4999
-	expectedMsg := "To open an account you must deposit at least 5000"
+	expectedErrMessage := "To open an account you must deposit at least 5000"
 	expectedCode := http.StatusUnprocessableEntity
 
 	logs := logger.ReplaceWithTestLogger()
 	expectedLogMessage := "New account amount is invalid"
 
 	//Act
-	err := request.Validate()
+	actualErr := request.Validate()
 
 	//Assert
-	if err == nil {
+	if actualErr == nil {
 		t.Fatal("expected error but got none while testing new account amount")
 	}
-	if err.Message != expectedMsg {
-		t.Errorf("expected message: \"%s\", actual message: \"%s\"", expectedMsg, err.Message)
+	if actualErr.Message != expectedErrMessage {
+		t.Errorf("expected message: \"%s\", actual message: \"%s\"", expectedErrMessage, actualErr.Message)
 	}
-	if err.Code != expectedCode {
-		t.Errorf("expected status code: \"%d\", actual status code: \"%d\"", expectedCode, err.Code)
+	if actualErr.Code != expectedCode {
+		t.Errorf("expected status code: \"%d\", actual status code: \"%d\"", expectedCode, actualErr.Code)
 	}
 	if logs.Len() != 1 {
 		t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
@@ -65,24 +65,24 @@ func TestNewAccountRequest_Validate_ErrorWhenAccountTypeInvalid(t *testing.T) {
 	//Arrange
 	request := getDefaultValidNewAccountRequest()
 	*request.AccountType = "some account type"
-	expectedMsg := "Account type should be saving or checking"
+	expectedErrMessage := "Account type should be saving or checking"
 	expectedCode := http.StatusUnprocessableEntity
 
 	logs := logger.ReplaceWithTestLogger()
 	expectedLogMessage := "New account type is invalid"
 
 	//Act
-	err := request.Validate()
+	actualErr := request.Validate()
 
 	//Assert
-	if err == nil {
+	if actualErr == nil {
 		t.Fatal("expected error but got none while testing new account type")
 	}
-	if err.Message != expectedMsg {
-		t.Errorf("expected message: \"%s\", actual message: \"%s\"", expectedMsg, err.Message)
+	if actualErr.Message != expectedErrMessage {
+		t.Errorf("expected message: \"%s\", actual message: \"%s\"", expectedErrMessage, actualErr.Message)
 	}
-	if err.Code != expectedCode {
-		t.Errorf("expected status code: \"%d\", actual status code: \"%d\"", expectedCode, err.Code)
+	if actualErr.Code != expectedCode {
+		t.Errorf("expected status code: \"%d\", actual status code: \"%d\"", expectedCode, actualErr.Code)
 	}
 	if logs.Len() != 1 {
 		t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())

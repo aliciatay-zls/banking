@@ -15,23 +15,21 @@ import (
 	"testing"
 )
 
-// Test variables and common inputs
-// (customer with id as 2 wants to open new saving account with amount 6000)
-// (customer with id as 2 and account number as 1977 wants to make a deposit of amount 6000)
+// Test common variables and inputs
 var mockAccountService *service.MockAccountService
 var ah AccountHandler
-var dummyNewAccountRequestObject dto.NewAccountRequest
-var dummyNewTransactionRequestObject dto.TransactionRequest
+
 var dummyAccountType = dto.AccountTypeSaving
 var dummyTransactionType = dto.TransactionTypeDeposit
 var dummyAmount float64 = 6000
 
 const newAccountPath = "/customers/{customer_id:[0-9]+}/account"
-const newTransactionPath = "/customers/{customer_id:[0-9]+}/account/{account_id:[0-9]+}"
 const dummyNewAccountPath = "/customers/2/account"
-const dummyNewTransactionPath = "/customers/2/account/1977"
-const dummyAccountId = "1977"
 const dummyNewAccountRequestPayload = `{"account_type": "saving", "amount": 6000}`
+const dummyAccountId = "1977"
+
+const newTransactionPath = "/customers/{customer_id:[0-9]+}/account/{account_id:[0-9]+}"
+const dummyNewTransactionPath = "/customers/2/account/1977"
 const dummyNewTransactionPayload = `{"transaction_type": "deposit", "amount": 6000}`
 const dummyTransactionId = "7791"
 const dummyBalance float64 = 12000
@@ -46,23 +44,32 @@ func setupAccountHandlerTest(t *testing.T, path string, payload string) func() {
 	recorder = httptest.NewRecorder()
 	request = httptest.NewRequest(http.MethodPost, path, bytes.NewBuffer([]byte(payload)))
 
-	dummyNewAccountRequestObject = dto.NewAccountRequest{
-		CustomerId:  dummyCustomerId,
-		AccountType: &dummyAccountType,
-		Amount:      &dummyAmount,
-	}
-	dummyNewTransactionRequestObject = dto.TransactionRequest{
-		AccountId:       dummyAccountId,
-		Amount:          &dummyAmount,
-		TransactionType: &dummyTransactionType,
-		CustomerId:      dummyCustomerId,
-	}
-
 	return func() {
 		router = nil
 		recorder = nil
 		request = nil
 		defer ctrl.Finish()
+	}
+}
+
+// getDefaultDummyNewAccountRequestObject returns a dto.NewAccountRequest for the customer with id 2 wanting to open
+// a saving account of amount 6000
+func getDefaultDummyNewAccountRequestObject() dto.NewAccountRequest {
+	return dto.NewAccountRequest{
+		CustomerId:  dummyCustomerId,
+		AccountType: &dummyAccountType,
+		Amount:      &dummyAmount,
+	}
+}
+
+// getDefaultDummyNewTransactionRequestObject returns a dto.TransactionRequest for the customer with id 2 wanting to
+// make a deposit of amount 6000 on the account with id 1977
+func getDefaultDummyNewTransactionRequestObject() dto.TransactionRequest {
+	return dto.TransactionRequest{
+		AccountId:       dummyAccountId,
+		Amount:          &dummyAmount,
+		TransactionType: &dummyTransactionType,
+		CustomerId:      dummyCustomerId,
 	}
 }
 
@@ -146,6 +153,7 @@ func TestAccountHandler_newAccountHandler_NewAccountWithStatusCode200WhenService
 	defer teardown()
 	router.HandleFunc(newAccountPath, ah.newAccountHandler).Methods(http.MethodPost)
 
+	dummyNewAccountRequestObject := getDefaultDummyNewAccountRequestObject()
 	dummyAccount := dto.NewAccountResponse{AccountId: dummyAccountId}
 	mockAccountService.EXPECT().CreateNewAccount(dummyNewAccountRequestObject).Return(&dummyAccount, nil)
 	expectedStatusCode := http.StatusCreated
@@ -169,6 +177,7 @@ func TestAccountHandler_newAccountHandler_NoAccountWithErrorStatusCodeWhenServic
 	defer teardown()
 	router.HandleFunc(newAccountPath, ah.newAccountHandler).Methods(http.MethodPost)
 
+	dummyNewAccountRequestObject := getDefaultDummyNewAccountRequestObject()
 	dummyAppError := errs.NewUnexpectedError("some error message")
 	mockAccountService.EXPECT().CreateNewAccount(dummyNewAccountRequestObject).Return(nil, dummyAppError)
 
@@ -265,6 +274,7 @@ func TestAccountHandler_transactionHandler_NewTransactionWithStatusCode200WhenSe
 	defer teardown()
 	router.HandleFunc(newTransactionPath, ah.transactionHandler)
 
+	dummyNewTransactionRequestObject := getDefaultDummyNewTransactionRequestObject()
 	dummyTransaction := dto.TransactionResponse{TransactionId: dummyTransactionId, Balance: dummyBalance}
 	mockAccountService.EXPECT().MakeTransaction(dummyNewTransactionRequestObject).Return(&dummyTransaction, nil)
 	expectedStatusCode := http.StatusCreated
@@ -288,6 +298,7 @@ func TestAccountHandler_transactionHandler_NoTransactionWithErrorStatusCodeWhenS
 	defer teardown()
 	router.HandleFunc(newTransactionPath, ah.transactionHandler)
 
+	dummyNewTransactionRequestObject := getDefaultDummyNewTransactionRequestObject()
 	dummyAppError := errs.NewUnexpectedError("some error message")
 	mockAccountService.EXPECT().MakeTransaction(dummyNewTransactionRequestObject).Return(nil, dummyAppError)
 

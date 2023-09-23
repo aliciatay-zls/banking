@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func getDefaultValidTransactionRequest() TransactionRequest {
+func getMinimumValidTransactionRequest() TransactionRequest {
 	var amt float64 = 1000
 	var tType string = TransactionTypeDeposit
 	return TransactionRequest{
@@ -17,7 +17,7 @@ func getDefaultValidTransactionRequest() TransactionRequest {
 
 func TestTransactionRequest_Validate_NoErrorWhenAmountAndTransactionTypeValid(t *testing.T) {
 	//Arrange
-	request := getDefaultValidTransactionRequest()
+	request := getMinimumValidTransactionRequest()
 
 	//Act
 	err := request.Validate()
@@ -30,7 +30,7 @@ func TestTransactionRequest_Validate_NoErrorWhenAmountAndTransactionTypeValid(t 
 
 func TestTransactionRequest_Validate_NoErrorWhenAmountZero(t *testing.T) {
 	//Arrange
-	request := getDefaultValidTransactionRequest()
+	request := getMinimumValidTransactionRequest()
 	*request.Amount = 0
 
 	//Act
@@ -44,26 +44,26 @@ func TestTransactionRequest_Validate_NoErrorWhenAmountZero(t *testing.T) {
 
 func TestTransactionRequest_Validate_ErrorWhenAmountNegative(t *testing.T) {
 	//Arrange
-	request := getDefaultValidTransactionRequest()
+	request := getMinimumValidTransactionRequest()
 	*request.Amount = -100
-	expectedMsg := "Transaction amount cannot be less than 0"
+	expectedErrMessage := "Transaction amount cannot be less than 0"
 	expectedCode := http.StatusUnprocessableEntity
 
 	logs := logger.ReplaceWithTestLogger()
 	expectedLogMessage := "Transaction amount is invalid"
 
 	//Act
-	err := request.Validate()
+	actualErr := request.Validate()
 
 	//Assert
-	if err == nil {
+	if actualErr == nil {
 		t.Fatal("expected error but got none while testing transaction amount")
 	}
-	if err.Message != expectedMsg {
-		t.Errorf("expected message: \"%s\", actual message: \"%s\"", expectedMsg, err.Message)
+	if actualErr.Message != expectedErrMessage {
+		t.Errorf("expected message: \"%s\", actual message: \"%s\"", expectedErrMessage, actualErr.Message)
 	}
-	if err.Code != expectedCode {
-		t.Errorf("expected status code: \"%d\", actual status code: \"%d\"", expectedCode, err.Code)
+	if actualErr.Code != expectedCode {
+		t.Errorf("expected status code: \"%d\", actual status code: \"%d\"", expectedCode, actualErr.Code)
 	}
 	if logs.Len() != 1 {
 		t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
@@ -76,26 +76,26 @@ func TestTransactionRequest_Validate_ErrorWhenAmountNegative(t *testing.T) {
 
 func TestTransactionRequest_Validate_ErrorWhenTransactionTypeInvalid(t *testing.T) {
 	//Arrange
-	request := getDefaultValidTransactionRequest()
+	request := getMinimumValidTransactionRequest()
 	*request.TransactionType = "some transaction type"
-	expectedMsg := "Transaction type should be withdrawal or deposit"
+	expectedErrMessage := "Transaction type should be withdrawal or deposit"
 	expectedCode := http.StatusUnprocessableEntity
 
 	logs := logger.ReplaceWithTestLogger()
 	expectedLogMessage := "Transaction type is invalid"
 
 	//Act
-	err := request.Validate()
+	actualErr := request.Validate()
 
 	//Assert
-	if err == nil {
+	if actualErr == nil {
 		t.Fatal("expected error but got none while testing transaction type")
 	}
-	if err.Message != expectedMsg {
-		t.Errorf("expected message: \"%s\", actual message: \"%s\"", expectedMsg, err.Message)
+	if actualErr.Message != expectedErrMessage {
+		t.Errorf("expected message: \"%s\", actual message: \"%s\"", expectedErrMessage, actualErr.Message)
 	}
-	if err.Code != expectedCode {
-		t.Errorf("expected status code: \"%d\", actual status code: \"%d\"", expectedCode, err.Code)
+	if actualErr.Code != expectedCode {
+		t.Errorf("expected status code: \"%d\", actual status code: \"%d\"", expectedCode, actualErr.Code)
 	}
 	if logs.Len() != 1 {
 		t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())

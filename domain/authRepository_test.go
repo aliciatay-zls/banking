@@ -14,14 +14,16 @@ import (
 	"testing"
 )
 
-// Test variables and common inputs
+// Test common variables and inputs
+var authRepo DefaultAuthRepository
 var channelWaitForShutDown chan int
 var channelDoShutDown chan int
 var dummyRouteVars map[string]string
 
-const verifyPath = "/auth/verify"
 const envVarAuthServerAddr = "AUTH_SERVER_ADDRESS"
 const envVarAuthServerPort = "AUTH_SERVER_PORT"
+
+const verifyPath = "/auth/verify"
 const dummyAccountId = "1977"
 const dummyCustomerId = "2"
 const dummyToken = "header.payload.signature"
@@ -34,6 +36,8 @@ func setupAuthRepositoryTest(t *testing.T) {
 	if err := os.Setenv(envVarAuthServerPort, "8585"); err != nil {
 		t.Fatal("Error during testing setup: " + err.Error())
 	}
+
+	authRepo = NewDefaultAuthRepository()
 
 	dummyRouteVars = map[string]string{"account_id": dummyAccountId, "customer_id": dummyCustomerId}
 }
@@ -87,13 +91,12 @@ func startDummyAuthServer(dummyVerifyAPIHandler func(http.ResponseWriter, *http.
 func TestAuthRepository_IsAuthorized_FalseWhenErrorSendingRequest(t *testing.T) {
 	//Arrange
 	setupAuthRepositoryTest(t)
-	defaultAuthRepo := NewDefaultAuthRepository()
 
 	logs := logger.ReplaceWithTestLogger()
 	expectedLogMessagePrefix := "Error while sending request to verification URL: "
 
 	//Act
-	isAuthorizationSuccess := defaultAuthRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
+	isAuthorizationSuccess := authRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
 
 	//Assert
 	if isAuthorizationSuccess != false {
@@ -111,7 +114,6 @@ func TestAuthRepository_IsAuthorized_FalseWhenErrorSendingRequest(t *testing.T) 
 func TestAuthRepository_IsAuthorized_TrueWhenAuthServerReturnsAuthorized(t *testing.T) {
 	//Arrange
 	setupAuthRepositoryTest(t)
-	defaultAuthRepo := NewDefaultAuthRepository()
 	dummyStatusCode := http.StatusOK
 	dummyResponse := map[string]interface{}{
 		"is_authorized": true,
@@ -121,7 +123,7 @@ func TestAuthRepository_IsAuthorized_TrueWhenAuthServerReturnsAuthorized(t *test
 	startDummyAuthServer(dummyVerifyAPIHandler)
 
 	//Act
-	isAuthorizationSuccess := defaultAuthRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
+	isAuthorizationSuccess := authRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
 
 	//Assert
 	if isAuthorizationSuccess != dummyResponse["is_authorized"] {
@@ -136,7 +138,6 @@ func TestAuthRepository_IsAuthorized_TrueWhenAuthServerReturnsAuthorized(t *test
 func TestAuthRepository_IsAuthorized_FalseWhenAuthServerReturnsUnauthorized(t *testing.T) {
 	//Arrange
 	setupAuthRepositoryTest(t)
-	defaultAuthRepo := NewDefaultAuthRepository()
 	dummyStatusCode := http.StatusUnauthorized
 	dummyResponse := map[string]interface{}{
 		"is_authorized": false,
@@ -150,7 +151,7 @@ func TestAuthRepository_IsAuthorized_FalseWhenAuthServerReturnsUnauthorized(t *t
 	startDummyAuthServer(dummyVerifyAPIHandler)
 
 	//Act
-	isAuthorizationSuccess := defaultAuthRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
+	isAuthorizationSuccess := authRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
 
 	//Assert
 	if isAuthorizationSuccess != dummyResponse["is_authorized"] {
@@ -173,7 +174,6 @@ func TestAuthRepository_IsAuthorized_FalseWhenAuthServerReturnsUnauthorized(t *t
 func TestAuthRepository_IsAuthorized_FalseWhenErrorDecodingAuthServerResponse(t *testing.T) {
 	//Arrange
 	setupAuthRepositoryTest(t)
-	defaultAuthRepo := NewDefaultAuthRepository()
 	dummyStatusCode := http.StatusOK
 	unexpectedResponse := "some string"
 
@@ -184,7 +184,7 @@ func TestAuthRepository_IsAuthorized_FalseWhenErrorDecodingAuthServerResponse(t 
 	startDummyAuthServer(dummyVerifyAPIHandler)
 
 	//Act
-	isAuthorizationSuccess := defaultAuthRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
+	isAuthorizationSuccess := authRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
 
 	//Assert
 	if isAuthorizationSuccess != false {
@@ -221,7 +221,6 @@ func TestAuthRepository_IsAuthorized_FalseWhenGettingAuthServerResponseValue(t *
 	}
 
 	setupAuthRepositoryTest(t)
-	defaultAuthRepo := NewDefaultAuthRepository()
 	dummyStatusCode := http.StatusOK
 	expectedLogMessage := "Error while getting value of the `is_authorized` key: value is not of type bool"
 
@@ -233,7 +232,7 @@ func TestAuthRepository_IsAuthorized_FalseWhenGettingAuthServerResponseValue(t *
 			startDummyAuthServer(dummyVerifyAPIHandler)
 
 			//Act
-			isAuthorizationSuccess := defaultAuthRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
+			isAuthorizationSuccess := authRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
 
 			//Assert
 			if isAuthorizationSuccess != false {

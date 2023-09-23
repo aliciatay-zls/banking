@@ -3,6 +3,7 @@ package domain
 import (
 	"github.com/udemy-go-1/banking-lib/errs"
 	"github.com/udemy-go-1/banking/dto"
+	"time"
 )
 
 //Business Domain
@@ -16,8 +17,18 @@ type Account struct { //business/domain object
 	Status      string  `db:"status"`
 }
 
-func (a Account) ToNewAccountResponseDTO() dto.NewAccountResponse {
-	return dto.NewAccountResponse{AccountId: a.AccountId}
+func NewAccount(customerId string, accountType string, amount float64) Account {
+	return Account{
+		CustomerId:  customerId,
+		OpeningDate: time.Now().Format("2006-01-02 15:04:05"), //from time.RFC3339, modified based on banking.sql
+		AccountType: accountType,
+		Amount:      amount,
+		Status:      "1", //default for newly-created account
+	}
+}
+
+func (a Account) ToNewAccountResponseDTO() *dto.NewAccountResponse {
+	return &dto.NewAccountResponse{AccountId: a.AccountId}
 }
 
 func (a Account) CanWithdraw(withdrawalAmount float64) bool {
@@ -26,6 +37,7 @@ func (a Account) CanWithdraw(withdrawalAmount float64) bool {
 
 //Server
 
+//go:generate mockgen -destination=../mocks/domain/mock_accountRepository.go -package=domain github.com/udemy-go-1/banking/domain AccountRepository
 type AccountRepository interface { //repo (secondary port)
 	Save(Account) (*Account, *errs.AppError)
 	FindById(string) (*Account, *errs.AppError)

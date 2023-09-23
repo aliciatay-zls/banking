@@ -12,7 +12,7 @@ import (
 	"testing"
 )
 
-// Test variables and common inputs
+// Test common variables and inputs
 var mockAuthRepo *domain.MockAuthRepository
 var amw AuthMiddleware
 var dummyRouteVars map[string]string

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/gorilla/mux"
 	"github.com/udemy-go-1/banking-lib/logger"
 	"log"
 	"net/http"
@@ -47,11 +48,21 @@ func getDummyVerifyAPIHandler(t *testing.T, dummyStatusCode int, dummyResponse i
 	}
 }
 
+// startDummyAuthServer uses a new router each time it is called to register the verifyPath path to the given
+// handler. It creates and starts a server and waits to shut down the server, which occurs when a value is
+// sent into the channelWaitForShutDown channel. This should be done by the caller. The caller should also wait on
+// the channelDoShutDown channel for this process to complete.
 func startDummyAuthServer(dummyVerifyAPIHandler func(http.ResponseWriter, *http.Request)) {
+	router := mux.NewRouter()
+	router.HandleFunc(verifyPath, dummyVerifyAPIHandler)
+
 	address := os.Getenv(envVarAuthServerAddr)
 	port := os.Getenv(envVarAuthServerPort)
 
-	dummyAuthServer := http.Server{Addr: fmt.Sprintf("%s:%s", address, port)}
+	dummyAuthServer := http.Server{
+		Addr:    fmt.Sprintf("%s:%s", address, port),
+		Handler: router,
+	}
 
 	channelWaitForShutDown = make(chan int) //sender
 	channelDoShutDown = make(chan int, 1)   //receiver
@@ -64,8 +75,6 @@ func startDummyAuthServer(dummyVerifyAPIHandler func(http.ResponseWriter, *http.
 
 		close(channelWaitForShutDown)
 	}()
-
-	http.HandleFunc(verifyPath, dummyVerifyAPIHandler)
 
 	go func() {
 		if err := dummyAuthServer.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
@@ -110,7 +119,6 @@ func TestAuthRepository_IsAuthorized_TrueWhenAuthServerReturnsAuthorized(t *test
 
 	dummyVerifyAPIHandler := getDummyVerifyAPIHandler(t, dummyStatusCode, dummyResponse)
 	startDummyAuthServer(dummyVerifyAPIHandler)
-	//TODO: fix: subsequent tests that also call start the server fail when run all tests together as the /auth/verify route is registered multiple times concurrently by the multiple test threads
 
 	//Act
 	isAuthorizationSuccess := defaultAuthRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
@@ -161,7 +169,7 @@ func TestAuthRepository_IsAuthorized_FalseWhenAuthServerReturnsUnauthorized(t *t
 	<-channelWaitForShutDown
 }
 
-// auth server sends response of a type that the app cannot handle (unexpected response object type)
+// auth server handler sends response of a type that the app cannot handle (unexpected response object type)
 func TestAuthRepository_IsAuthorized_FalseWhenErrorDecodingAuthServerResponse(t *testing.T) {
 	//Arrange
 	setupAuthRepositoryTest(t)
@@ -195,76 +203,55 @@ func TestAuthRepository_IsAuthorized_FalseWhenErrorDecodingAuthServerResponse(t 
 	<-channelWaitForShutDown
 }
 
-// auth server sends response of a type that the app cannot handle (unexpected response object type)
-func TestAuthRepository_IsAuthorized_FalseWhenGettingAuthServerResponseValue_WrongValueType(t *testing.T) {
+// auth server handler sends response of a type that the app cannot handle (unexpected response object type)
+func TestAuthRepository_IsAuthorized_FalseWhenGettingAuthServerResponseValue(t *testing.T) {
 	//Arrange
+	tests := []struct {
+		name                    string
+		dummyUnexpectedResponse map[string]interface{}
+	}{
+		{
+			"wrong value type",
+			map[string]interface{}{"is_authorized": "some string"},
+		},
+		{
+			"wrong key",
+			map[string]interface{}{"dummy_key": true},
+		},
+	}
+
 	setupAuthRepositoryTest(t)
 	defaultAuthRepo := NewDefaultAuthRepository()
 	dummyStatusCode := http.StatusOK
-	unexpectedResponses := map[string]interface{}{ //type assertion of string as bool type will fail
-		"is_authorized": "some string",
-	}
-
-	logs := logger.ReplaceWithTestLogger()
 	expectedLogMessage := "Error while getting value of the `is_authorized` key: value is not of type bool"
 
-	dummyVerifyAPIHandler := getDummyVerifyAPIHandler(t, dummyStatusCode, unexpectedResponses)
-	startDummyAuthServer(dummyVerifyAPIHandler)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			logs := logger.ReplaceWithTestLogger()
 
-	//Act
-	isAuthorizationSuccess := defaultAuthRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
+			dummyVerifyAPIHandler := getDummyVerifyAPIHandler(t, dummyStatusCode, tc.dummyUnexpectedResponse)
+			startDummyAuthServer(dummyVerifyAPIHandler)
 
-	//Assert
-	if isAuthorizationSuccess != false {
-		t.Error("Expected authorization to be false but got true")
+			//Act
+			isAuthorizationSuccess := defaultAuthRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
+
+			//Assert
+			if isAuthorizationSuccess != false {
+				t.Error("Expected authorization to be false but got true")
+			}
+			if logs.Len() != 1 {
+				t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
+			}
+			actualLogMessage := logs.All()[0].Message
+			if actualLogMessage != expectedLogMessage {
+				t.Errorf("Expected log message to be \"%s\" but got \"%s\"", expectedLogMessage, actualLogMessage)
+			}
+
+			//Cleanup
+			channelDoShutDown <- 1
+			<-channelWaitForShutDown
+		})
 	}
-	if logs.Len() != 1 {
-		t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
-	}
-	actualLogMessage := logs.All()[0].Message
-	if actualLogMessage != expectedLogMessage {
-		t.Errorf("Expected log message to be \"%s\" but got \"%s\"", expectedLogMessage, actualLogMessage)
-	}
-
-	//Cleanup
-	channelDoShutDown <- 1
-	<-channelWaitForShutDown
-}
-
-// auth server sends response of a type that the app cannot handle (unexpected response object type)
-func TestAuthRepository_IsAuthorized_FalseWhenGettingAuthServerResponseValue_NoSuchKey(t *testing.T) {
-	//Arrange
-	setupAuthRepositoryTest(t)
-	defaultAuthRepo := NewDefaultAuthRepository()
-	dummyStatusCode := http.StatusOK
-	unexpectedResponse := map[string]interface{}{ //type assertion of nil (no value gotten) as bool type will also fail
-		"dummy_key": true,
-	}
-
-	logs := logger.ReplaceWithTestLogger()
-	expectedLogMessage := "Error while getting value of the `is_authorized` key: value is not of type bool"
-
-	dummyVerifyAPIHandler := getDummyVerifyAPIHandler(t, dummyStatusCode, unexpectedResponse)
-	startDummyAuthServer(dummyVerifyAPIHandler)
-
-	//Act
-	isAuthorizationSuccess := defaultAuthRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
-
-	//Assert
-	if isAuthorizationSuccess != false {
-		t.Error("Expected authorization to be false but got true")
-	}
-	if logs.Len() != 1 {
-		t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
-	}
-	actualLogMessage := logs.All()[0].Message
-	if actualLogMessage != expectedLogMessage {
-		t.Errorf("Expected log message to be \"%s\" but got \"%s\"", expectedLogMessage, actualLogMessage)
-	}
-
-	//Cleanup
-	channelDoShutDown <- 1
-	<-channelWaitForShutDown
 }
 
 func TestAuthRepository_extractToken_StrippedTokenWhenThereIsBearerPrefix(t *testing.T) {
@@ -283,17 +270,25 @@ func TestAuthRepository_extractToken_StrippedTokenWhenThereIsBearerPrefix(t *tes
 
 func TestAuthRepository_extractToken_StrippedTokenWhenNoBearerPrefix(t *testing.T) {
 	//Arrange
-	tokenStrings := []string{"header.payload.signature", " header.payload.signature"}
+	tests := []struct {
+		name        string
+		tokenString string
+	}{
+		{"normal", "header.payload.signature"},
+		{"leading space", " header.payload.signature"},
+	}
 	expected := "header.payload.signature"
 
-	for _, v := range tokenStrings {
-		//Act
-		actual := extractToken(v)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			//Act
+			actual := extractToken(tc.tokenString)
 
-		//Assert
-		if actual != expected {
-			t.Errorf("Expected extracted token to be \"%s\" but got \"%s\"", expected, actual)
-		}
+			//Assert
+			if actual != expected {
+				t.Errorf("Expected extracted token to be \"%s\" but got \"%s\"", expected, actual)
+			}
+		})
 	}
 }
 

@@ -2,24 +2,26 @@ package domain
 
 import "testing"
 
-func TestCustomer_AsStatusName_GetCorrectStatus(t *testing.T) {
+func TestCustomer_AsStatusName_CorrectStatus(t *testing.T) {
 	//Arrange
-	customers := []Customer{
-		Customer{Status: "1"},
-		Customer{Status: "0"},
-	}
-	expectedStatuses := []string{"active", "inactive"}
-
-	//Act
-	actualStatuses := make([]string, 2)
-	for k, _ := range customers {
-		actualStatuses[k] = customers[k].AsStatusName()
+	tests := []struct {
+		name           string
+		customer       Customer
+		expectedStatus string
+	}{
+		{"status 1", Customer{Status: "1"}, "active"},
+		{"status 0", Customer{Status: "0"}, "inactive"},
 	}
 
-	//Assert
-	for k, _ := range expectedStatuses {
-		if actualStatuses[k] != expectedStatuses[k] {
-			t.Errorf("expected customer status \"%v\" but got \"%v\"", expectedStatuses[k], actualStatuses[k])
-		}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			//Act
+			actualStatus := tc.customer.AsStatusName()
+
+			//Assert
+			if actualStatus != tc.expectedStatus {
+				t.Errorf("Expected customer status \"%v\" but got \"%v\"", tc.expectedStatus, actualStatus)
+			}
+		})
 	}
 }

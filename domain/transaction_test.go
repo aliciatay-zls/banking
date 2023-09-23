@@ -5,24 +5,26 @@ import (
 	"testing"
 )
 
-func TestTransaction_IsWithdrawal_GetCorrectResult(t *testing.T) {
+func TestTransaction_IsWithdrawal_CorrectResult(t *testing.T) {
 	//Arrange
-	transactions := []Transaction{
-		Transaction{TransactionType: dto.TransactionTypeWithdrawal},
-		Transaction{TransactionType: dto.TransactionTypeDeposit},
-	}
-	expectedResults := []bool{true, false}
-
-	//Act
-	actualResults := make([]bool, 2)
-	for k, _ := range transactions {
-		actualResults[k] = transactions[k].IsWithdrawal()
+	tests := []struct {
+		name           string
+		transaction    Transaction
+		expectedResult bool
+	}{
+		{"withdrawal", Transaction{TransactionType: dto.TransactionTypeWithdrawal}, true},
+		{"deposit", Transaction{TransactionType: dto.TransactionTypeDeposit}, false},
 	}
 
-	//Assert
-	for k, _ := range expectedResults {
-		if actualResults[k] != expectedResults[k] {
-			t.Errorf("expected \"%v\" but got \"%v\"", expectedResults[k], actualResults[k])
-		}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			//Act
+			actualResult := tc.transaction.IsWithdrawal()
+
+			//Assert
+			if actualResult != tc.expectedResult {
+				t.Errorf("expected \"%v\" but got \"%v\"", tc.expectedResult, actualResult)
+			}
+		})
 	}
 }

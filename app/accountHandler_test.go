@@ -9,7 +9,6 @@ import (
 	"github.com/udemy-go-1/banking/mocks/service"
 	"go.uber.org/mock/gomock"
 	"io"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -17,8 +16,8 @@ import (
 )
 
 // Test variables and common inputs
-// customer with id as 2 wants to open new saving account with amount 6000
-// customer with id as 2 and account number as 1977 wants to make a deposit of amount 6000
+// (customer with id as 2 wants to open new saving account with amount 6000)
+// (customer with id as 2 and account number as 1977 wants to make a deposit of amount 6000)
 var mockAccountService *service.MockAccountService
 var ah AccountHandler
 var dummyNewAccountRequestObject dto.NewAccountRequest
@@ -96,41 +95,47 @@ func TestAccountHandler_newAccountHandler_NoAccountWithErrorStatusCodeWhenPayloa
 }
 
 func TestAccountHandler_newAccountHandler_NoAccountWithErrorWhenPayloadFieldMissingOrNull(t *testing.T) {
-	badPayloads := []string{`{"account_type": "saving"}`, `{"account_type": "saving", "amount": null}`}
+	//Arrange
+	tests := []struct {
+		name    string
+		payload string
+	}{
+		{"amount missing", `{"account_type": "saving"}`},
+		{"amount null", `{"account_type": "saving", "amount": null}`},
+	}
 	expectedStatusCode := http.StatusBadRequest
 	expectedResponse := "\"Field(s) missing or null in request body: account_type, amount\""
 	expectedLogMessage := "Field(s) missing or null in request body"
 
-	for index, payload := range badPayloads {
-		log.Printf("Testing with payload number %d: %s", index+1, payload)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			teardown := setupAccountHandlerTest(t, dummyNewAccountPath, tc.payload)
+			router.HandleFunc(newAccountPath, ah.newAccountHandler).Methods(http.MethodPost)
 
-		//Arrange
-		teardown := setupAccountHandlerTest(t, dummyNewAccountPath, payload)
-		router.HandleFunc(newAccountPath, ah.newAccountHandler).Methods(http.MethodPost)
+			logs := logger.ReplaceWithTestLogger()
 
-		logs := logger.ReplaceWithTestLogger()
+			//Act
+			router.ServeHTTP(recorder, request)
 
-		//Act
-		router.ServeHTTP(recorder, request)
+			//Assert
+			if recorder.Result().StatusCode != expectedStatusCode {
+				t.Errorf("Expecting status code %d but got %d", expectedStatusCode, recorder.Result().StatusCode)
+			}
+			actualResponse, _ := io.ReadAll(recorder.Result().Body)
+			if !strings.Contains(string(actualResponse), expectedResponse) {
+				t.Errorf("Expecting response to contain %s but got %s", expectedResponse, actualResponse)
+			}
+			if logs.Len() != 1 {
+				t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
+			}
+			actualLogMessage := logs.All()[0].Message
+			if actualLogMessage != expectedLogMessage {
+				t.Errorf("Expected log message to be \"%s\" but got \"%s\"", expectedLogMessage, actualLogMessage)
+			}
 
-		//Assert
-		if recorder.Result().StatusCode != expectedStatusCode {
-			t.Errorf("Expecting status code %d but got %d", expectedStatusCode, recorder.Result().StatusCode)
-		}
-		actualResponse, _ := io.ReadAll(recorder.Result().Body)
-		if !strings.Contains(string(actualResponse), expectedResponse) {
-			t.Errorf("Expecting response to contain %s but got %s", expectedResponse, actualResponse)
-		}
-		if logs.Len() != 1 {
-			t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
-		}
-		actualLogMessage := logs.All()[0].Message
-		if actualLogMessage != expectedLogMessage {
-			t.Errorf("Expected log message to be \"%s\" but got \"%s\"", expectedLogMessage, actualLogMessage)
-		}
-
-		//Cleanup
-		teardown()
+			//Cleanup
+			teardown()
+		})
 	}
 
 }
@@ -209,41 +214,47 @@ func TestAccountHandler_transactionHandler_NoTransactionWithErrorStatusCodeWhenP
 }
 
 func TestAccountHandler_transactionHandler_NoTransactionWithErrorWhenPayloadFieldMissingOrNull(t *testing.T) {
-	badPayloads := []string{`{"amount": 6000}`, `{"transaction_type": null, "amount": 6000}`}
+	//Arrange
+	tests := []struct {
+		name    string
+		payload string
+	}{
+		{"transaction_type missing", `{"amount": 6000}`},
+		{"transaction_type null", `{"transaction_type": null, "amount": 6000}`},
+	}
 	expectedStatusCode := http.StatusBadRequest
 	expectedResponse := "\"Field(s) missing or null in request body: transaction_type, amount\""
 	expectedLogMessage := "Field(s) missing or null in request body"
 
-	for index, payload := range badPayloads {
-		log.Printf("Testing with payload number %d: %s", index+1, payload)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			teardown := setupAccountHandlerTest(t, dummyNewTransactionPath, tc.payload)
+			router.HandleFunc(newTransactionPath, ah.transactionHandler).Methods(http.MethodPost)
 
-		//Arrange
-		teardown := setupAccountHandlerTest(t, dummyNewTransactionPath, payload)
-		router.HandleFunc(newTransactionPath, ah.transactionHandler).Methods(http.MethodPost)
+			logs := logger.ReplaceWithTestLogger()
 
-		logs := logger.ReplaceWithTestLogger()
+			//Act
+			router.ServeHTTP(recorder, request)
 
-		//Act
-		router.ServeHTTP(recorder, request)
+			//Assert
+			if recorder.Result().StatusCode != expectedStatusCode {
+				t.Errorf("Expecting status code %d but got %d", expectedStatusCode, recorder.Result().StatusCode)
+			}
+			actualResponse, _ := io.ReadAll(recorder.Result().Body)
+			if !strings.Contains(string(actualResponse), expectedResponse) {
+				t.Errorf("Expecting response to contain %s but got %s", expectedResponse, actualResponse)
+			}
+			if logs.Len() != 1 {
+				t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
+			}
+			actualLogMessage := logs.All()[0].Message
+			if actualLogMessage != expectedLogMessage {
+				t.Errorf("Expected log message to be \"%s\" but got \"%s\"", expectedLogMessage, actualLogMessage)
+			}
 
-		//Assert
-		if recorder.Result().StatusCode != expectedStatusCode {
-			t.Errorf("Expecting status code %d but got %d", expectedStatusCode, recorder.Result().StatusCode)
-		}
-		actualResponse, _ := io.ReadAll(recorder.Result().Body)
-		if !strings.Contains(string(actualResponse), expectedResponse) {
-			t.Errorf("Expecting response to contain %s but got %s", expectedResponse, actualResponse)
-		}
-		if logs.Len() != 1 {
-			t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
-		}
-		actualLogMessage := logs.All()[0].Message
-		if actualLogMessage != expectedLogMessage {
-			t.Errorf("Expected log message to be \"%s\" but got \"%s\"", expectedLogMessage, actualLogMessage)
-		}
-
-		//Cleanup
-		teardown()
+			//Cleanup
+			teardown()
+		})
 	}
 
 }

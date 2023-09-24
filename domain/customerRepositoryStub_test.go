@@ -20,14 +20,18 @@ func TestCustomerRepositoryStub_FindAll_CorrectCustomersSet(t *testing.T) {
 
 	//Act
 	actualCustomers, err := customerRepositoryStub.FindAll(status)
+
+	//Assert
 	if err != nil {
 		t.Error("expected no error but got error while testing default dummy data: " + err.Message)
 	}
-
-	//Assert
-	for k, _ := range expectedCustomers {
-		if actualCustomers[k] != expectedCustomers[k] {
-			t.Errorf("expected customer %s but got customer %s", expectedCustomers[k], actualCustomers[k])
+	if len(actualCustomers) != len(expectedCustomers) {
+		t.Fatalf("Expected %d customers to be returned but got %d customers",
+			len(expectedCustomers), len(actualCustomers))
+	}
+	for i := range expectedCustomers {
+		if actualCustomers[i] != expectedCustomers[i] {
+			t.Errorf("expected customer %s but got customer %s", expectedCustomers[i], actualCustomers[i])
 		}
 	}
 }
@@ -52,14 +56,14 @@ func TestCustomerRepositoryStub_FindById_CorrectCustomerWhenIdExists(t *testing.
 func TestCustomerRepositoryStub_FindById_ErrorWhenNonExistentCustomer(t *testing.T) {
 	//Arrange
 	customerRepositoryStub := NewCustomerRepositoryStub()
-	id := "321"
+	nonExistentCustomerId := "321"
 	expectedErrMessage := "Customer not found"
 
 	logs := logger.ReplaceWithTestLogger()
 	expectedLogMessage := "Error while finding customer by id using stub for CustomerRepository: not found"
 
 	//Act
-	_, actualErr := customerRepositoryStub.FindById(id)
+	_, actualErr := customerRepositoryStub.FindById(nonExistentCustomerId)
 
 	//Assert
 	if actualErr == nil {

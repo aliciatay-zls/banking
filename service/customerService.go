@@ -1,7 +1,9 @@
 package service
 
 import (
+	"fmt"
 	"github.com/udemy-go-1/banking-lib/errs"
+	"github.com/udemy-go-1/banking-lib/logger"
 	"github.com/udemy-go-1/banking/domain"
 	"github.com/udemy-go-1/banking/dto"
 )
@@ -28,6 +30,7 @@ func (s DefaultCustomerService) GetAllCustomers(status string) ([]dto.CustomerRe
 	} else if status == "inactive" {
 		status = "0"
 	} else {
+		logger.Error(fmt.Sprintf("Unexpected customer status: %s", status))
 		return nil, errs.NewNotFoundError("Invalid status")
 	}
 
@@ -38,7 +41,7 @@ func (s DefaultCustomerService) GetAllCustomers(status string) ([]dto.CustomerRe
 
 	response := make([]dto.CustomerResponse, 0)
 	for _, c := range customers {
-		response = append(response, c.ToDTO())
+		response = append(response, *c.ToDTO())
 	}
 
 	return response, nil
@@ -49,10 +52,7 @@ func (s DefaultCustomerService) GetCustomer(id string) (*dto.CustomerResponse, *
 	if err != nil {
 		return nil, err
 	}
-
-	response := c.ToDTO()
-
-	return &response, nil
+	return c.ToDTO(), nil
 }
 
 // (*)

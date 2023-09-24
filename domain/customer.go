@@ -17,8 +17,8 @@ type Customer struct { //business/domain object
 }
 
 // ToDTO does the conversion of domain object to Data Transfer Object.
-func (c Customer) ToDTO() dto.CustomerResponse {
-	return dto.CustomerResponse{
+func (c Customer) ToDTO() *dto.CustomerResponse {
+	return &dto.CustomerResponse{
 		Id:          c.Id,
 		Name:        c.Name,
 		City:        c.City,
@@ -40,6 +40,7 @@ func (c Customer) AsStatusName() string {
 
 //Server
 
+//go:generate mockgen -destination=../mocks/domain/mock_customerRepository.go -package=domain github.com/udemy-go-1/banking/domain CustomerRepository
 type CustomerRepository interface { //repo (secondary port)
 	FindAll(string) ([]Customer, *errs.AppError)
 	FindById(string) (*Customer, *errs.AppError) //allows nil customer, useful for checking

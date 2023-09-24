@@ -10,6 +10,9 @@ import (
 	"testing"
 )
 
+// Package common variables and inputs
+const dummyCustomerId = "2"
+
 // Test common variables and inputs
 var mockAccountRepo *mocksDomain.MockAccountRepository
 var accSvc DefaultAccountService
@@ -18,7 +21,6 @@ var dummyAccountType = dto.AccountTypeSaving
 var dummyTransactionType = dto.TransactionTypeWithdrawal
 var dummyAmount float64 = 6000
 
-const dummyCustomerId = "2"
 const dummyAccountId = "1977"
 const dummyTransactionId = "7791"
 const dummyBalance = 0
@@ -88,7 +90,7 @@ func TestAccountService_CreateNewAccount_ErrorWhenRepoFails(t *testing.T) {
 
 	//Assert
 	if err == nil {
-		t.Error("Expected error but got none while testing error during saving of new account")
+		t.Fatal("Expected error but got none while testing error during saving of new account")
 	}
 	if err.Message != dummyAppErr.Message {
 		t.Errorf("Expected error message to be \"%s\" but got \"%s\"", dummyAppErr.Message, err.Message)
@@ -111,7 +113,7 @@ func TestAccountService_CreateNewAccount_NewAccountIdWhenRepoSucceeds(t *testing
 
 	//Assert
 	if err != nil {
-		t.Error("Expected no error but got error while testing successful creation of new account: " + err.Message)
+		t.Fatal("Expected no error but got error while testing successful creation of new account: " + err.Message)
 	}
 	if newAccountResponse.AccountId != dummyNewAccount.AccountId {
 		t.Errorf("Expected new account id returned to be %s but got %s",
@@ -151,7 +153,7 @@ func TestAccountService_MakeTransaction_ErrorWhenNonExistentAccount(t *testing.T
 
 	//Assert
 	if err == nil {
-		t.Error("Expected error but got none while testing non-existent account")
+		t.Fatal("Expected error but got none while testing non-existent account")
 	}
 	if err.Message != dummyAppErr.Message {
 		t.Errorf("Expected error message to be \"%s\" but got \"%s\"", dummyAppErr.Message, err.Message)
@@ -179,7 +181,7 @@ func TestAccountService_MakeTransaction_ErrorWhenCannotWithdraw(t *testing.T) {
 
 	//Assert
 	if actualErr == nil {
-		t.Error("Expected error but got none while testing unable to withdraw")
+		t.Fatal("Expected error but got none while testing unable to withdraw")
 	}
 	if actualErr.Message != expectedErrMessage {
 		t.Errorf("Expected error message to be \"%s\" but got \"%s\"", expectedErrMessage, actualErr.Message)
@@ -212,7 +214,7 @@ func TestAccountService_MakeTransaction_ErrorWhenRepoFails(t *testing.T) {
 
 	//Assert
 	if err == nil {
-		t.Error("Expected error but got none while testing error during making of transaction")
+		t.Fatal("Expected error but got none while testing error during making of transaction")
 	}
 	if err.Message != dummyAppErr.Message {
 		t.Errorf("Expected error message to be \"%s\" but got \"%s\"", dummyAppErr.Message, err.Message)
@@ -240,7 +242,7 @@ func TestAccountService_MakeTransaction_NewTransactionDetailsWhenRepoSucceeds(t 
 
 	//Assert
 	if err != nil {
-		t.Error("Expected no error but got error while testing successful finding, sufficient balance and transacting: " + err.Message)
+		t.Fatal("Expected no error but got error while testing successful finding, sufficient balance and transacting: " + err.Message)
 	}
 	if newTransactionResponse.TransactionId != dummyNewTransaction.TransactionId {
 		t.Errorf("Expected new transaction id to be %s but got %s",

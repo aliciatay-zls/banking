@@ -17,9 +17,10 @@ const dummyCustomerId = "2"
 var mockAccountRepo *mocksDomain.MockAccountRepository
 var accSvc DefaultAccountService
 
+var dummyAmount float64 = 6000
+
 var dummyAccountType = dto.AccountTypeSaving
 var dummyTransactionType = dto.TransactionTypeWithdrawal
-var dummyAmount float64 = 6000
 
 const dummyAccountId = "1977"
 const dummyTransactionId = "7791"

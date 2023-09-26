@@ -19,9 +19,10 @@ import (
 var mockAccountService *service.MockAccountService
 var ah AccountHandler
 
+var dummyAmount float64 = 6000
+
 var dummyAccountType = dto.AccountTypeSaving
 var dummyTransactionType = dto.TransactionTypeDeposit
-var dummyAmount float64 = 6000
 
 const newAccountPath = "/customers/{customer_id:[0-9]+}/account"
 const dummyNewAccountPath = "/customers/2/account"

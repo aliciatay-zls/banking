@@ -14,6 +14,10 @@ import (
 	"testing"
 )
 
+// Package common variables and inputs
+const dummyCustomerId = "2"
+const dummyAccountId = "1977"
+
 // Test common variables and inputs
 var authRepo DefaultAuthRepository
 var channelWaitForShutDown chan int
@@ -24,8 +28,6 @@ const envVarAuthServerAddr = "AUTH_SERVER_ADDRESS"
 const envVarAuthServerPort = "AUTH_SERVER_PORT"
 
 const verifyPath = "/auth/verify"
-const dummyAccountId = "1977"
-const dummyCustomerId = "2"
 const dummyToken = "header.payload.signature"
 const dummyRouteName = "SomeRouteName"
 

@@ -2,6 +2,7 @@ package domain
 
 import (
 	"database/sql"
+	"errors"
 	"github.com/jmoiron/sqlx"
 	"github.com/udemy-go-1/banking-lib/errs"
 	"github.com/udemy-go-1/banking-lib/logger"
@@ -46,7 +47,7 @@ func (d AccountRepositoryDb) FindById(id string) (*Account, *errs.AppError) {
 	err := d.client.Get(&account, findAccountSql, id)
 	if err != nil {
 		logger.Error("Error while retrieving account: " + err.Error())
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, errs.NewNotFoundError("Account not found")
 		} else {
 			return nil, errs.NewUnexpectedError("Unexpected database error")
@@ -95,9 +96,6 @@ func (d AccountRepositoryDb) Transact(transaction Transaction) (*Transaction, *e
 	}
 
 	if err = tx.Commit(); err != nil {
-		if rollbackErr := tx.Rollback(); rollbackErr != nil {
-			logger.Fatal("Error while rolling back committing of db transaction: " + rollbackErr.Error())
-		}
 		logger.Error("Error while committing db transaction: " + err.Error())
 		return nil, errs.NewUnexpectedError("Unexpected database error")
 	}

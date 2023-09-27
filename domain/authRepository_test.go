@@ -90,7 +90,7 @@ func startDummyAuthServer(dummyVerifyAPIHandler func(http.ResponseWriter, *http.
 }
 
 // e.g. auth server is not started
-func TestAuthRepository_IsAuthorized_FalseWhenErrorSendingRequest(t *testing.T) {
+func TestDefaultAuthRepository_IsAuthorized_returns_false_when_error_sending_request(t *testing.T) {
 	//Arrange
 	setupAuthRepositoryTest(t)
 
@@ -113,7 +113,7 @@ func TestAuthRepository_IsAuthorized_FalseWhenErrorSendingRequest(t *testing.T) 
 	}
 }
 
-func TestAuthRepository_IsAuthorized_TrueWhenAuthServerReturnsAuthorized(t *testing.T) {
+func TestDefaultAuthRepository_IsAuthorized_returns_true_when_authServer_respondsWith_authorized(t *testing.T) {
 	//Arrange
 	setupAuthRepositoryTest(t)
 	dummyStatusCode := http.StatusOK
@@ -137,7 +137,7 @@ func TestAuthRepository_IsAuthorized_TrueWhenAuthServerReturnsAuthorized(t *test
 	<-channelWaitForShutDown
 }
 
-func TestAuthRepository_IsAuthorized_FalseWhenAuthServerReturnsUnauthorized(t *testing.T) {
+func TestDefaultAuthRepository_IsAuthorized_returns_false_when_authServer_respondsWith_unauthorized(t *testing.T) {
 	//Arrange
 	setupAuthRepositoryTest(t)
 	dummyStatusCode := http.StatusUnauthorized
@@ -173,7 +173,7 @@ func TestAuthRepository_IsAuthorized_FalseWhenAuthServerReturnsUnauthorized(t *t
 }
 
 // auth server handler sends response of a type that the app cannot handle (unexpected response object type)
-func TestAuthRepository_IsAuthorized_FalseWhenErrorDecodingAuthServerResponse(t *testing.T) {
+func TestDefaultAuthRepository_IsAuthorized_returns_false_when_error_decoding_authServerResponse(t *testing.T) {
 	//Arrange
 	setupAuthRepositoryTest(t)
 	dummyStatusCode := http.StatusOK
@@ -206,7 +206,7 @@ func TestAuthRepository_IsAuthorized_FalseWhenErrorDecodingAuthServerResponse(t 
 }
 
 // auth server handler sends response of a type that the app cannot handle (unexpected response object type)
-func TestAuthRepository_IsAuthorized_FalseWhenGettingAuthServerResponseValue(t *testing.T) {
+func TestDefaultAuthRepository_IsAuthorized_returns_false_when_getting_authServerResponse_value(t *testing.T) {
 	//Arrange
 	tests := []struct {
 		name                    string
@@ -255,7 +255,7 @@ func TestAuthRepository_IsAuthorized_FalseWhenGettingAuthServerResponseValue(t *
 	}
 }
 
-func TestAuthRepository_extractToken_StrippedTokenWhenThereIsBearerPrefix(t *testing.T) {
+func Test_extractToken_returns_strippedToken_when_thereIs_bearerPrefix(t *testing.T) {
 	//Arrange
 	tokenString := "Bearer header.payload.signature"
 	expected := "header.payload.signature"
@@ -269,7 +269,7 @@ func TestAuthRepository_extractToken_StrippedTokenWhenThereIsBearerPrefix(t *tes
 	}
 }
 
-func TestAuthRepository_extractToken_StrippedTokenWhenNoBearerPrefix(t *testing.T) {
+func Test_extractToken_returns_strippedToken_when_no_bearerPrefix(t *testing.T) {
 	//Arrange
 	tests := []struct {
 		name        string
@@ -293,7 +293,7 @@ func TestAuthRepository_extractToken_StrippedTokenWhenNoBearerPrefix(t *testing.
 	}
 }
 
-func TestAuthRepository_buildURL_CorrectURL(t *testing.T) {
+func Test_buildURL_returns_correctURL(t *testing.T) {
 	//Arrange
 	setupAuthRepositoryTest(t)
 	expectedURLComponents := []string{

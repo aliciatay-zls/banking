@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestTransaction_IsWithdrawal_CorrectResult(t *testing.T) {
+func TestTransaction_IsWithdrawal_returns_correctResult(t *testing.T) {
 	//Arrange
 	tests := []struct {
 		name           string

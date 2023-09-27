@@ -11,8 +11,8 @@ import (
 )
 
 // Test common variables and inputs
-var mockDB sqlmock.Sqlmock
 var accRepoDb AccountRepositoryDb
+var accountsTableColumns = []string{"account_id", "customer_id", "opening_date", "account_type", "amount", "status"}
 
 const dummyDate = "2006-01-02 15:04:05"
 const dummyAmount float64 = 6000
@@ -34,21 +34,13 @@ const updateAccountsWithdrawalSql = "UPDATE accounts SET amount = amount - ? WHE
 const insertTransactionsSql = "INSERT INTO transactions (account_id, amount, transaction_type, transaction_date) VALUES (?, ?, ?, ?)"
 
 func setupAccountRepoDbTest(t *testing.T) func() {
-	var db *sql.DB
-	var err error
-	db, mockDB, err = sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
-	if err != nil {
-		t.Fatal("Error during test setup: creating mock db")
-	}
-
-	sqlxDb := sqlx.NewDb(db, "mysql")
-	accRepoDb = NewAccountRepositoryDb(sqlxDb)
-
-	return func() {
-		defer db.Close()
-	}
+	teardown := setupDB(t)
+	accRepoDb = NewAccountRepositoryDb(sqlx.NewDb(db, driverName))
+	return teardown
 }
 
+// getDefaultAccountBeforeSave returns an Account for the customer with id 2 wanting to open a new saving account
+// of amount 6000 at 2006-01-02 15:04:05
 func getDefaultAccountBeforeSave() Account {
 	return Account{
 		CustomerId:  dummyCustomerId,
@@ -59,12 +51,15 @@ func getDefaultAccountBeforeSave() Account {
 	}
 }
 
+// getDefaultAccountAfterSave returns the same Account as above but now with the account id set to 1977
 func getDefaultAccountAfterSave() Account {
 	newAccount := getDefaultAccountBeforeSave()
 	newAccount.AccountId = dummyAccountId
 	return newAccount
 }
 
+// getDefaultTransactionBeforeTransact returns a Transaction for making a deposit of amount 6000 on the account
+// with id 1977 at 2006-01-02 15:04:05
 func getDefaultTransactionBeforeTransact() Transaction {
 	return Transaction{
 		AccountId:       dummyAccountId,
@@ -74,6 +69,8 @@ func getDefaultTransactionBeforeTransact() Transaction {
 	}
 }
 
+// getDefaultTransactionAfterTransact returns the same Transaction as above but now with the transaction id set to 7791
+// and the account's new balance set to 12000
 func getDefaultTransactionAfterTransact() Transaction {
 	newTransaction := getDefaultTransactionBeforeTransact()
 	newTransaction.TransactionId = dummyTransactionId
@@ -81,7 +78,7 @@ func getDefaultTransactionAfterTransact() Transaction {
 	return newTransaction
 }
 
-func Test_Save_returns_error_when_insertion_fails(t *testing.T) {
+func TestAccountRepositoryDb_Save_returns_error_when_insertAccounts_fails(t *testing.T) {
 	//Arrange
 	teardown := setupAccountRepoDbTest(t)
 	defer teardown()
@@ -114,7 +111,7 @@ func Test_Save_returns_error_when_insertion_fails(t *testing.T) {
 	}
 }
 
-func Test_Save_returns_error_when_gettingInsertId_fails(t *testing.T) {
+func TestAccountRepositoryDb_Save_returns_error_when_gettingInsertId_fails(t *testing.T) {
 	//Arrange
 	teardown := setupAccountRepoDbTest(t)
 	defer teardown()
@@ -148,7 +145,7 @@ func Test_Save_returns_error_when_gettingInsertId_fails(t *testing.T) {
 	}
 }
 
-func Test_Save_returns_newAccount_when_insertion_and_getInsertionId_succeed(t *testing.T) {
+func TestAccountRepositoryDb_Save_returns_newAccount_when_insertAccounts_and_getInsertionId_succeed(t *testing.T) {
 	//Arrange
 	teardown := setupAccountRepoDbTest(t)
 	defer teardown()
@@ -175,7 +172,7 @@ func Test_Save_returns_newAccount_when_insertion_and_getInsertionId_succeed(t *t
 	}
 }
 
-func Test_FindById_returns_error_when_select_fails(t *testing.T) {
+func TestAccountRepositoryDb_FindById_returns_error_when_selectAccounts_fails(t *testing.T) {
 	//Arrange
 	teardown := setupAccountRepoDbTest(t)
 	defer teardown()
@@ -222,14 +219,13 @@ func Test_FindById_returns_error_when_select_fails(t *testing.T) {
 	}
 }
 
-func Test_FindById_returns_account_when_select_succeeds(t *testing.T) {
+func TestAccountRepositoryDb_FindById_returns_account_when_selectAccounts_succeeds(t *testing.T) {
 	//Arrange
 	teardown := setupAccountRepoDbTest(t)
 	defer teardown()
 
 	dummyNewAccount := getDefaultAccountAfterSave()
-	columns := []string{"account_id", "customer_id", "opening_date", "account_type", "amount", "status"}
-	dummyRows := sqlmock.NewRows(columns).
+	dummyRows := sqlmock.NewRows(accountsTableColumns).
 		AddRow(dummyNewAccount.AccountId, dummyNewAccount.CustomerId, dummyNewAccount.OpeningDate, dummyNewAccount.AccountType, dummyNewAccount.Amount, dummyNewAccount.Status)
 	mockDB.ExpectQuery(selectAccountsSql).
 		WithArgs(dummyNewAccount.AccountId).
@@ -247,7 +243,7 @@ func Test_FindById_returns_account_when_select_succeeds(t *testing.T) {
 	}
 }
 
-func Test_Transact_returns_error_when_failure_startingDbTransaction(t *testing.T) {
+func TestAccountRepositoryDb_Transact_returns_error_when_failure_startingDbTransaction(t *testing.T) {
 	//Arrange
 	teardown := setupAccountRepoDbTest(t)
 	defer teardown()
@@ -278,7 +274,7 @@ func Test_Transact_returns_error_when_failure_startingDbTransaction(t *testing.T
 	}
 }
 
-func Test_Transact_returns_error_when_update_fails(t *testing.T) {
+func TestAccountRepositoryDb_Transact_returns_error_when_updateAccounts_fails(t *testing.T) {
 	//Arrange
 	teardown := setupAccountRepoDbTest(t)
 	defer teardown()
@@ -313,12 +309,9 @@ func Test_Transact_returns_error_when_update_fails(t *testing.T) {
 	if actualLogMessage.Message != expectedLogMessage {
 		t.Errorf("Expected log message to be \"%s\" but got \"%s\"", expectedLogMessage, actualLogMessage.Message)
 	}
-	if err := mockDB.ExpectationsWereMet(); err != nil { //TODO: need?
-		t.Errorf("Unmet expectation error: " + err.Error())
-	}
 }
 
-func Test_Transact_returns_error_when_insert_fails(t *testing.T) {
+func TestAccountRepositoryDb_Transact_returns_error_when_insertTransactions_fails(t *testing.T) {
 	//Arrange
 	teardown := setupAccountRepoDbTest(t)
 	defer teardown()
@@ -362,7 +355,7 @@ func Test_Transact_returns_error_when_insert_fails(t *testing.T) {
 	}
 }
 
-func Test_Transact_returns_error_when_failure_committingDbTransaction(t *testing.T) {
+func TestAccountRepositoryDb_Transact_returns_error_when_failure_committingDbTransaction(t *testing.T) {
 	//Arrange
 	teardown := setupAccountRepoDbTest(t)
 	defer teardown()
@@ -408,7 +401,7 @@ func Test_Transact_returns_error_when_failure_committingDbTransaction(t *testing
 	}
 }
 
-func Test_Transact_returns_error_when_gettingInsertId_fails(t *testing.T) {
+func TestAccountRepositoryDb_Transact_returns_error_when_gettingInsertId_fails(t *testing.T) {
 	//Arrange
 	teardown := setupAccountRepoDbTest(t)
 	defer teardown()
@@ -453,7 +446,7 @@ func Test_Transact_returns_error_when_gettingInsertId_fails(t *testing.T) {
 	}
 }
 
-func Test_Transact_returns_error_when_cannotFindAccount(t *testing.T) {
+func TestAccountRepositoryDb_Transact_returns_error_when_cannotFindAccount(t *testing.T) {
 	//Arrange
 	teardown := setupAccountRepoDbTest(t)
 	defer teardown()
@@ -492,8 +485,7 @@ func Test_Transact_returns_error_when_cannotFindAccount(t *testing.T) {
 	}
 }
 
-// to test line 72 + whether amount was updated correctly (might need actual db connection)
-func Test_Transact_returns_newTransaction_when_transactionType_deposit(t *testing.T) {
+func TestAccountRepositoryDb_Transact_returns_newTransaction_when_transactionType_deposit(t *testing.T) {
 	//Arrange
 	teardown := setupAccountRepoDbTest(t)
 	defer teardown()
@@ -518,8 +510,7 @@ func Test_Transact_returns_newTransaction_when_transactionType_deposit(t *testin
 
 	dummyExistentAccount := getDefaultAccountAfterSave()
 	dummyExistentAccount.Amount = dummyBalance
-	columns := []string{"account_id", "customer_id", "opening_date", "account_type", "amount", "status"}
-	dummyRows := sqlmock.NewRows(columns).
+	dummyRows := sqlmock.NewRows(accountsTableColumns).
 		AddRow(dummyExistentAccount.AccountId, dummyExistentAccount.CustomerId, dummyExistentAccount.OpeningDate, dummyExistentAccount.AccountType, dummyExistentAccount.Amount, dummyExistentAccount.Status)
 	mockDB.ExpectQuery(selectAccountsSql).
 		WithArgs(dummyExistentAccount.AccountId).
@@ -539,8 +530,7 @@ func Test_Transact_returns_newTransaction_when_transactionType_deposit(t *testin
 	}
 }
 
-// test line 74 + whether amount was updated correctly (might need actual db connection)
-func Test_Transact_returns_newTransaction_when_transactionType_withdrawal(t *testing.T) {
+func TestAccountRepositoryDb_Transact_returns_newTransaction_when_transactionType_withdrawal(t *testing.T) {
 	//Arrange
 	teardown := setupAccountRepoDbTest(t)
 	defer teardown()
@@ -570,8 +560,7 @@ func Test_Transact_returns_newTransaction_when_transactionType_withdrawal(t *tes
 
 	dummyExistentAccount := getDefaultAccountAfterSave()
 	dummyExistentAccount.Amount = dummyBalanceAfterWithdrawal
-	columns := []string{"account_id", "customer_id", "opening_date", "account_type", "amount", "status"}
-	dummyRows := sqlmock.NewRows(columns).
+	dummyRows := sqlmock.NewRows(accountsTableColumns).
 		AddRow(dummyExistentAccount.AccountId, dummyExistentAccount.CustomerId, dummyExistentAccount.OpeningDate, dummyExistentAccount.AccountType, dummyExistentAccount.Amount, dummyExistentAccount.Status)
 	mockDB.ExpectQuery(selectAccountsSql).
 		WithArgs(dummyExistentAccount.AccountId).

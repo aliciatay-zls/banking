@@ -59,7 +59,7 @@ func setVariableDummyCustomers() {
 	}
 }
 
-func TestCustomerHandlers_customersHandler_CustomersWithStatusCode200WhenServiceSucceeds(t *testing.T) {
+func TestCustomerHandlers_customersHandler_respondsWith_customersAndStatusCode200_when_service_succeeds(t *testing.T) {
 	//Arrange
 	teardown := setupCustomerHandlersTest(t, customersPath)
 	defer teardown()
@@ -81,7 +81,7 @@ func TestCustomerHandlers_customersHandler_CustomersWithStatusCode200WhenService
 	}
 }
 
-func TestCustomerHandlers_customersHandler_NoCustomersWithErrorStatusCodeWhenServiceFails(t *testing.T) {
+func TestCustomerHandlers_customersHandler_respondsWith_errorStatusCode_when_service_fails(t *testing.T) {
 	//Arrange
 	teardown := setupCustomerHandlersTest(t, customersPath)
 	defer teardown()
@@ -103,7 +103,7 @@ func TestCustomerHandlers_customersHandler_NoCustomersWithErrorStatusCodeWhenSer
 	}
 }
 
-func TestCustomerHandlers_customerIdHandler_CustomerWithStatusCode200WhenServiceSucceeds(t *testing.T) {
+func TestCustomerHandlers_customerIdHandler_respondsWith_customerAndStatusCode200_when_service_succeeds(t *testing.T) {
 	//Arrange
 	teardown := setupCustomerHandlersTest(t, dummyCustomerIdPath)
 	defer teardown()
@@ -126,7 +126,7 @@ func TestCustomerHandlers_customerIdHandler_CustomerWithStatusCode200WhenService
 	}
 }
 
-func TestCustomerHandlers_customerIdHandler_NoCustomerWithErrorStatusCodeWhenServiceFails(t *testing.T) {
+func TestCustomerHandlers_customerIdHandler_respondsWith_errorStatusCode_when_service_fails(t *testing.T) {
 	//Arrange
 	teardown := setupCustomerHandlersTest(t, dummyCustomerIdPath)
 	defer teardown()

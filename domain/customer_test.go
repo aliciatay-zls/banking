@@ -2,7 +2,7 @@ package domain
 
 import "testing"
 
-func TestCustomer_AsStatusName_CorrectStatus(t *testing.T) {
+func TestCustomer_AsStatusName_returns_correctStatus(t *testing.T) {
 	//Arrange
 	tests := []struct {
 		name           string

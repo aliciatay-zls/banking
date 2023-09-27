@@ -35,7 +35,7 @@ func getDefaultDummyCustomers() []domain.Customer {
 	}
 }
 
-func Test_GetAllCustomers_returns_error_when_invalid_status(t *testing.T) {
+func TestDefaultCustomerService_GetAllCustomers_returns_error_when_invalid_status(t *testing.T) {
 	//Arrange
 	cusSvc = NewCustomerService(nil)
 
@@ -64,7 +64,7 @@ func Test_GetAllCustomers_returns_error_when_invalid_status(t *testing.T) {
 	}
 }
 
-func Test_GetAllCustomers_returns_error_when_repo_fails(t *testing.T) {
+func TestDefaultCustomerService_GetAllCustomers_returns_error_when_repo_fails(t *testing.T) {
 	//Arrange
 	teardown := setupCustomerServiceTest(t)
 	defer teardown()
@@ -84,7 +84,7 @@ func Test_GetAllCustomers_returns_error_when_repo_fails(t *testing.T) {
 	}
 }
 
-func Test_GetAllCustomers_returns_customers_when_repo_succeeds(t *testing.T) {
+func TestDefaultCustomerService_GetAllCustomers_returns_customers_when_repo_succeeds(t *testing.T) {
 	//Arrange
 	teardown := setupCustomerServiceTest(t)
 	defer teardown()
@@ -115,7 +115,7 @@ func Test_GetAllCustomers_returns_customers_when_repo_succeeds(t *testing.T) {
 	}
 }
 
-func Test_GetCustomer_returns_error_when_repo_fails(t *testing.T) {
+func TestDefaultCustomerService_GetCustomer_returns_error_when_repo_fails(t *testing.T) {
 	//Arrange
 	teardown := setupCustomerServiceTest(t)
 	defer teardown()
@@ -136,7 +136,7 @@ func Test_GetCustomer_returns_error_when_repo_fails(t *testing.T) {
 	}
 }
 
-func Test_GetCustomer_returns_a_customer_when_repo_succeeds(t *testing.T) {
+func TestDefaultCustomerService_GetCustomer_returns_a_customer_when_repo_succeeds(t *testing.T) {
 	//Arrange
 	teardown := setupCustomerServiceTest(t)
 	defer teardown()

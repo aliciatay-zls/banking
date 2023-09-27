@@ -2,7 +2,7 @@ package domain
 
 import "testing"
 
-func TestAccount_CanWithdraw_TrueWhenAccountBalanceSufficient(t *testing.T) {
+func TestAccount_CanWithdraw_returns_true_when_accountBalance_sufficient(t *testing.T) {
 	//Arrange
 	account := Account{Amount: 1000}
 	var withdrawalAmount float64 = 1000
@@ -17,7 +17,7 @@ func TestAccount_CanWithdraw_TrueWhenAccountBalanceSufficient(t *testing.T) {
 	}
 }
 
-func TestAccount_CanWithdraw_FalseWhenAccountBalanceInsufficient(t *testing.T) {
+func TestAccount_CanWithdraw_returns_false_when_accountBalance_insufficient(t *testing.T) {
 	//Arrange
 	account := Account{Amount: 1000}
 	var withdrawalAmount float64 = 2000

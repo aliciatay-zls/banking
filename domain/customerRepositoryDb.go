@@ -2,6 +2,7 @@ package domain
 
 import (
 	"database/sql"
+	"errors"
 	"github.com/jmoiron/sqlx"
 	"github.com/udemy-go-1/banking-lib/errs"
 	"github.com/udemy-go-1/banking-lib/logger"
@@ -45,7 +46,7 @@ func (d CustomerRepositoryDb) FindById(id string) (*Customer, *errs.AppError) {
 	err := d.client.Get(&c, findCustomerSql, id) // (**)
 	if err != nil {
 		logger.Error("Error while querying/scanning customer: " + err.Error())
-		if err == sql.ErrNoRows { // (*)
+		if errors.Is(err, sql.ErrNoRows) { // (*)
 			return nil, errs.NewNotFoundError("Customer not found")
 		} else {
 			return nil, errs.NewUnexpectedError("Unexpected database error")

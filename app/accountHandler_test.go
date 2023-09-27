@@ -74,7 +74,7 @@ func getDefaultDummyNewTransactionRequestObject() dto.TransactionRequest {
 	}
 }
 
-func TestAccountHandler_newAccountHandler_NoAccountWithErrorStatusCodeWhenPayloadMalformed(t *testing.T) {
+func TestAccountHandler_newAccountHandler_respondsWith_errorStatusCode_when_payload_malformed(t *testing.T) {
 	//Arrange
 	badPayload := `{"account_type": "saving", "amount": "string instead of number"}`
 	teardown := setupAccountHandlerTest(t, dummyNewAccountPath, badPayload)
@@ -102,7 +102,7 @@ func TestAccountHandler_newAccountHandler_NoAccountWithErrorStatusCodeWhenPayloa
 	}
 }
 
-func TestAccountHandler_newAccountHandler_NoAccountWithErrorWhenPayloadFieldMissingOrNull(t *testing.T) {
+func TestAccountHandler_newAccountHandler_respondsWith_errorStatusCode_when_payloadField_missingOrNull(t *testing.T) {
 	//Arrange
 	tests := []struct {
 		name    string
@@ -148,7 +148,7 @@ func TestAccountHandler_newAccountHandler_NoAccountWithErrorWhenPayloadFieldMiss
 
 }
 
-func TestAccountHandler_newAccountHandler_NewAccountWithStatusCode200WhenServiceSucceeds(t *testing.T) {
+func TestAccountHandler_newAccountHandler_respondsWith_newAccountAndStatusCode200_when_service_succeeds(t *testing.T) {
 	//Arrange
 	teardown := setupAccountHandlerTest(t, dummyNewAccountPath, dummyNewAccountRequestPayload)
 	defer teardown()
@@ -172,7 +172,7 @@ func TestAccountHandler_newAccountHandler_NewAccountWithStatusCode200WhenService
 	}
 }
 
-func TestAccountHandler_newAccountHandler_NoAccountWithErrorStatusCodeWhenServiceFails(t *testing.T) {
+func TestAccountHandler_newAccountHandler_respondsWith_errorStatusCode_when_service_fails(t *testing.T) {
 	//Arrange
 	teardown := setupAccountHandlerTest(t, dummyNewAccountPath, dummyNewAccountRequestPayload)
 	defer teardown()
@@ -195,7 +195,7 @@ func TestAccountHandler_newAccountHandler_NoAccountWithErrorStatusCodeWhenServic
 	}
 }
 
-func TestAccountHandler_transactionHandler_NoTransactionWithErrorStatusCodeWhenPayloadMalformed(t *testing.T) {
+func TestAccountHandler_transactionHandler_respondsWith_errorStatusCode_when_payload_malformed(t *testing.T) {
 	//Arrange
 	badPayload := `{"transaction_type": "deposit", "amount": "string instead of number"}`
 	teardown := setupAccountHandlerTest(t, dummyNewTransactionPath, badPayload)
@@ -223,7 +223,7 @@ func TestAccountHandler_transactionHandler_NoTransactionWithErrorStatusCodeWhenP
 	}
 }
 
-func TestAccountHandler_transactionHandler_NoTransactionWithErrorWhenPayloadFieldMissingOrNull(t *testing.T) {
+func TestAccountHandler_transactionHandler_respondsWith_errorStatusCode_when_payloadField_missingOrNull(t *testing.T) {
 	//Arrange
 	tests := []struct {
 		name    string
@@ -269,7 +269,7 @@ func TestAccountHandler_transactionHandler_NoTransactionWithErrorWhenPayloadFiel
 
 }
 
-func TestAccountHandler_transactionHandler_NewTransactionWithStatusCode200WhenServiceSucceeds(t *testing.T) {
+func TestAccountHandler_transactionHandler_respondsWith_newTransactionAndStatusCode200_when_service_succeeds(t *testing.T) {
 	//Arrange
 	teardown := setupAccountHandlerTest(t, dummyNewTransactionPath, dummyNewTransactionPayload)
 	defer teardown()
@@ -293,7 +293,7 @@ func TestAccountHandler_transactionHandler_NewTransactionWithStatusCode200WhenSe
 	}
 }
 
-func TestAccountHandler_transactionHandler_NoTransactionWithErrorStatusCodeWhenServiceFails(t *testing.T) {
+func TestAccountHandler_transactionHandler_respondsWith_errorStatusCode_when_service_fails(t *testing.T) {
 	//Arrange
 	teardown := setupAccountHandlerTest(t, dummyNewTransactionPath, dummyNewTransactionPayload)
 	defer teardown()

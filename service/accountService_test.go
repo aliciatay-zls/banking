@@ -58,7 +58,7 @@ func getDefaultDummyTransactionRequest() dto.TransactionRequest {
 	}
 }
 
-func TestAccountService_CreateNewAccount_ErrorWhenValidatingNewAccountRequestFails(t *testing.T) {
+func TestDefaultAccountService_CreateNewAccount_returns_error_when_validatingNewAccountRequest_fails(t *testing.T) {
 	//Arrange
 	accSvc = NewAccountService(nil)
 
@@ -76,7 +76,7 @@ func TestAccountService_CreateNewAccount_ErrorWhenValidatingNewAccountRequestFai
 	}
 }
 
-func TestAccountService_CreateNewAccount_ErrorWhenRepoFails(t *testing.T) {
+func TestDefaultAccountService_CreateNewAccount_returns_error_when_repo_fails(t *testing.T) {
 	//Arrange
 	teardown := setupAccountServiceTest(t)
 	defer teardown()
@@ -98,7 +98,7 @@ func TestAccountService_CreateNewAccount_ErrorWhenRepoFails(t *testing.T) {
 	}
 }
 
-func TestAccountService_CreateNewAccount_NewAccountIdWhenRepoSucceeds(t *testing.T) {
+func TestDefaultAccountService_CreateNewAccount_returns_newAccountId_when_repo_succeeds(t *testing.T) {
 	//Arrange
 	teardown := setupAccountServiceTest(t)
 	defer teardown()
@@ -122,7 +122,7 @@ func TestAccountService_CreateNewAccount_NewAccountIdWhenRepoSucceeds(t *testing
 	}
 }
 
-func TestAccountService_MakeTransaction_ErrorWhenValidatingTransactionRequestFails(t *testing.T) {
+func TestDefaultAccountService_MakeTransaction_returns_error_when_validatingTransactionRequest_fails(t *testing.T) {
 	//Arrange
 	accSvc = NewAccountService(nil)
 
@@ -140,7 +140,7 @@ func TestAccountService_MakeTransaction_ErrorWhenValidatingTransactionRequestFai
 	}
 }
 
-func TestAccountService_MakeTransaction_ErrorWhenNonExistentAccount(t *testing.T) {
+func TestDefaultAccountService_MakeTransaction_returns_error_when_nonExistentAccount(t *testing.T) {
 	//Arrange
 	teardown := setupAccountServiceTest(t)
 	defer teardown()
@@ -161,7 +161,7 @@ func TestAccountService_MakeTransaction_ErrorWhenNonExistentAccount(t *testing.T
 	}
 }
 
-func TestAccountService_MakeTransaction_ErrorWhenCannotWithdraw(t *testing.T) {
+func TestDefaultAccountService_MakeTransaction_returns_error_when_cannotWithdraw(t *testing.T) {
 	//Arrange
 	teardown := setupAccountServiceTest(t)
 	defer teardown()
@@ -196,7 +196,7 @@ func TestAccountService_MakeTransaction_ErrorWhenCannotWithdraw(t *testing.T) {
 	}
 }
 
-func TestAccountService_MakeTransaction_ErrorWhenRepoFails(t *testing.T) {
+func TestDefaultAccountService_MakeTransaction_returns_error_when_repo_fails(t *testing.T) {
 	//Arrange
 	teardown := setupAccountServiceTest(t)
 	defer teardown()
@@ -222,7 +222,7 @@ func TestAccountService_MakeTransaction_ErrorWhenRepoFails(t *testing.T) {
 	}
 }
 
-func TestAccountService_MakeTransaction_NewTransactionDetailsWhenRepoSucceeds(t *testing.T) {
+func TestDefaultAccountService_MakeTransaction_returns_newTransactionDetails_when_repo_succeeds(t *testing.T) {
 	//Arrange
 	teardown := setupAccountServiceTest(t)
 	defer teardown()

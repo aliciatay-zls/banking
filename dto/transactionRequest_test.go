@@ -6,6 +6,7 @@ import (
 	"testing"
 )
 
+// getMinimumValidTransactionRequest returns a minimally-filled TransactionRequest for making a deposit of amount 1000
 func getMinimumValidTransactionRequest() TransactionRequest {
 	var amt float64 = 1000
 	var tType string = TransactionTypeDeposit
@@ -15,7 +16,7 @@ func getMinimumValidTransactionRequest() TransactionRequest {
 	}
 }
 
-func TestTransactionRequest_Validate_NoErrorWhenAmountAndTransactionTypeValid(t *testing.T) {
+func TestTransactionRequest_Validate_returns_nil_when_amount_valid_and_transactionType_valid(t *testing.T) {
 	//Arrange
 	request := getMinimumValidTransactionRequest()
 
@@ -28,7 +29,7 @@ func TestTransactionRequest_Validate_NoErrorWhenAmountAndTransactionTypeValid(t 
 	}
 }
 
-func TestTransactionRequest_Validate_NoErrorWhenAmountZero(t *testing.T) {
+func TestTransactionRequest_Validate_returns_nil_when_amount_zero(t *testing.T) {
 	//Arrange
 	request := getMinimumValidTransactionRequest()
 	*request.Amount = 0
@@ -42,7 +43,7 @@ func TestTransactionRequest_Validate_NoErrorWhenAmountZero(t *testing.T) {
 	}
 }
 
-func TestTransactionRequest_Validate_ErrorWhenAmountNegative(t *testing.T) {
+func TestTransactionRequest_Validate_returns_error_when_amount_negative(t *testing.T) {
 	//Arrange
 	request := getMinimumValidTransactionRequest()
 	*request.Amount = -100
@@ -74,7 +75,7 @@ func TestTransactionRequest_Validate_ErrorWhenAmountNegative(t *testing.T) {
 	}
 }
 
-func TestTransactionRequest_Validate_ErrorWhenTransactionTypeInvalid(t *testing.T) {
+func TestTransactionRequest_Validate_returns_error_when_transactionType_invalid(t *testing.T) {
 	//Arrange
 	request := getMinimumValidTransactionRequest()
 	*request.TransactionType = "some transaction type"

@@ -56,7 +56,7 @@ func setupAuthMiddlewareTest(t *testing.T, isTokenGiven bool) func() {
 	}
 }
 
-func TestAuthMiddleware_AuthMiddlewareHandler_ErrorStatusCodeWhenTokenMissing(t *testing.T) {
+func TestAuthMiddleware_AuthMiddlewareHandler_respondsWith_errorStatusCode_when_token_missing(t *testing.T) {
 	//Arrange
 	teardownAll := setupAuthMiddlewareTest(t, false)
 	defer teardownAll()
@@ -87,7 +87,7 @@ func TestAuthMiddleware_AuthMiddlewareHandler_ErrorStatusCodeWhenTokenMissing(t 
 	}
 }
 
-func TestAuthMiddleware_AuthMiddlewareHandler_RunsNextHandlerFuncWhenRepoSucceeds(t *testing.T) {
+func TestAuthMiddleware_AuthMiddlewareHandler_runsNextHandlerFunc_when_repo_succeeds(t *testing.T) {
 	//Arrange
 	teardownAll := setupAuthMiddlewareTest(t, true)
 	defer teardownAll()
@@ -107,7 +107,7 @@ func TestAuthMiddleware_AuthMiddlewareHandler_RunsNextHandlerFuncWhenRepoSucceed
 	}
 }
 
-func TestAuthMiddleware_AuthMiddlewareHandler_ErrorStatusCodeWhenRepoFails(t *testing.T) {
+func TestAuthMiddleware_AuthMiddlewareHandler_respondsWith_errorStatusCode_when_repo_fails(t *testing.T) {
 	//Arrange
 	teardownAll := setupAuthMiddlewareTest(t, true)
 	defer teardownAll()

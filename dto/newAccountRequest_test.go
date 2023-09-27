@@ -6,6 +6,8 @@ import (
 	"testing"
 )
 
+// getDefaultValidNewAccountRequest returns a NewAccountRequest for the customer with id 2000 wanting to open
+// a saving account of amount 5000
 func getDefaultValidNewAccountRequest() NewAccountRequest {
 	var amt float64 = NewAccountMinAmountAllowed
 	var tType string = AccountTypeSaving
@@ -16,7 +18,7 @@ func getDefaultValidNewAccountRequest() NewAccountRequest {
 	}
 }
 
-func TestNewAccountRequest_Validate_NoErrorWhenAmountAndAccountTypeValid(t *testing.T) {
+func TestNewAccountRequest_Validate_returns_nil_when_amount_valid_and_accountType_valid(t *testing.T) {
 	//Arrange
 	request := getDefaultValidNewAccountRequest()
 
@@ -29,7 +31,7 @@ func TestNewAccountRequest_Validate_NoErrorWhenAmountAndAccountTypeValid(t *test
 	}
 }
 
-func TestNewAccountRequest_Validate_ErrorWhenAmountInvalid(t *testing.T) {
+func TestNewAccountRequest_Validate_returns_error_when_amount_invalid(t *testing.T) {
 	//Arrange
 	request := getDefaultValidNewAccountRequest()
 	*request.Amount = 4999
@@ -61,7 +63,7 @@ func TestNewAccountRequest_Validate_ErrorWhenAmountInvalid(t *testing.T) {
 	}
 }
 
-func TestNewAccountRequest_Validate_ErrorWhenAccountTypeInvalid(t *testing.T) {
+func TestNewAccountRequest_Validate_returns_error_when_accountType_invalid(t *testing.T) {
 	//Arrange
 	request := getDefaultValidNewAccountRequest()
 	*request.AccountType = "some account type"

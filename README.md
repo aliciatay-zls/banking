@@ -74,6 +74,8 @@ DTOs `TransactionRequest` and `TransactionResponse`)
     ([banking-auth repo](https://github.com/udemy-go-1/banking-auth))
 15. Add state-based tests for domain objects, DTOs
 16. Test routes
+17. Test services
+18. (Extra) Test DB adapters, stub adapter
 
 ## Other Notes
 * Files in `build/package` taken from instructor's repo

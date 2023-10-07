@@ -10,28 +10,42 @@ https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang
 
 3. Configure environment variables in `run.ps1` or `run.sh`, such as `DB_USER` and `DB_PASSWORD`
 
+4. Install or upgrade current version of Node.js and npm using the [Node.js installer](https://nodejs.org/en/download)
+
 ## Running the app
-1. To start the db, first start the Docker app. Then in terminal, `cd` to `build/package` and run:
+1. To start the db, first start the Docker app. Then in terminal:
    ```
+   cd backend/build/package
    docker-compose up
    ```
 
-2. To start the app, open another tab in terminal and run one of the following:
+2. To start the backend resource server, open another tab in terminal and run one of the following:
    * `./run.ps1` if using Powershell (e.g. Intellij terminal)
    * `./run.sh`
 
    An info-level log with the message "Starting the app..." will be printed to console on success.
 <br/><br/>
-3. [Postman](https://www.postman.com/) can be used to send requests to the app. Sample requests:
 
-| Method | URL                                                | Authorization Header (Bearer Token) | Body                                                    | Result                                                                                                                                                             |
-|--------|----------------------------------------------------|-------------------------------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| GET    | http://localhost:8080/customers                    | (token received after logging in)   |                                                         | Will display details of customers with id 2000 to 2005                                                                                                             |
-| GET    | http://localhost:8080/customers/2000               | (token received after logging in)   |                                                         | Will display details of the customer with id 2000                                                                                                                  |
-| POST   | http://localhost:8080/customers/2000/account       | (token received after logging in)   | {"account_type": "saving", <br/>"amount": 7000}         | Will open a new bank account containing $7000 for the customer with id 2000, then display the new bank account id                                                  |
-| POST   | http://localhost:8080/customers/2000/account/95470 | (token received after logging in)   | {"transaction_type": "withdrawal", <br/>"amount": 1000} | Will make a withdrawal of $1000 for the customer with id 2000 for the account with id 95470, then display the updated account balance and completed transaction id |
+3. To start the backend authentication server, see other repo: https://github.com/udemy-go-1/banking-auth
 
-4. To check changes made to the app database, open another tab in terminal and start an interactive shell in 
+4. To start the frontend development server, open another tab in terminal:
+    ```
+   cd frontend
+   npm run dev
+   ```
+
+5. Navigate to http://localhost:3000/login to view the app.
+
+6. Alternatively, [Postman](https://www.postman.com/) can be used to send requests to the backend APIs. Sample requests:
+
+| Method | Backend API Endpoint                               | Authorization Header (Bearer Token)      | Body                                                    | Result                                                                                                                                                             |
+|--------|----------------------------------------------------|------------------------------------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| GET    | http://localhost:8080/customers                    | (access token received after logging in) |                                                         | Will display details of customers with id 2000 to 2005                                                                                                             |
+| GET    | http://localhost:8080/customers/2000               | (access token received after logging in) |                                                         | Will display details of the customer with id 2000                                                                                                                  |
+| POST   | http://localhost:8080/customers/2000/account       | (access token received after logging in) | {"account_type": "saving", <br/>"amount": 7000}         | Will open a new bank account containing $7000 for the customer with id 2000, then display the new bank account id                                                  |
+| POST   | http://localhost:8080/customers/2000/account/95470 | (access token received after logging in) | {"transaction_type": "withdrawal", <br/>"amount": 1000} | Will make a withdrawal of $1000 for the customer with id 2000 for the account with id 95470, then display the updated account balance and completed transaction id |
+
+7. To check changes made to the app database, open another tab in terminal and start an interactive shell in 
 the container for querying the db:
    ```
    docker exec -it mysql sh
@@ -43,7 +57,8 @@ the container for querying the db:
    mysql> select * from accounts;
    ```
 
-## Tasks
+## Udemy Course
+Below is a list of the main tasks in the Udemy course. 
 1. Start and run server, create routes: GET `greet`, GET `customers`
 2. JSON or XML encoding of response for GET `customers` route, depending on request header
 3. Replace standard library request multiplexer: `gorilla/mux`
@@ -68,7 +83,7 @@ REST handler `AccountHandler`, DTOs `NewAccountRequest` and `NewAccountResponse`
 DTOs `TransactionRequest` and `TransactionResponse`)
 14. (Extra) Create Authentication Server using hexagonal architecture:
     1. Add ability to log in a client: generate a token for the client which acts as a session token 
-    ([banking-auth repo]( https://github.com/udemy-go-1/banking-auth))
+    ([banking-auth repo](https://github.com/udemy-go-1/banking-auth))
     2. Add ability to verify client's right to access route: require the token from i. for requests to all routes 
     (middleware `AuthMiddlewareHandler`), verify the token and role privileges of the client 
     ([banking-auth repo](https://github.com/udemy-go-1/banking-auth))
@@ -76,6 +91,14 @@ DTOs `TransactionRequest` and `TransactionResponse`)
 16. Test routes
 17. Test services
 18. (Extra) Test DB adapters, stub adapter
+19. Generate refresh token ([banking-auth repo](https://github.com/udemy-go-1/banking-auth))
 
-## Other Notes
+Other Notes:
 * Files in `build/package` taken from instructor's repo
+
+
+## Frontend
+Key dependencies:
+* react, react-dom, next
+* [cookie](https://www.npmjs.com/package/cookie?activeTab=readme)
+* [react-cookie](https://www.npmjs.com/package/react-cookie?activeTab=readme)

@@ -23,7 +23,7 @@ export default function LoginPage() {
 
         try {
             //login request
-            const response = await fetch("http://localhost:8181/auth/login", {
+            const response = await fetch("http://127.0.0.1:8181/auth/login", {
                 method: "POST",
                 body: JSON.stringify({username: username, password: password}),
                 redirect: "follow"
@@ -52,8 +52,18 @@ export default function LoginPage() {
                 sameSite: 'strict',
             })
 
-            //redirect //client side navigation
-            router.push('/customers')
+            //redirect to diff pages based on role
+            if (data.role == null) {
+                throw new Error("No role in response, cannot continue")
+            }
+
+            if (data.role === 'admin') {
+                router.replace('/customers') //client side navigation
+            } else if (data.role === 'user') {
+                router.replace('/customers/' + data.cid)
+            } else {
+                throw new Error("Unknown role")
+            }
 
         } catch (err) {
             setError(err.message)

@@ -19,7 +19,7 @@ https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang
    docker-compose up
    ```
 
-2. To start the backend resource server, open another tab in terminal and run one of the following:
+2. To start the backend resource server, open another tab in terminal, `cd backend` and run one of the following:
    * `./run.ps1` if using Powershell (e.g. Intellij terminal)
    * `./run.sh`
 

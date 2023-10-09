@@ -50,7 +50,7 @@ func Start() {
 		Name("GetAllCustomers")
 	router.
 		HandleFunc("/customers/{customer_id:[0-9]+}", ch.customerIdHandler).
-		Methods(http.MethodGet).
+		Methods(http.MethodGet, http.MethodOptions).
 		Name("GetCustomer")
 	router.
 		HandleFunc("/customers/{customer_id:[0-9]+}/account", ah.newAccountHandler).

@@ -10,9 +10,11 @@ import (
 	"strings"
 )
 
+const AuthorizationHeaderPrefix = "Bearer "
+
 //go:generate mockgen -destination=../mocks/domain/mock_authRepository.go -package=domain github.com/udemy-go-1/banking/backend/domain AuthRepository
 type AuthRepository interface { //repo (secondary port)
-	IsAuthorized(string, string, map[string]string) bool
+	IsUnauthorizedOrExpired(string, string, map[string]string) (bool, bool)
 }
 
 type DefaultAuthRepository struct { //adapter
@@ -23,7 +25,7 @@ func NewDefaultAuthRepository() DefaultAuthRepository {
 	return DefaultAuthRepository{}
 }
 
-func (r DefaultAuthRepository) IsAuthorized(tokenString string, routeName string, routeVars map[string]string) bool { //adapter implements repo
+func (r DefaultAuthRepository) IsUnauthorizedOrExpired(tokenString string, routeName string, routeVars map[string]string) (bool, bool) { //adapter implements repo
 	token := extractToken(tokenString)
 
 	verifyURL := buildURL(token, routeName, routeVars)
@@ -31,31 +33,33 @@ func (r DefaultAuthRepository) IsAuthorized(tokenString string, routeName string
 	response, err := http.Get(verifyURL)
 	if err != nil {
 		logger.Error("Error while sending request to verification URL: " + err.Error())
-		return false
+		return true, false
 	}
 
-	result := map[string]interface{}{}
-	if err = json.NewDecoder(response.Body).Decode(&result); err != nil {
+	responseData := map[string]interface{}{}
+	if err = json.NewDecoder(response.Body).Decode(&responseData); err != nil {
 		logger.Error("Error while reading response from auth server: " + err.Error())
-		return false
+		return true, false
 	}
-	if response.StatusCode != http.StatusOK {
-		logger.Error("Request verification failed: " + result["message"].(string))
-		return false
+	if response.StatusCode == http.StatusOK { //success case
+		return false, false
 	}
 
-	val, ok := result["is_authorized"].(bool)
-	if !ok {
-		logger.Error("Error while getting value of the `is_authorized` key: value is not of type bool")
-		return false
+	//check for expired token error, frontend will handle refresh
+	if responseData["outcome"].(string) == "expired" {
+		return true, true
+	} else if responseData["outcome"].(string) == "unauthorized" {
+		logger.Error("Request verification failed: " + responseData["message"].(string))
+		return true, false
 	}
-	return val
+
+	return true, false
 }
 
 // extractToken converts the value of the Authorization header from the form "Bearer <token>" to "<token>"
 func extractToken(tokenString string) string {
-	if strings.Contains(tokenString, "Bearer ") {
-		tokenString = strings.Split(tokenString, "Bearer ")[1]
+	if strings.Contains(tokenString, AuthorizationHeaderPrefix) {
+		tokenString = strings.Split(tokenString, AuthorizationHeaderPrefix)[1]
 	}
 	return strings.TrimSpace(tokenString)
 }

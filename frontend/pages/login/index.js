@@ -60,6 +60,9 @@ export default function LoginPage() {
             if (data.role === 'admin') {
                 router.replace('/customers') //client side navigation
             } else if (data.role === 'user') {
+                if (data.cid == null || data.cid === '') { //will change later when admin can access indiv customer
+                    throw new Error("No cid in response, cannot continue")
+                }
                 router.replace('/customers/' + data.cid)
             } else {
                 throw new Error("Unknown role")

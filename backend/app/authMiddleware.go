@@ -17,7 +17,7 @@ type AuthMiddleware struct {
 func (m AuthMiddleware) AuthMiddlewareHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		//handle preflight requests
-		EnableCORS(w)
+		enableCORS(w)
 		if r.Method == http.MethodOptions {
 			writeJsonResponse(w, http.StatusOK, "all preflight requests currently accepted")
 			return
@@ -33,8 +33,14 @@ func (m AuthMiddleware) AuthMiddlewareHandler(next http.Handler) http.Handler {
 		routeName := mux.CurrentRoute(r).GetName()
 		routeVars := mux.Vars(r)
 
-		isAuthorized := m.repo.IsAuthorized(tokenString, routeName, routeVars)
-		if !isAuthorized {
+		isUnauthorized, isExpired := m.repo.IsUnauthorizedOrExpired(tokenString, routeName, routeVars)
+		//if verification failed due to expired access token, inform frontend so it can handle refresh
+		if isExpired {
+			writeJsonResponse(w, http.StatusUnauthorized, "Expired token") //TODO: better way?
+			return
+		}
+		//if verification failed due to other reasons
+		if isUnauthorized {
 			writeJsonResponse(w, http.StatusForbidden, "Access forbidden")
 			return
 		}
@@ -43,7 +49,7 @@ func (m AuthMiddleware) AuthMiddlewareHandler(next http.Handler) http.Handler {
 	})
 }
 
-func EnableCORS(w http.ResponseWriter) {
+func enableCORS(w http.ResponseWriter) {
 	w.Header().Add("Access-Control-Allow-Origin", "http://localhost:3000") //frontend domain
 	w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS")   //OPTIONS: preflight request method
 	w.Header().Add("Access-Control-Allow-Headers", "*")

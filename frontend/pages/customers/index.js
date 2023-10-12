@@ -29,11 +29,20 @@ export async function getServerSideProps(context) {
     let data = ''
     try {
         const response = await fetch("http://127.0.0.1:8080/customers", request)
+        data = await response.json()
 
         if (!response.ok) {
             console.log("HTTP error: " + response.statusText)
 
-            if (response.status === 401 || response.status === 403) {
+            if (response.status === 401 && data.toString() === "Expired token") {
+                console.log("Redirecting to refresh")
+                return {
+                    redirect: {
+                        destination: '/customers/refresh',
+                        permanent: true,
+                    }
+                }
+            } else if (response.status === 403) {
                 console.log("Redirecting to login")
                 return {
                     redirect: {
@@ -49,8 +58,6 @@ export async function getServerSideProps(context) {
                 throw new Error("HTTP error: " + response.statusText)
             }
         }
-
-        data = await response.json()
 
     } catch (err) {
         console.log(err)
@@ -71,7 +78,7 @@ export default function CustomersPage(props) {
     return (
         <div>
             <Head>
-                <title>Banking App - All customers</title>
+                <title>Banking App - Home</title>
                 <link rel="icon" type="image/png" href="/favicon-16x16.png" />
             </Head>
 

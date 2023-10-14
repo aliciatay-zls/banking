@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/udemy-go-1/banking-lib/errs"
 	"github.com/udemy-go-1/banking-lib/logger"
 	"github.com/udemy-go-1/banking/backend/domain"
 	"net/http"
@@ -19,7 +20,7 @@ func (m AuthMiddleware) AuthMiddlewareHandler(next http.Handler) http.Handler {
 		//handle preflight requests
 		enableCORS(w)
 		if r.Method == http.MethodOptions {
-			writeJsonResponse(w, http.StatusOK, "all preflight requests currently accepted")
+			writeJsonResponse(w, http.StatusOK, errs.NewMessageObject("all preflight requests currently accepted"))
 			return
 		}
 
@@ -27,21 +28,14 @@ func (m AuthMiddleware) AuthMiddlewareHandler(next http.Handler) http.Handler {
 		tokenString := r.Header.Get("Authorization")
 		if tokenString == "" {
 			logger.Error("Client did not provide a token")
-			writeJsonResponse(w, http.StatusUnauthorized, "Missing token")
+			writeJsonResponse(w, http.StatusUnauthorized, errs.NewMessageObject("Missing token"))
 			return
 		}
 		routeName := mux.CurrentRoute(r).GetName()
 		routeVars := mux.Vars(r)
 
-		isUnauthorized, isExpired := m.repo.IsUnauthorizedOrExpired(tokenString, routeName, routeVars)
-		//if verification failed due to expired access token, inform frontend so it can handle refresh
-		if isExpired {
-			writeJsonResponse(w, http.StatusUnauthorized, "Expired token") //TODO: better way?
-			return
-		}
-		//if verification failed due to other reasons
-		if isUnauthorized {
-			writeJsonResponse(w, http.StatusForbidden, "Access forbidden")
+		if appErr := m.repo.IsAuthorized(tokenString, routeName, routeVars); appErr != nil {
+			writeJsonResponse(w, appErr.Code, appErr.AsMessage())
 			return
 		}
 

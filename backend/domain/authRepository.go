@@ -3,6 +3,7 @@ package domain
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/udemy-go-1/banking-lib/errs"
 	"github.com/udemy-go-1/banking-lib/logger"
 	"net/http"
 	"net/url"
@@ -14,7 +15,7 @@ const AuthorizationHeaderPrefix = "Bearer "
 
 //go:generate mockgen -destination=../mocks/domain/mock_authRepository.go -package=domain github.com/udemy-go-1/banking/backend/domain AuthRepository
 type AuthRepository interface { //repo (secondary port)
-	IsUnauthorizedOrExpired(string, string, map[string]string) (bool, bool)
+	IsAuthorized(string, string, map[string]string) *errs.AppError
 }
 
 type DefaultAuthRepository struct { //adapter
@@ -25,7 +26,7 @@ func NewDefaultAuthRepository() DefaultAuthRepository {
 	return DefaultAuthRepository{}
 }
 
-func (r DefaultAuthRepository) IsUnauthorizedOrExpired(tokenString string, routeName string, routeVars map[string]string) (bool, bool) { //adapter implements repo
+func (r DefaultAuthRepository) IsAuthorized(tokenString string, routeName string, routeVars map[string]string) *errs.AppError { //adapter implements repo
 	token := extractToken(tokenString)
 
 	verifyURL := buildURL(token, routeName, routeVars)
@@ -33,27 +34,20 @@ func (r DefaultAuthRepository) IsUnauthorizedOrExpired(tokenString string, route
 	response, err := http.Get(verifyURL)
 	if err != nil {
 		logger.Error("Error while sending request to verification URL: " + err.Error())
-		return true, false
+		return errs.NewUnexpectedError("Internal server error")
+	}
+	if response.StatusCode != http.StatusOK {
+		responseData := map[string]string{}
+		if err = json.NewDecoder(response.Body).Decode(&responseData); err != nil {
+			logger.Error("Error while reading response from auth server: " + err.Error())
+			return errs.NewUnexpectedError("Internal server error")
+		}
+
+		logger.Error("Verification failed: " + responseData["message"])
+		return errs.NewAppError(response.StatusCode, responseData["message"])
 	}
 
-	responseData := map[string]interface{}{}
-	if err = json.NewDecoder(response.Body).Decode(&responseData); err != nil {
-		logger.Error("Error while reading response from auth server: " + err.Error())
-		return true, false
-	}
-	if response.StatusCode == http.StatusOK { //success case
-		return false, false
-	}
-
-	//check for expired token error, frontend will handle refresh
-	if responseData["outcome"].(string) == "expired" {
-		return true, true
-	} else if responseData["outcome"].(string) == "unauthorized" {
-		logger.Error("Request verification failed: " + responseData["message"].(string))
-		return true, false
-	}
-
-	return true, false
+	return nil
 }
 
 // extractToken converts the value of the Authorization header from the form "Bearer <token>" to "<token>"

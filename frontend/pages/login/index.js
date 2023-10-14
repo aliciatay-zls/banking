@@ -29,11 +29,12 @@ export default function LoginPage() {
                 redirect: "follow"
             })
 
+            const data = await response.json()
+
             //convert JSON response to JS
             if (!response.ok) {
-                throw new Error("HTTP error: " + response.statusText)
+                throw new Error("HTTP error: " + data.message)
             }
-            const data = await response.json()
 
             //store tokens on client side
             if (data.access_token == null || data.refresh_token == null) {

@@ -32,9 +32,9 @@ export async function getServerSideProps(context) {
         data = await response.json()
 
         if (!response.ok) {
-            console.log("HTTP error: " + response.statusText)
+            console.log("HTTP error: " + data.message)
 
-            if (response.status === 401 && data.toString() === "Expired token") {
+            if (response.status === 401 && data.message === "expired access token") {
                 console.log("Redirecting to refresh")
                 return {
                     redirect: {

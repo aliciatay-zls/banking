@@ -18,31 +18,45 @@ export default function TempRefreshPage() {
                 method: "POST",
                 body: JSON.stringify({"access_token": cookies.access_token, "refresh_token": cookies.refresh_token}),
             };
-            fetch("http://127.0.0.1:8181/auth/refresh", newTokenRequest)
-                .then((refreshResponse) => {
-                    if (!refreshResponse.ok) {
-                        throw new Error("HTTP error: " + refreshResponse.statusText)
+
+            const tryRefresh = async () => {
+                const response = await fetch("http://127.0.0.1:8181/auth/refresh", newTokenRequest)
+                const data = await response.json()
+
+                //refresh failed
+                if (!response.ok) {
+                    console.log("HTTP error: " + data.message)
+                    if (data.message === "expired or invalid refresh token") {
+                        setTimeout(() => router.replace('/login'), 3000)
+                        throw new Error("Session expired or invalid. Please login again.")
+                    } else {
+                        setTimeout(() => router.replace('/500'), 3000)
+                        throw new Error("Internal server error.")
                     }
-                    return refreshResponse.json()
+                }
+
+                if (!("new_access_token" in data) || data.new_access_token === "") {
+                    console.log("No token in response, cannot continue")
+                    setTimeout(() => router.replace('/500'), 3000)
+                    throw new Error("Internal server error.")
+                }
+
+                //refresh succeeded, update token on client side
+                return setCookie('access_token', data.new_access_token, {
+                    path: '/',
+                    maxAge: 60 * 60,
+                    sameSite: 'strict',
                 })
-                .then((refreshData) => {
-                    //update token on client side
-                    if (refreshData.new_access_token == null) {
-                        throw new Error("No token in response, cannot continue")
-                    }
-                    return setCookie('access_token', refreshData.new_access_token, {
-                        path: '/',
-                        maxAge: 60 * 60,
-                        sameSite: 'strict',
-                    })
-                })
-                .then(() => {
-                    router.replace('/customers')
-                })
-                .catch((err) => {
-                    console.log(err)
-                    setError(err.message)
-                })
+            }
+
+            tryRefresh()
+            .then(() => { //success case
+                router.replace('/customers')
+            })
+            .catch((err) => { //non-http errors
+                setError(err.message)
+                console.log(err)
+            })
         }
 
         return () => {

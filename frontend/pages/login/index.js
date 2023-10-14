@@ -1,79 +1,82 @@
-'use client' //make this a client component so can use useRouter() hook
+'use client'; //make this a client component
 
-import Head from 'next/head'
-import Header from "../../components/header"
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { useCookies} from "react-cookie";
+import { useState } from 'react';
+
+import Header from "../../components/header";
 
 export default function LoginPage() {
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
 
-    const [error, setError] = useState('')
-    const [isLoading, setIsLoading] = useState(false)
-    const [cookies, setCookie, removeCookie] = useCookies(['access_token', 'refresh_token'])
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [cookies, setCookie, removeCookie] = useCookies(['access_token', 'refresh_token']);
 
-    const router = useRouter()
+    const router = useRouter();
 
     async function handleSubmit(event) {
-        event.preventDefault()
-        setIsLoading(true)
-        setError('')
+        event.preventDefault();
+        setIsLoading(true);
+        setError('');
+
+        const request = {
+            method: "POST",
+            body: JSON.stringify({username: username, password: password}),
+        };
 
         try {
             //login request
-            const response = await fetch("http://127.0.0.1:8181/auth/login", {
-                method: "POST",
-                body: JSON.stringify({username: username, password: password}),
-                redirect: "follow"
-            })
+            const response = await fetch("http://127.0.0.1:8181/auth/login", request);
+            const data = await response.json();
 
-            const data = await response.json()
+            const responseMessage = data.message || '';
+            const accessToken = data.access_token || '';
+            const refreshToken = data.refresh_token || '';
+            const clientRole = data.role || '';
+            const customerId = data.cid || '';
 
             //convert JSON response to JS
             if (!response.ok) {
-                throw new Error("HTTP error: " + data.message)
+                throw new Error("HTTP error: " + responseMessage);
             }
 
             //store tokens on client side
-            if (data.access_token == null || data.refresh_token == null) {
-                throw new Error("No token in response, cannot continue")
+            if (accessToken === '' || refreshToken === '') {
+                throw new Error("No token in response, cannot continue");
             }
 
             //set cookies
-            setCookie('access_token', data.access_token, {
+            setCookie('access_token', accessToken, {
                 path: '/', //want cookie to be accessible on all pages
                 maxAge: 60 * 60, //1 hour
                 sameSite: 'strict',
-            })
-            setCookie('refresh_token', data.refresh_token, {
+            });
+            setCookie('refresh_token', refreshToken, {
                 path: '/',
                 maxAge: 60 * 60,
                 sameSite: 'strict',
-            })
+            });
 
             //redirect to diff pages based on role
-            if (data.role == null) {
-                throw new Error("No role in response, cannot continue")
-            }
-
-            if (data.role === 'admin') {
-                router.replace('/customers') //client side navigation
-            } else if (data.role === 'user') {
-                if (data.cid == null || data.cid === '') { //will change later when admin can access indiv customer
-                    throw new Error("No cid in response, cannot continue")
+            if (clientRole === 'admin') {
+                return router.replace('/customers'); //client side navigation
+            } else if (clientRole === 'user') {
+                if (customerId === '') { //will change later when admin can access indiv customer
+                    throw new Error("No cid in response, cannot continue");
                 }
-                router.replace('/customers/' + data.cid)
+                return router.replace('/customers/' + customerId);
             } else {
-                throw new Error("Unknown role")
+                throw new Error("Unknown role");
             }
 
         } catch (err) {
-            setError(err.message)
-            console.log(err)
+            setError(err.message);
+            console.log(err);
         } finally {
-            setIsLoading(false)
+            setIsLoading(false);
         }
     }
 
@@ -113,7 +116,6 @@ export default function LoginPage() {
                         />
                     </div>
                     <div>
-                        {/*<button type="submit" onClick={() => router.push('/customers')}>*/}
                         <button type="submit">
                             {isLoading ? 'Loading...' : 'Submit'}
                         </button>

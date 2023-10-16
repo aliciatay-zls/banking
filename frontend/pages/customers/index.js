@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import Link from "next/link";
 import { Fragment } from "react";
 import { parse } from "cookie";
 
@@ -11,21 +12,22 @@ export async function getServerSideProps(context) {
     const cookies = parse(rawCookies);
     const accessToken = cookies.access_token || '';
     const refreshToken = cookies.refresh_token || '';
+    const clientSideDefaultErrorMessage = "Unexpected error occurred";
 
     if (accessToken === '' || refreshToken === '') {
         console.log("no cookies set");
         return {
             redirect: {
-                destination: '/login',
+                destination: `/login?errorMessage=${encodeURIComponent(clientSideDefaultErrorMessage)}`,
                 permanent: false,
             }
         };
     }
 
     //prepare for GET based on the page that was landed on
-    const pathName = context.resolvedUrl;
+    const currentPathName = context.resolvedUrl;
     let requestURL = '';
-    if (pathName === '/customers') {
+    if (currentPathName === '/customers') {
         requestURL = "http://127.0.0.1:8080/customers";
     } else if ("id" in context.query && context.query.id !== '') {
         requestURL = "http://127.0.0.1:8080/customers".concat("/", context.query.id);
@@ -34,7 +36,7 @@ export async function getServerSideProps(context) {
         console.log("Unknown page trying to call getServerSideProps");
         return {
             redirect: {
-                destination: '/login',
+                destination: `/login?errorMessage=${encodeURIComponent(clientSideDefaultErrorMessage)}`,
                 permanent: true,
             }
         };
@@ -60,7 +62,7 @@ export async function getServerSideProps(context) {
                     console.log("Redirecting to refresh");
                     return {
                         redirect: {
-                            destination: '/customers/refresh',
+                            destination: `/login/refresh?callbackURL=${encodeURIComponent(currentPathName)}`,
                             permanent: true,
                         },
                     };
@@ -78,7 +80,7 @@ export async function getServerSideProps(context) {
                 console.log("Redirecting to login");
                 return {
                     redirect: {
-                        destination: '/login',
+                        destination: `/login?errorMessage=${encodeURIComponent(responseMessage)}`,
                         permanent: false,
                     }
                 };
@@ -119,20 +121,32 @@ export default function CustomersPage(props) {
                 <Header title="All Customers"/>
 
                 <div>
-                    { props.customers &&
-                        props.customers.map((cus) =>
-                            <Fragment key={cus["customer_id"].toString()}>
-                                <p>Customer Name: {cus["full_name"]}</p>
+                    { props.customers && props.customers.map((cus) => {
+                        const customerId = cus["customer_id"].toString();
+                        const customerName = cus["full_name"];
+                        const customerDOB = cus["date_of_birth"];
+                        const customerCity = cus["city"];
+                        const customerZip = cus["zipcode"];
+                        const customerStatus = cus["status"];
+
+                        return (
+                            <Fragment key={customerId}>
+                                <p>Customer Name: {customerName}</p>
                                 <ul>
-                                    <li>ID: {cus["customer_id"]}</li>
-                                    <li>DOB: {cus["date_of_birth"]}</li>
-                                    <li>City: {cus["city"]}</li>
-                                    <li>Zip Code: {cus["zipcode"]}</li>
-                                    <li>Customer Status: {cus["status"]}</li>
+                                    <li>ID: {customerId}</li>
+                                    <li>DOB: {customerDOB}</li>
+                                    <li>City: {customerCity}</li>
+                                    <li>Zip Code: {customerZip}</li>
+                                    <li>Customer Status: {customerStatus}</li>
                                 </ul>
+                                <Link href={"/customers".concat("/", customerId)}>
+                                    <button type="button">
+                                        Act on behalf of this customer
+                                    </button>
+                                </Link>
                             </Fragment>
-                        )
-                    }
+                        );
+                    })}
                 </div>
             </div>
         </div>

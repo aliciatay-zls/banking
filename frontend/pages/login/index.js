@@ -46,12 +46,10 @@ export default function LoginPage() {
                 throw new Error("HTTP error: " + responseMessage);
             }
 
-            //store tokens on client side
+            //store tokens on client side as cookies
             if (accessToken === '' || refreshToken === '') {
                 throw new Error("No token in response, cannot continue");
             }
-
-            //set cookies
             setCookie('access_token', accessToken, {
                 path: '/', //want cookie to be accessible on all pages
                 maxAge: 60 * 60, //1 hour
@@ -67,10 +65,10 @@ export default function LoginPage() {
             if (clientRole === 'admin') {
                 return router.replace('/customers'); //client side navigation
             } else if (clientRole === 'user') {
-                if (customerId === '') { //will change later when admin can access indiv customer
+                if (customerId === '') {
                     throw new Error("No cid in response, cannot continue");
                 }
-                return router.replace('/customers/' + customerId);
+                return router.replace('/customers/'.concat('/', customerId));
             } else {
                 throw new Error("Unknown role");
             }

@@ -14,11 +14,11 @@ export default function CustomerHomePage(props) {
             </Head>
 
             <div>
-                <Header title="Personal Information"/>
+                <Header title="Customer Information"/>
 
                 <div>
                     <div>
-                        <p>Full Name: {props.customers["full_name"]}</p>
+                        <p>Name: {props.customers["full_name"]}</p>
                         <ul>
                             <li>Date of Birth: {props.customers["date_of_birth"]}</li>
                             <li>City: {props.customers["city"]}</li>

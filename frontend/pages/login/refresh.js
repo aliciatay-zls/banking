@@ -8,6 +8,8 @@ export default function TempRefreshPage() {
 
     const [error, setError] = useState('');
     const [cookies, setCookie, removeCookie] = useCookies(['access_token', 'refresh_token']);
+    const serverSideErrorDefaultMessage = "Internal server error.";
+    const clientSideErrorDefaultMessage = "Unexpected error occurred";
 
     useEffect(() => {
         let ignore = false;
@@ -30,14 +32,14 @@ export default function TempRefreshPage() {
                         throw new Error("Session expired or invalid. Please login again.");
                     } else {
                         setTimeout(() => router.replace('/500'), 3000);
-                        throw new Error("Internal server error.");
+                        throw new Error(serverSideErrorDefaultMessage);
                     }
                 }
 
                 if (!("new_access_token" in data) || data.new_access_token === "") {
                     console.log("No token in response, cannot continue");
                     setTimeout(() => router.replace('/500'), 3000);
-                    throw new Error("Internal server error.");
+                    throw new Error(serverSideErrorDefaultMessage);
                 }
 
                 //refresh succeeded, update token on client side
@@ -50,7 +52,12 @@ export default function TempRefreshPage() {
 
             tryRefresh()
             .then(() => { //success case
-                return router.replace('/customers');
+                const callbackURL = router.query.callbackURL || '';
+                if (callbackURL === '') {
+                    console.log("Refresh successful but no callback url");
+                    throw new Error(clientSideErrorDefaultMessage);
+                }
+                return router.replace(callbackURL);
             })
             .catch((err) => { //non-http errors
                 setError(err.message);

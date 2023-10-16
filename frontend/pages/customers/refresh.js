@@ -4,10 +4,9 @@ import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 
 export default function TempRefreshPage() {
-    console.log("Landed on temporary refresh page");
+    const router = useRouter();
 
     const [error, setError] = useState('');
-    const router = useRouter();
     const [cookies, setCookie, removeCookie] = useCookies(['access_token', 'refresh_token']);
 
     useEffect(() => {

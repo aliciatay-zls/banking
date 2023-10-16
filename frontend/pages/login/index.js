@@ -3,11 +3,13 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useCookies} from "react-cookie";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Header from "../../components/header";
 
 export default function LoginPage() {
+    const router = useRouter();
+
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
@@ -15,12 +17,13 @@ export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [cookies, setCookie, removeCookie] = useCookies(['access_token', 'refresh_token']);
 
-    const router = useRouter();
+    useEffect(() => {
+        setError(router.query.errorMessage);
+    }, [router.query.errorMessage]);
 
     async function handleSubmit(event) {
         event.preventDefault();
         setIsLoading(true);
-        setError('');
 
         const request = {
             method: "POST",

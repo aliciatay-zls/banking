@@ -50,6 +50,21 @@ func (mr *MockAccountServiceMockRecorder) CreateNewAccount(arg0 interface{}) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateNewAccount", reflect.TypeOf((*MockAccountService)(nil).CreateNewAccount), arg0)
 }
 
+// GetAllAccounts mocks base method.
+func (m *MockAccountService) GetAllAccounts(arg0 string) ([]dto.AccountResponse, *errs.AppError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllAccounts", arg0)
+	ret0, _ := ret[0].([]dto.AccountResponse)
+	ret1, _ := ret[1].(*errs.AppError)
+	return ret0, ret1
+}
+
+// GetAllAccounts indicates an expected call of GetAllAccounts.
+func (mr *MockAccountServiceMockRecorder) GetAllAccounts(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllAccounts", reflect.TypeOf((*MockAccountService)(nil).GetAllAccounts), arg0)
+}
+
 // MakeTransaction mocks base method.
 func (m *MockAccountService) MakeTransaction(arg0 dto.TransactionRequest) (*dto.TransactionResponse, *errs.AppError) {
 	m.ctrl.T.Helper()

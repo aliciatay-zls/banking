@@ -7,6 +7,7 @@ package domain
 import (
 	reflect "reflect"
 
+	errs "github.com/udemy-go-1/banking-lib/errs"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -34,10 +35,10 @@ func (m *MockAuthRepository) EXPECT() *MockAuthRepositoryMockRecorder {
 }
 
 // IsAuthorized mocks base method.
-func (m *MockAuthRepository) IsAuthorized(arg0, arg1 string, arg2 map[string]string) bool {
+func (m *MockAuthRepository) IsAuthorized(arg0, arg1 string, arg2 map[string]string) *errs.AppError {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "IsAuthorized", arg0, arg1, arg2)
-	ret0, _ := ret[0].(bool)
+	ret0, _ := ret[0].(*errs.AppError)
 	return ret0
 }
 

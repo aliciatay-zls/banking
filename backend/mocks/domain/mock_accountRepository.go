@@ -35,6 +35,21 @@ func (m *MockAccountRepository) EXPECT() *MockAccountRepositoryMockRecorder {
 	return m.recorder
 }
 
+// FindAll mocks base method.
+func (m *MockAccountRepository) FindAll(arg0 string) ([]domain.Account, *errs.AppError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindAll", arg0)
+	ret0, _ := ret[0].([]domain.Account)
+	ret1, _ := ret[1].(*errs.AppError)
+	return ret0, ret1
+}
+
+// FindAll indicates an expected call of FindAll.
+func (mr *MockAccountRepositoryMockRecorder) FindAll(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAll", reflect.TypeOf((*MockAccountRepository)(nil).FindAll), arg0)
+}
+
 // FindById mocks base method.
 func (m *MockAccountRepository) FindById(arg0 string) (*domain.Account, *errs.AppError) {
 	m.ctrl.T.Helper()

@@ -12,7 +12,7 @@ func getDefaultCustomers() []Customer {
 	}
 }
 
-func TestCustomerRepositoryStub_FindAll_CorrectCustomersSet(t *testing.T) {
+func TestCustomerRepositoryStub_FindAll_returns_allCustomers(t *testing.T) {
 	//Arrange
 	customerRepositoryStub := NewCustomerRepositoryStub()
 	status := ""
@@ -36,7 +36,7 @@ func TestCustomerRepositoryStub_FindAll_CorrectCustomersSet(t *testing.T) {
 	}
 }
 
-func TestCustomerRepositoryStub_FindById_CorrectCustomerWhenIdExists(t *testing.T) {
+func TestCustomerRepositoryStub_FindById_returns_customer_when_id_exists(t *testing.T) {
 	//Arrange
 	customerRepositoryStub := NewCustomerRepositoryStub()
 	expectedCustomer := &getDefaultCustomers()[0]
@@ -53,7 +53,7 @@ func TestCustomerRepositoryStub_FindById_CorrectCustomerWhenIdExists(t *testing.
 	}
 }
 
-func TestCustomerRepositoryStub_FindById_ErrorWhenNonExistentCustomer(t *testing.T) {
+func TestCustomerRepositoryStub_FindById_returns_error_when_nonExistentCustomer(t *testing.T) {
 	//Arrange
 	customerRepositoryStub := NewCustomerRepositoryStub()
 	nonExistentCustomerId := "321"

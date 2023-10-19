@@ -19,7 +19,7 @@ func NewCustomerRepositoryDb(dbClient *sqlx.DB) CustomerRepositoryDb { //helper 
 	return CustomerRepositoryDb{dbClient}
 }
 
-// FindAll queries the database and reads results into return object.
+// FindAll retrieves from database all customers with the given status.
 func (d CustomerRepositoryDb) FindAll(status string) ([]Customer, *errs.AppError) { //DB implements repo
 	var err error
 	customers := make([]Customer, 0)

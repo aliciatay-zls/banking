@@ -28,6 +28,7 @@ const dummyBalance float64 = 12000
 const dummyBalanceAfterWithdrawal float64 = 0
 
 const insertAccountsSql = "INSERT INTO accounts (customer_id, opening_date, account_type, amount, status) VALUES (?, ?, ?, ?, ?)"
+const selectAccountsOfCustomerSql = "SELECT * FROM accounts WHERE customer_id = ?"
 const selectAccountsSql = "SELECT * FROM accounts WHERE account_id = ?"
 const updateAccountsDepositSql = "UPDATE accounts SET amount = amount + ? WHERE account_id = ?"
 const updateAccountsWithdrawalSql = "UPDATE accounts SET amount = amount - ? WHERE account_id = ?"
@@ -169,6 +170,93 @@ func TestAccountRepositoryDb_Save_returns_newAccount_when_insertAccounts_and_get
 	}
 	if *actualNewAccount != expectedNewAccount {
 		t.Errorf("Expected account %v but got account %v", expectedNewAccount, *actualNewAccount)
+	}
+}
+
+func TestAccountRepositoryDb_FindAll_returns_error_when_select_fails(t *testing.T) {
+	//Arrange
+	teardown := setupAccountRepoDbTest(t)
+	defer teardown()
+
+	tests := []struct {
+		name               string
+		dummyDbErr         error
+		dummyCustomerId    string
+		expectedErrMessage string
+	}{
+		{"due to nonexistent customer", sql.ErrNoRows, dummyCustomerId, "No accounts found for this customer or customer does not exist"},
+		{"due to customer not having accounts", sql.ErrNoRows, "321", "No accounts found for this customer or customer does not exist"},
+		{"due to other db error", errors.New("some error message"), dummyCustomerId, defaultExpectedErrMessage},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			mockDB.ExpectQuery(selectAccountsOfCustomerSql).
+				WithArgs(tc.dummyCustomerId).
+				WillReturnError(tc.dummyDbErr)
+
+			logs := logger.ReplaceWithTestLogger()
+			expectedLogMessage := "Error while retrieving all accounts belonging to this customer: " + tc.dummyDbErr.Error()
+
+			//Act
+			_, actualErr := accRepoDb.FindAll(tc.dummyCustomerId)
+
+			//Assert
+			if actualErr == nil {
+				t.Fatal("Expected error but got none while testing failed select")
+			}
+			if actualErr.Message != tc.expectedErrMessage {
+				t.Errorf("Expected error message to be \"%s\" but got \"%s\"",
+					tc.expectedErrMessage, actualErr.Message)
+			}
+			if logs.Len() != 1 {
+				t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
+			}
+			actualLogMessage := logs.All()[0]
+			if actualLogMessage.Message != expectedLogMessage {
+				t.Errorf("Expected log message to be \"%s\" but got \"%s\"",
+					expectedLogMessage, actualLogMessage.Message)
+			}
+		})
+	}
+}
+
+func TestAccountRepositoryDb_FindAll_returns_accounts_when_select_succeeds(t *testing.T) {
+	//Arrange
+	teardown := setupAccountRepoDbTest(t)
+	defer teardown()
+
+	dummyAccount1 := getDefaultAccountAfterSave()
+	dummyAccount2 := Account{
+		AccountId:   "1980",
+		CustomerId:  dummyCustomerId,
+		OpeningDate: dummyDate,
+		AccountType: dto.AccountTypeChecking,
+		Amount:      7000,
+		Status:      "0",
+	}
+	dummyRows := sqlmock.NewRows(accountsTableColumns).
+		AddRow(dummyAccount1.AccountId, dummyAccount1.CustomerId, dummyAccount1.OpeningDate, dummyAccount1.AccountType, dummyAccount1.Amount, dummyAccount1.Status).
+		AddRow(dummyAccount2.AccountId, dummyAccount2.CustomerId, dummyAccount2.OpeningDate, dummyAccount2.AccountType, dummyAccount2.Amount, dummyAccount2.Status)
+	mockDB.ExpectQuery(selectAccountsOfCustomerSql).
+		WithArgs(dummyCustomerId).
+		WillReturnRows(dummyRows)
+	expectedAccounts := []Account{dummyAccount1, dummyAccount2}
+
+	//Act
+	actualAccounts, err := accRepoDb.FindAll(dummyCustomerId)
+
+	//Assert
+	if err != nil {
+		t.Fatal("Expected no error but got error while testing successful select: " + err.Message)
+	}
+	if len(actualAccounts) != len(expectedAccounts) {
+		t.Fatalf("Expected %d accounts to be retrieved but got %d accounts", len(expectedAccounts), len(actualAccounts))
+	}
+	for k, _ := range expectedAccounts {
+		if actualAccounts[k] != expectedAccounts[k] {
+			t.Errorf("Expected account %v but got %v", expectedAccounts[k], actualAccounts[k])
+		}
 	}
 }
 

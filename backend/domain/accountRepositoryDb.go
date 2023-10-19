@@ -40,11 +40,27 @@ func (d AccountRepositoryDb) Save(account Account) (*Account, *errs.AppError) { 
 	return &account, nil
 }
 
+// FindAll retrieves all accounts belonging to the customer with the given id.
+func (d AccountRepositoryDb) FindAll(customerId string) ([]Account, *errs.AppError) {
+	accounts := make([]Account, 0)
+	selectSql := "SELECT * FROM accounts WHERE customer_id = ?"
+	err := d.client.Select(&accounts, selectSql, customerId)
+	if err != nil {
+		logger.Error("Error while retrieving all accounts belonging to this customer: " + err.Error())
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errs.NewNotFoundError("No accounts found for this customer or customer does not exist")
+		}
+		return nil, errs.NewUnexpectedError("Unexpected database error")
+	}
+
+	return accounts, nil
+}
+
 // FindById retrieves the account with the given id.
-func (d AccountRepositoryDb) FindById(id string) (*Account, *errs.AppError) {
+func (d AccountRepositoryDb) FindById(accountId string) (*Account, *errs.AppError) {
 	var account Account
 	findAccountSql := "SELECT * FROM accounts WHERE account_id = ?"
-	err := d.client.Get(&account, findAccountSql, id)
+	err := d.client.Get(&account, findAccountSql, accountId)
 	if err != nil {
 		logger.Error("Error while retrieving account: " + err.Error())
 		if errors.Is(err, sql.ErrNoRows) {

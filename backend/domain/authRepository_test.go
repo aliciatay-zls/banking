@@ -90,19 +90,23 @@ func startDummyAuthServer(dummyVerifyAPIHandler func(http.ResponseWriter, *http.
 }
 
 // e.g. auth server is not started
-func TestDefaultAuthRepository_IsAuthorized_returns_false_when_error_sending_request(t *testing.T) {
+func TestDefaultAuthRepository_IsAuthorized_returns_error_when_error_sending_request(t *testing.T) {
 	//Arrange
 	setupAuthRepositoryTest(t)
+	expectedErrMessage := "Internal server error"
 
 	logs := logger.ReplaceWithTestLogger()
 	expectedLogMessagePrefix := "Error while sending request to verification URL: "
 
 	//Act
-	isAuthorizationSuccess := authRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
+	actualErr := authRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
 
 	//Assert
-	if isAuthorizationSuccess != false {
-		t.Error("Expected authorization to be false but got true")
+	if actualErr == nil {
+		t.Error("Expected error but got none")
+	}
+	if actualErr.Message != expectedErrMessage {
+		t.Errorf("Expected error message to be \"%s\" but got \"%s\"", expectedErrMessage, actualErr.Message)
 	}
 	if logs.Len() != 1 { //does not run app.go so no info level logs will be generated (at this point in the actual code, only 1 log is recorded)
 		t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
@@ -113,23 +117,39 @@ func TestDefaultAuthRepository_IsAuthorized_returns_false_when_error_sending_req
 	}
 }
 
-func TestDefaultAuthRepository_IsAuthorized_returns_true_when_authServer_respondsWith_authorized(t *testing.T) {
+// auth server handler sends response of a type that the app cannot handle (unexpected response object type)
+func TestDefaultAuthRepository_IsAuthorized_returns_error_when_error_decoding_authServerResponse(t *testing.T) {
 	//Arrange
 	setupAuthRepositoryTest(t)
-	dummyStatusCode := http.StatusOK
-	dummyResponse := map[string]interface{}{
-		"is_authorized": true,
+	dummyStatusCode := http.StatusForbidden
+	dummyUnexpectedResponse := map[int]int{
+		0: 123,
 	}
+	expectedErrMessage := "Internal server error"
 
-	dummyVerifyAPIHandler := getDummyVerifyAPIHandler(t, dummyStatusCode, dummyResponse)
+	logs := logger.ReplaceWithTestLogger()
+	expectedLogMessagePrefix := "Error while reading response from auth server: "
+
+	dummyVerifyAPIHandler := getDummyVerifyAPIHandler(t, dummyStatusCode, dummyUnexpectedResponse)
 	startDummyAuthServer(dummyVerifyAPIHandler)
 
 	//Act
-	isAuthorizationSuccess := authRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
+	actualErr := authRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
 
 	//Assert
-	if isAuthorizationSuccess != dummyResponse["is_authorized"] {
-		t.Errorf("Expected authorization to be %v but got %v", dummyResponse["is_authorized"], isAuthorizationSuccess)
+	if actualErr == nil {
+		t.Error("Expected error but got none")
+	}
+	if actualErr.Message != expectedErrMessage {
+		t.Errorf("Expected error message to be \"%s\" but got \"%s\"", expectedErrMessage, actualErr.Message)
+	}
+	if logs.Len() != 1 {
+		t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
+	}
+	actualLogMessage := logs.All()[0].Message
+	if !strings.Contains(actualLogMessage, expectedLogMessagePrefix) {
+		t.Errorf("Expected log message to contain \"%s\" but got log message: \"%s\"",
+			expectedLogMessagePrefix, actualLogMessage)
 	}
 
 	//Cleanup
@@ -137,27 +157,30 @@ func TestDefaultAuthRepository_IsAuthorized_returns_true_when_authServer_respond
 	<-channelWaitForShutDown
 }
 
-func TestDefaultAuthRepository_IsAuthorized_returns_false_when_authServer_respondsWith_unauthorized(t *testing.T) {
+func TestDefaultAuthRepository_IsAuthorized_returns_error_when_authServer_respondsWith_errorStatusCode(t *testing.T) {
 	//Arrange
 	setupAuthRepositoryTest(t)
-	dummyStatusCode := http.StatusUnauthorized
-	dummyResponse := map[string]interface{}{
-		"is_authorized": false,
-		"message":       "this is bad",
+	dummyStatusCode := http.StatusForbidden
+	dummyResponse := map[string]string{
+		"message": "some error message",
 	}
+	expectedErrMessage := "some error message"
 
 	logs := logger.ReplaceWithTestLogger()
-	expectedLogMessage := "Request verification failed: " + dummyResponse["message"].(string)
+	expectedLogMessage := "Verification failed: some error message"
 
 	dummyVerifyAPIHandler := getDummyVerifyAPIHandler(t, dummyStatusCode, dummyResponse)
 	startDummyAuthServer(dummyVerifyAPIHandler)
 
 	//Act
-	isAuthorizationSuccess := authRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
+	actualErr := authRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
 
 	//Assert
-	if isAuthorizationSuccess != dummyResponse["is_authorized"] {
-		t.Errorf("Expected authorization to be %v but got %v", dummyResponse["is_authorized"], isAuthorizationSuccess)
+	if actualErr == nil {
+		t.Error("Expected error but got none")
+	}
+	if actualErr.Message != expectedErrMessage {
+		t.Errorf("Expected error message to be \"%s\" but got \"%s\"", expectedErrMessage, actualErr.Message)
 	}
 	if logs.Len() != 1 {
 		t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
@@ -172,87 +195,28 @@ func TestDefaultAuthRepository_IsAuthorized_returns_false_when_authServer_respon
 	<-channelWaitForShutDown
 }
 
-// auth server handler sends response of a type that the app cannot handle (unexpected response object type)
-func TestDefaultAuthRepository_IsAuthorized_returns_false_when_error_decoding_authServerResponse(t *testing.T) {
+func TestDefaultAuthRepository_IsAuthorized_returns_nil_when_authServer_respondsWith_200(t *testing.T) {
 	//Arrange
 	setupAuthRepositoryTest(t)
 	dummyStatusCode := http.StatusOK
-	unexpectedResponse := "some string"
+	dummyResponse := map[string]string{
+		"message": "",
+	}
 
-	logs := logger.ReplaceWithTestLogger()
-	expectedLogMessagePrefix := "Error while reading response from auth server: "
-
-	dummyVerifyAPIHandler := getDummyVerifyAPIHandler(t, dummyStatusCode, unexpectedResponse)
+	dummyVerifyAPIHandler := getDummyVerifyAPIHandler(t, dummyStatusCode, dummyResponse)
 	startDummyAuthServer(dummyVerifyAPIHandler)
 
 	//Act
-	isAuthorizationSuccess := authRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
+	actualErr := authRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
 
 	//Assert
-	if isAuthorizationSuccess != false {
-		t.Error("Expected authorization to be false but got true")
-	}
-	if logs.Len() != 1 {
-		t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
-	}
-	actualLogMessage := logs.All()[0].Message
-	if !strings.Contains(actualLogMessage, expectedLogMessagePrefix) {
-		t.Errorf("Expected log message to contain \"%s\" but got log message: \"%s\"", expectedLogMessagePrefix, actualLogMessage)
+	if actualErr != nil {
+		t.Error("Expected no error but got error while testing successful case" + actualErr.Message)
 	}
 
 	//Cleanup
 	channelDoShutDown <- 1
 	<-channelWaitForShutDown
-}
-
-// auth server handler sends response of a type that the app cannot handle (unexpected response object type)
-func TestDefaultAuthRepository_IsAuthorized_returns_false_when_getting_authServerResponse_value(t *testing.T) {
-	//Arrange
-	tests := []struct {
-		name                    string
-		dummyUnexpectedResponse map[string]interface{}
-	}{
-		{
-			"wrong value type",
-			map[string]interface{}{"is_authorized": "some string"},
-		},
-		{
-			"wrong key",
-			map[string]interface{}{"dummy_key": true},
-		},
-	}
-
-	setupAuthRepositoryTest(t)
-	dummyStatusCode := http.StatusOK
-	expectedLogMessage := "Error while getting value of the `is_authorized` key: value is not of type bool"
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			logs := logger.ReplaceWithTestLogger()
-
-			dummyVerifyAPIHandler := getDummyVerifyAPIHandler(t, dummyStatusCode, tc.dummyUnexpectedResponse)
-			startDummyAuthServer(dummyVerifyAPIHandler)
-
-			//Act
-			isAuthorizationSuccess := authRepo.IsAuthorized(dummyToken, dummyRouteName, dummyRouteVars)
-
-			//Assert
-			if isAuthorizationSuccess != false {
-				t.Error("Expected authorization to be false but got true")
-			}
-			if logs.Len() != 1 {
-				t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
-			}
-			actualLogMessage := logs.All()[0].Message
-			if actualLogMessage != expectedLogMessage {
-				t.Errorf("Expected log message to be \"%s\" but got \"%s\"", expectedLogMessage, actualLogMessage)
-			}
-
-			//Cleanup
-			channelDoShutDown <- 1
-			<-channelWaitForShutDown
-		})
-	}
 }
 
 func Test_extractToken_returns_strippedToken_when_thereIs_bearerPrefix(t *testing.T) {

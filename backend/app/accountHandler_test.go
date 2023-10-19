@@ -24,8 +24,8 @@ var dummyAmount float64 = 6000
 var dummyAccountType = dto.AccountTypeSaving
 var dummyTransactionType = dto.TransactionTypeDeposit
 
-const newAccountPath = "/customers/{customer_id:[0-9]+}/account"
-const dummyNewAccountPath = "/customers/2/account"
+const newAccountPath = "/customers/{customer_id:[0-9]+}/account/new"
+const dummyNewAccountPath = "/customers/2/account/new"
 const dummyNewAccountRequestPayload = `{"account_type": "saving", "amount": 6000}`
 const dummyAccountId = "1977"
 

@@ -9,6 +9,7 @@ import (
 
 //go:generate mockgen -destination=../mocks/service/mock_accountService.go -package=service github.com/udemy-go-1/banking/backend/service AccountService
 type AccountService interface { //service (primary port)
+	GetAllAccounts(string) ([]dto.AccountResponse, *errs.AppError)
 	CreateNewAccount(dto.NewAccountRequest) (*dto.NewAccountResponse, *errs.AppError)
 	MakeTransaction(dto.TransactionRequest) (*dto.TransactionResponse, *errs.AppError)
 }
@@ -19,6 +20,19 @@ type DefaultAccountService struct { //business/domain object
 
 func NewAccountService(repo domain.AccountRepository) DefaultAccountService {
 	return DefaultAccountService{repo}
+}
+
+func (s DefaultAccountService) GetAllAccounts(customerId string) ([]dto.AccountResponse, *errs.AppError) {
+	accounts, err := s.repo.FindAll(customerId)
+	if err != nil {
+		return nil, err
+	}
+
+	response := make([]dto.AccountResponse, 0)
+	for _, a := range accounts {
+		response = append(response, *a.ToDTO())
+	}
+	return response, nil
 }
 
 func (s DefaultAccountService) CreateNewAccount(request dto.NewAccountRequest) (*dto.NewAccountResponse, *errs.AppError) { //Business Domain implements service

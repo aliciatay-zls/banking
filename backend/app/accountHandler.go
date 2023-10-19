@@ -13,6 +13,18 @@ type AccountHandler struct {
 	service service.AccountService //REST handler has dependency on service (service is a field)
 }
 
+func (h AccountHandler) accountsHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	response, appErr := h.service.GetAllAccounts(vars["customer_id"])
+	if appErr != nil {
+		writeJsonResponse(w, appErr.Code, appErr.Message)
+		return
+	}
+
+	writeJsonResponse(w, http.StatusOK, response)
+}
+
 func (h AccountHandler) newAccountHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	newAccountRequest := dto.NewAccountRequest{
@@ -31,9 +43,9 @@ func (h AccountHandler) newAccountHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	response, err := h.service.CreateNewAccount(newAccountRequest)
-	if err != nil {
-		writeJsonResponse(w, err.Code, err.AsMessage())
+	response, appErr := h.service.CreateNewAccount(newAccountRequest)
+	if appErr != nil {
+		writeJsonResponse(w, appErr.Code, appErr.AsMessage())
 		return
 	}
 
@@ -59,9 +71,9 @@ func (h AccountHandler) transactionHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	response, err := h.service.MakeTransaction(transactionRequest)
-	if err != nil {
-		writeJsonResponse(w, err.Code, err.AsMessage())
+	response, appErr := h.service.MakeTransaction(transactionRequest)
+	if appErr != nil {
+		writeJsonResponse(w, appErr.Code, appErr.AsMessage())
 		return
 	}
 

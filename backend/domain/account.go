@@ -27,6 +27,10 @@ func NewAccount(customerId string, accountType string, amount float64) Account {
 	}
 }
 
+func (a Account) ToDTO() *dto.AccountResponse {
+	return &dto.AccountResponse{AccountId: a.AccountId, AccountType: a.AccountType, Amount: a.Amount}
+}
+
 func (a Account) ToNewAccountResponseDTO() *dto.NewAccountResponse {
 	return &dto.NewAccountResponse{AccountId: a.AccountId}
 }
@@ -40,6 +44,7 @@ func (a Account) CanWithdraw(withdrawalAmount float64) bool {
 //go:generate mockgen -destination=../mocks/domain/mock_accountRepository.go -package=domain github.com/udemy-go-1/banking/backend/domain AccountRepository
 type AccountRepository interface { //repo (secondary port)
 	Save(Account) (*Account, *errs.AppError)
+	FindAll(string) ([]Account, *errs.AppError)
 	FindById(string) (*Account, *errs.AppError)
 	Transact(Transaction) (*Transaction, *errs.AppError)
 }

@@ -7,12 +7,7 @@ import getServerSideProps from "../api/serverSideProps";
 export { getServerSideProps };
 
 export default function CustomerHomePage(props) {
-    console.log("LANDED ON [ID] PAGE");
-    const accountId = "95470";
-    const buttonLink = props.currentPath.concat("/account", "/", accountId);
-    console.log(props.currentPath);
-    console.log(props.currentPath.concat("/account", "/", accountId));
-
+    const buttonLink = props.currentPath.concat("/", "account");
 
     return (
         <div>
@@ -35,17 +30,11 @@ export default function CustomerHomePage(props) {
                 </div>
 
                 <div>
-                    <Header title="My Accounts"/>
-                    <div>
-                        <select name="account-number" id="account-number">
-                            <option value="95470"></option>
-                        </select>
-                        <Link href={buttonLink}>
-                            <button type="button">
-                                Make a Transaction
-                            </button>
-                        </Link>
-                    </div>
+                    <Link href={buttonLink}>
+                        <button type="button">
+                            View my accounts
+                        </button>
+                    </Link>
                 </div>
             </div>
         </div>

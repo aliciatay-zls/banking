@@ -68,7 +68,7 @@ export default function LoginPage() {
                 if (customerId === '') {
                     throw new Error("No cid in response, cannot continue");
                 }
-                return router.replace('/customers/'.concat('/', customerId));
+                return router.replace('/customers'.concat('/', customerId));
             } else {
                 throw new Error("Unknown role");
             }

@@ -18,7 +18,7 @@ func (h AccountHandler) accountsHandler(w http.ResponseWriter, r *http.Request) 
 
 	response, appErr := h.service.GetAllAccounts(vars["customer_id"])
 	if appErr != nil {
-		writeJsonResponse(w, appErr.Code, appErr.Message)
+		writeJsonResponse(w, appErr.Code, appErr.AsMessage())
 		return
 	}
 

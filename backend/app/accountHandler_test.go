@@ -24,6 +24,9 @@ var dummyAmount float64 = 6000
 var dummyAccountType = dto.AccountTypeSaving
 var dummyTransactionType = dto.TransactionTypeDeposit
 
+const getAccountsPath = "/customers/{customer_id:[0-9]+}/account"
+const dummyGetAccountsPath = "/customers/2/account"
+
 const newAccountPath = "/customers/{customer_id:[0-9]+}/account/new"
 const dummyNewAccountPath = "/customers/2/account/new"
 const dummyNewAccountRequestPayload = `{"account_type": "saving", "amount": 6000}`
@@ -71,6 +74,59 @@ func getDefaultDummyNewTransactionRequestObject() dto.TransactionRequest {
 		Amount:          &dummyAmount,
 		TransactionType: &dummyTransactionType,
 		CustomerId:      dummyCustomerId,
+	}
+}
+
+func TestAccountHandler_accountsHandler_respondsWith_errorStatusCode_when_service_fails(t *testing.T) {
+	//Arrange
+	teardown := setupAccountHandlerTest(t, dummyGetAccountsPath, "")
+	defer teardown()
+	request = httptest.NewRequest(http.MethodGet, dummyGetAccountsPath, nil) //override
+	router.HandleFunc(getAccountsPath, ah.accountsHandler).Methods(http.MethodGet)
+
+	dummyAppErr := errs.NewUnexpectedError("some error message")
+	mockAccountService.EXPECT().GetAllAccounts(dummyCustomerId).Return(nil, dummyAppErr)
+
+	//Act
+	router.ServeHTTP(recorder, request)
+
+	//Assert
+	if recorder.Result().StatusCode != dummyAppErr.Code {
+		t.Errorf("Expected status code %d but got %d", dummyAppErr.Code, recorder.Result().StatusCode)
+	}
+	actualResponse, _ := io.ReadAll(recorder.Result().Body)
+	if !strings.Contains(string(actualResponse), dummyAppErr.Message) {
+		t.Errorf("Expected response to contain %s but got: %s", dummyAppErr.Message, actualResponse)
+	}
+}
+
+func TestAccountHandler_accountsHandler_respondsWith_accountsAndStatusCode200_when_service_succeeds(t *testing.T) {
+	//Arrange
+	teardown := setupAccountHandlerTest(t, dummyGetAccountsPath, "")
+	defer teardown()
+	request = httptest.NewRequest(http.MethodGet, dummyGetAccountsPath, nil) //override
+	router.HandleFunc(getAccountsPath, ah.accountsHandler).Methods(http.MethodGet)
+
+	dummyAccounts := []dto.AccountResponse{
+		{dummyAccountId, dummyAccountType, dummyAmount},
+		{"1980", dto.AccountTypeChecking, 7000},
+	}
+	mockAccountService.EXPECT().GetAllAccounts(dummyCustomerId).Return(dummyAccounts, nil)
+
+	expectedStatusCode := http.StatusOK
+
+	//Act
+	router.ServeHTTP(recorder, request)
+
+	//Assert
+	if recorder.Result().StatusCode != expectedStatusCode {
+		t.Errorf("Expected status code %d but got %d", expectedStatusCode, recorder.Result().StatusCode)
+	}
+	actualResponse, _ := io.ReadAll(recorder.Result().Body)
+	for k, _ := range dummyAccounts {
+		if !strings.Contains(string(actualResponse), dummyAccounts[k].AccountId) {
+			t.Errorf("Expected response to contain account with id %s but did not", dummyAccounts[k].AccountId)
+		}
 	}
 }
 

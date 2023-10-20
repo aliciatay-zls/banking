@@ -36,6 +36,7 @@ export default function TransactionPage(props) {
 
     async function handleMakeTransaction(event) {
         event.preventDefault();
+        setError('');
 
         if (selectedType === 'none') {
             setError("No transaction type was selected.");
@@ -99,7 +100,7 @@ export default function TransactionPage(props) {
                 </form>
             </div>
 
-            { result && !error && <div>
+            { result !== '' && !error && <div>
                 <p>Transaction success.</p>
                 <ul>
                     <li>Transaction ID: {result.transaction_id}</li>

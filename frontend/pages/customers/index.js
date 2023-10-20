@@ -2,10 +2,24 @@ import Head from 'next/head';
 import Link from "next/link";
 import { Fragment } from "react";
 
-import getServerSideProps from "./api/serverSideProps";
+import handler from "./api/handler";
+import serverSideProps from "./api/serverSideProps";
 import Header from "../../components/header";
 
-export { getServerSideProps };
+export async function getServerSideProps(context) {
+    try {
+        const initProps = await serverSideProps(context);
+
+        const request = {
+            method: "GET",
+            headers: { "Authorization": "Bearer " + initProps.props.accessToken },
+        };
+
+        return await handler(initProps.props.currentPathName, initProps.props.requestURL, request);
+    } catch(err) {
+        console.log(err);
+    }
+}
 
 export default function CustomersPage(props) {
     return (
@@ -19,7 +33,7 @@ export default function CustomersPage(props) {
                 <Header title="All Customers"/>
 
                 <div>
-                    { props.customers && props.customers.map((cus) => {
+                    { props.responseData && props.responseData.map((cus) => {
                         const customerId = cus["customer_id"].toString();
                         const customerName = cus["full_name"];
                         const customerDOB = cus["date_of_birth"];

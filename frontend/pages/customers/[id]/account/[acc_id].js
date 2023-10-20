@@ -1,31 +1,22 @@
 import Head from "next/head";
 import { useState } from "react";
-import { parse } from "cookie";
 
+import handler from "../../api/handler";
+import serverSideProps from "../../api/serverSideProps";
 import Header from "../../../../components/header";
 
-export function getServerSideProps(context) {
-    //get cookies
-    const { req } = context;
-    const rawCookies = req.headers.cookie || '';
-    const cookies = parse(rawCookies);
-    const accessToken = cookies.access_token || '';
-    const refreshToken = cookies.refresh_token || '';
-    const clientSideDefaultErrorMessage = "Unexpected error occurred";
+export async function getServerSideProps(context) {
+    try {
+        const initProps = await serverSideProps(context);
 
-    if (accessToken === '' || refreshToken === '') {
-        console.log("no cookies set");
         return {
-            redirect: {
-                destination: `/login?errorMessage=${encodeURIComponent(clientSideDefaultErrorMessage)}`,
-                permanent: false,
-            }
-        }
+            props: {
+                initProps: initProps.props,
+            },
+        };
+    } catch(err) {
+        console.log(err);
     }
-
-    return {
-        props: {currentPath: context.resolvedUrl, accessToken: accessToken},
-    };
 }
 
 export default function TransactionPage(props) {
@@ -43,26 +34,15 @@ export default function TransactionPage(props) {
             return;
         }
 
-        const requestURL = "http://127.0.0.1:8080".concat(props.currentPath);
         const request = {
             method: "POST",
-            headers: { "Authorization": "Bearer " + props.accessToken },
+            headers: { "Authorization": "Bearer " + props.initProps.accessToken },
             body: JSON.stringify({amount: selectedAmount, transaction_type: selectedType}),
         };
 
-        let data = '';
-        try {
-            const response = await fetch(requestURL, request);
-            data = await response.json();
-            if (!response.ok) {
-                throw new Error("HTTP error: " + data.message);
-            }
+        const finalProps = await handler(props.initProps.currentPathName, props.initProps.requestURL, request);
 
-            setResult(data);
-        } catch (err) {
-            console.log(err);
-            setError(err.message);
-        }
+        setResult(finalProps.props.responseData);
     }
 
     return (

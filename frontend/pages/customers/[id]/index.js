@@ -1,13 +1,27 @@
 import Head from 'next/head';
 import Link from 'next/link';
 
+import handler from "../api/handler";
+import serverSideProps from "../api/serverSideProps";
 import Header from "../../../components/header";
-import getServerSideProps from "../api/serverSideProps";
 
-export { getServerSideProps };
+export async function getServerSideProps(context) {
+    try {
+        const initProps = await serverSideProps(context);
+
+        const request = {
+            method: "GET",
+            headers: { "Authorization": "Bearer " + initProps.props.accessToken },
+        };
+
+        return await handler(initProps.props.currentPathName, initProps.props.requestURL, request);
+    } catch(err) {
+        console.log(err);
+    }
+}
 
 export default function CustomerHomePage(props) {
-    const buttonLink = props.currentPath.concat("/", "account");
+    const buttonLink = props.currentPathName.concat("/", "account");
 
     return (
         <div>
@@ -20,11 +34,11 @@ export default function CustomerHomePage(props) {
                 <div>
                     <Header title="My Profile"/>
                     <div>
-                        <p>Name: {props.customers["full_name"]}</p>
+                        <p>Name: {props.responseData["full_name"]}</p>
                         <ul>
-                            <li>Date of Birth: {props.customers["date_of_birth"]}</li>
-                            <li>City: {props.customers["city"]}</li>
-                            <li>Zip Code: {props.customers["zipcode"]}</li>
+                            <li>Date of Birth: {props.responseData["date_of_birth"]}</li>
+                            <li>City: {props.responseData["city"]}</li>
+                            <li>Zip Code: {props.responseData["zipcode"]}</li>
                         </ul>
                     </div>
                 </div>

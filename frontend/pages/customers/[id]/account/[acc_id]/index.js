@@ -1,9 +1,10 @@
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
-import handler from "../../api/handler";
-import serverSideProps from "../../api/serverSideProps";
-import Header from "../../../../components/header";
+import handler from "../../../api/handler";
+import serverSideProps from "../../../api/serverSideProps";
+import Header from "../../../../../components/header";
 
 export async function getServerSideProps(context) {
     try {
@@ -20,10 +21,14 @@ export async function getServerSideProps(context) {
 }
 
 export default function TransactionPage(props) {
+    const router = useRouter();
     const [selectedAmount, setSelectedAmount] = useState(0);
     const [selectedType, setSelectedType] = useState('none');
-    const [result, setResult] = useState('');
     const [error, setError] = useState('');
+
+    const accessToken = props.initProps.accessToken;
+    const currentPath = props.initProps.currentPathName;
+    const requestURL = props.initProps.requestURL;
 
     async function handleMakeTransaction(event) {
         event.preventDefault();
@@ -36,13 +41,21 @@ export default function TransactionPage(props) {
 
         const request = {
             method: "POST",
-            headers: { "Authorization": "Bearer " + props.initProps.accessToken },
+            headers: { "Authorization": "Bearer " + accessToken },
             body: JSON.stringify({amount: selectedAmount, transaction_type: selectedType}),
         };
 
-        const finalProps = await handler(props.initProps.currentPathName, props.initProps.requestURL, request);
+        const finalProps = await handler(currentPath, requestURL, request);
+        const result = finalProps.props.responseData || '';
 
-        setResult(finalProps.props.responseData);
+        if (result !== '') {
+            const successURL = currentPath.concat("/success", "?",
+                `transactionType=${encodeURIComponent(selectedType)}`, "&",
+                `transactionID=${encodeURIComponent(result.transaction_id)}`, "&",
+                `newBalance=${encodeURIComponent(result.new_balance)}`);
+
+            return router.replace(successURL);
+        }
     }
 
     return (
@@ -80,18 +93,12 @@ export default function TransactionPage(props) {
                 </form>
             </div>
 
-            { result !== '' && !error && <div>
-                <p>Transaction success.</p>
-                <ul>
-                    <li>Transaction ID: {result.transaction_id}</li>
-                    <li>New balance: {result.new_balance}</li>
-                </ul>
-            </div>}
-
-            { error && <div style={{ color: 'red'}}>
-                <p>Transaction failed.</p>
-                <p>{error}</p>
-            </div> }
+            { error &&
+                <div style={{ color: 'red'}}>
+                    <p>Transaction failed.</p>
+                    <p>{error}</p>
+                </div>
+            }
         </div>
     );
 }

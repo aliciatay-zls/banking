@@ -45,9 +45,7 @@ export default function CustomerHomePage(props) {
 
                 <div>
                     <Link href={buttonLink}>
-                        <button type="button">
-                            View my accounts
-                        </button>
+                        <button type="button">View my accounts</button>
                     </Link>
                 </div>
             </div>

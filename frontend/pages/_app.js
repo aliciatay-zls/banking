@@ -5,5 +5,5 @@ export default function MyApp({ Component, pageProps }) {
         <CookiesProvider>
             <Component {...pageProps} />
         </CookiesProvider>
-    )
+    );
 }

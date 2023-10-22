@@ -35,11 +35,11 @@ export default function LoginPage() {
             const response = await fetch("http://127.0.0.1:8181/auth/login", request);
             const data = await response.json();
 
-            const responseMessage = data.message || '';
-            const accessToken = data.access_token || '';
-            const refreshToken = data.refresh_token || '';
-            const clientRole = data.role || '';
-            const customerId = data.cid || '';
+            const responseMessage = data?.message || '';
+            const accessToken = data?.access_token || '';
+            const refreshToken = data?.refresh_token || '';
+            const clientRole = data?.role || '';
+            const customerId = data?.cid || '';
 
             //convert JSON response to JS
             if (!response.ok) {

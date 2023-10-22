@@ -1,40 +1,52 @@
 import Head from "next/head";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { useContext, useEffect, useState } from "react";
 
+import { DataToDisplayContext } from "../../../../_app";
 import serverSideProps from "../../../api/serverSideProps"
 import Header from "../../../../../components/header";
 
 export async function getServerSideProps(context) {
-    await serverSideProps(context);
-
-    const customerID = context.params.id;
-    const accountID = context.params.acc_id;
-    const beforeURL = `http://localhost:3000/customers/${customerID}/account/${accountID}`;
-    const transactionType = context.query.transactionType || '';
-    const transactionID = context.query.transactionID || '';
-    const newBalance = context.query.newBalance || '';
-
-    if (transactionType === '' || transactionID === '' || newBalance === '') { //HERE
-        console.log("Missing query params in url. Redirecting to transaction page.");
-        return {
-            redirect: {
-                destination: beforeURL,
-                permanent: true,
-            },
-        };
+    const initProps = await serverSideProps(context); //just to check cookies are set
+    if (!initProps.props) {
+        return initProps;
     }
+
+    const customerID = context.params?.id || '';
+    const accountID = context.params?.acc_id || '';
+    const beforeURL = `http://localhost:3000/customers/${customerID}/account/${accountID}`;
 
     return {
         props: {
             beforeURL: beforeURL,
-            transactionType: transactionType,
-            transactionID: transactionID,
-            newBalance: newBalance,
         },
     };
 }
 
 export default function TransactionSuccessPage(props) {
+    const router = useRouter();
+    const { dataToDisplay } = useContext(DataToDisplayContext);
+    const [shouldRedirectBack, setShouldRedirectBack] = useState(false);
+
+    useEffect(() => {
+        if (shouldRedirectBack) {
+            console.log("Missing information on transaction result. Redirecting back to transaction page.");
+            router.replace(props.beforeURL);
+        }
+    }, [shouldRedirectBack]);
+
+
+    if (!dataToDisplay || dataToDisplay.length < 2) {
+        if (!shouldRedirectBack) {
+            setShouldRedirectBack(true);
+        }
+    }
+
+    const transactionID = dataToDisplay[0]?.transaction_id || '';
+    const newBalance = dataToDisplay[0]?.new_balance || '';
+    const transactionType = dataToDisplay[1] || '';
+
     return (
         <div>
             <Head>
@@ -43,10 +55,10 @@ export default function TransactionSuccessPage(props) {
             </Head>
 
             <div>
-                <Header title={`Your ${props.transactionType} was successful.`}></Header>
+                <Header title={`Your ${transactionType} was successful.`}></Header>
                 <ul>
-                    <li>New account balance: {props.newBalance}</li>
-                    <li>Transaction ID: {props.transactionID}</li>
+                    <li>New account balance: {newBalance}</li>
+                    <li>Transaction ID: {transactionID}</li>
                 </ul>
             </div>
 

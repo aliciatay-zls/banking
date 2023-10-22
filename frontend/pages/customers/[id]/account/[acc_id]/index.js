@@ -1,34 +1,26 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useContext, useState } from "react";
 
+import { DataToDisplayContext } from "../../../../_app";
 import handler from "../../../api/handler";
 import serverSideProps from "../../../api/serverSideProps";
 import Header from "../../../../../components/header";
 
 export async function getServerSideProps(context) {
-    try {
-        const initProps = await serverSideProps(context);
-
-        return {
-            props: {
-                initProps: initProps.props,
-            },
-        };
-    } catch(err) {
-        console.log(err);
-    }
+    return await serverSideProps(context);
 }
 
 export default function TransactionPage(props) {
     const router = useRouter();
+    const { setDataToDisplay } = useContext(DataToDisplayContext);
     const [selectedAmount, setSelectedAmount] = useState(0);
     const [selectedType, setSelectedType] = useState('none');
     const [error, setError] = useState('');
 
-    const accessToken = props.initProps.accessToken;
-    const currentPath = props.initProps.currentPathName;
-    const requestURL = props.initProps.requestURL;
+    const accessToken = props.accessToken;
+    const currentPath = props.currentPath;
+    const requestURL = props.requestURL;
 
     async function handleMakeTransaction(event) {
         event.preventDefault();
@@ -46,16 +38,18 @@ export default function TransactionPage(props) {
         };
 
         const finalProps = await handler(currentPath, requestURL, request);
-        const result = finalProps.props.responseData || '';
+        const result = finalProps?.props?.responseData ? [finalProps.props.responseData] : [];
 
-        if (result !== '') {
-            const successURL = currentPath.concat("/success", "?",
-                `transactionType=${encodeURIComponent(selectedType)}`, "&",
-                `transactionID=${encodeURIComponent(result.transaction_id)}`, "&",
-                `newBalance=${encodeURIComponent(result.new_balance)}`);
-
-            return router.replace(successURL);
+        if (result.length === 0) {
+            console.log("No response after sending transaction request");
+            setError("Something went wrong on our end, please try again later.");
+            return;
         }
+
+        result.push(selectedType);
+        setDataToDisplay(result);
+
+        return router.replace(currentPath.concat("/success"));
     }
 
     return (

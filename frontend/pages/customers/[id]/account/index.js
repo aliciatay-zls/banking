@@ -7,18 +7,17 @@ import serverSideProps from "../../api/serverSideProps";
 import Header from "../../../../components/header";
 
 export async function getServerSideProps(context) {
-    try {
-        const initProps = await serverSideProps(context);
-
-        const request = {
-            method: "GET",
-            headers: { "Authorization": "Bearer " + initProps.props.accessToken },
-        };
-
-        return await handler(initProps.props.currentPathName, initProps.props.requestURL, request);
-    } catch(err) {
-        console.log(err);
+    const initProps = await serverSideProps(context);
+    if (!initProps.props) {
+        return initProps;
     }
+
+    const request = {
+        method: "GET",
+        headers: { "Authorization": "Bearer " + initProps.props.accessToken },
+    };
+
+    return await handler(initProps.props.currentPath, initProps.props.requestURL, request);
 }
 
 export default function AccountsPage(props) {
@@ -44,7 +43,7 @@ export default function AccountsPage(props) {
                                     <li>Type: {accountType}</li>
                                     <li>Balance: ${accountAmount}</li>
                                 </ul>
-                                <Link href={props.currentPathName.concat("/", accountId)}>
+                                <Link href={props.currentPath.concat("/", accountId)}>
                                     <button type="button">
                                         Make a transaction
                                     </button>

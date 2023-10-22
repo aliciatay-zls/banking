@@ -26,8 +26,10 @@ export default function TempRefreshPage() {
 
                 //refresh failed
                 if (!response.ok) {
-                    console.log("HTTP error: " + data.message);
-                    if (data.message === "expired or invalid refresh token") {
+                    const errorMessage = data?.message || '';
+
+                    console.log("HTTP error: " + errorMessage);
+                    if (errorMessage === "expired or invalid refresh token") {
                         setTimeout(() => router.replace('/login'), 3000);
                         throw new Error("Session expired or invalid. Please login again.");
                     } else {
@@ -36,7 +38,7 @@ export default function TempRefreshPage() {
                     }
                 }
 
-                if (!("new_access_token" in data) || data.new_access_token === "") {
+                if (!data || !("new_access_token" in data) || data.new_access_token === "") {
                     console.log("No token in response, cannot continue");
                     setTimeout(() => router.replace('/500'), 3000);
                     throw new Error(serverSideErrorDefaultMessage);

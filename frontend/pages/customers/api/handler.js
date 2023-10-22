@@ -1,4 +1,4 @@
-export default async function handler(currentPathName, requestURL, request) {
+export default async function handler(currentPath, requestURL, request) {
     let data = '';
 
     try {
@@ -8,27 +8,27 @@ export default async function handler(currentPathName, requestURL, request) {
         }
 
         data = await response.json();
-        const responseMessage = data.message || '';
+        const errorMessage = data?.message || '';
 
         //GET response error and refresh handling
         if (!response.ok) {
-            console.log("HTTP error: " + responseMessage);
+            console.log("HTTP error: " + errorMessage);
 
             if (response.status === 401) {
-                if (responseMessage === "expired access token") { //NewAuthenticationErrorDueToExpiredAccessToken
+                if (errorMessage === "expired access token") { //NewAuthenticationErrorDueToExpiredAccessToken
                     console.log("Redirecting to refresh");
                     return {
                         redirect: {
-                            destination: `/login/refresh?callbackURL=${encodeURIComponent(currentPathName)}`,
+                            destination: `/login/refresh?callbackURL=${encodeURIComponent(currentPath)}`,
                             permanent: true,
                         },
                     };
                 }
-                if (responseMessage === "invalid access token") { //NewAuthenticationErrorDueToInvalidAccessToken
+                if (errorMessage === "invalid access token") { //NewAuthenticationErrorDueToInvalidAccessToken
                     console.log("Redirecting to login");
                     return {
                         redirect: {
-                            destination: `/login?errorMessage=${encodeURIComponent(responseMessage)}`,
+                            destination: `/login?errorMessage=${encodeURIComponent(errorMessage)}`,
                             permanent: false,
                         },
                     };
@@ -37,7 +37,7 @@ export default async function handler(currentPathName, requestURL, request) {
                 console.log("Redirecting to login");
                 return {
                     redirect: {
-                        destination: `/login?errorMessage=${encodeURIComponent(responseMessage)}`,
+                        destination: `/login?errorMessage=${encodeURIComponent(errorMessage)}`,
                         permanent: false,
                     }
                 };
@@ -46,7 +46,7 @@ export default async function handler(currentPathName, requestURL, request) {
                     notFound: true,
                 };
             } else {
-                throw new Error("HTTP error: " + responseMessage);
+                throw new Error("HTTP error: " + errorMessage);
             }
         }
 
@@ -64,7 +64,7 @@ export default async function handler(currentPathName, requestURL, request) {
     return {
         props: {
             responseData: data,
-            currentPathName: currentPathName,
+            currentPath: currentPath,
         },
     };
 }

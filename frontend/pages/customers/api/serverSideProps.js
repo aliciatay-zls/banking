@@ -3,30 +3,29 @@ import { parse } from "cookie";
 export default async function getServerSideProps(context) {
     //get cookies
     const { req } = context;
-    const rawCookies = req.headers.cookie || '';
+    const rawCookies = req?.headers?.cookie || '';
     const cookies = parse(rawCookies);
-    const accessToken = cookies.access_token || '';
-    const refreshToken = cookies.refresh_token || '';
-    const clientSideDefaultErrorMessage = "Unexpected error occurred";
+    const accessToken = cookies?.access_token || '';
+    const refreshToken = cookies?.refresh_token || '';
 
     if (accessToken === '' || refreshToken === '') {
         console.log("no cookies set");
         return {
             redirect: {
-                destination: `/login?errorMessage=${encodeURIComponent(clientSideDefaultErrorMessage)}`,
+                destination: `/login?errorMessage=${encodeURIComponent("Please login.")}`,
                 permanent: false,
             }
         };
     }
 
-    const currentPathName = context.resolvedUrl;
-    const requestURL = "http://127.0.0.1:8080".concat(currentPathName);
+    const currentPath = context.resolvedUrl;
+    const requestURL = "http://127.0.0.1:8080".concat(currentPath);
 
     return {
         props: {
             accessToken: accessToken,
             refreshToken: refreshToken,
-            currentPathName: currentPathName,
+            currentPath: currentPath,
             requestURL: requestURL,
         },
     };

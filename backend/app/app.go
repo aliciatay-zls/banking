@@ -58,7 +58,7 @@ func Start() {
 		Name("GetAccountsForCustomer")
 	router.
 		HandleFunc("/customers/{customer_id:[0-9]+}/account/new", ah.newAccountHandler).
-		Methods(http.MethodPost).
+		Methods(http.MethodPost, http.MethodOptions).
 		Name("NewAccount")
 	router.
 		HandleFunc("/customers/{customer_id:[0-9]+}/account/{account_id:[0-9]+}", ah.transactionHandler).

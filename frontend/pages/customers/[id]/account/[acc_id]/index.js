@@ -14,8 +14,8 @@ export async function getServerSideProps(context) {
 export default function TransactionPage(props) {
     const router = useRouter();
     const { setDataToDisplay } = useContext(DataToDisplayContext);
-    const [selectedAmount, setSelectedAmount] = useState(0);
-    const [selectedType, setSelectedType] = useState('none');
+    const [selectedType, setSelectedType] = useState('');
+    const [inputAmount, setInputAmount] = useState(0);
     const [error, setError] = useState('');
 
     const accessToken = props.accessToken;
@@ -26,28 +26,23 @@ export default function TransactionPage(props) {
         event.preventDefault();
         setError('');
 
-        if (selectedType === 'none') {
-            setError("No transaction type was selected.");
-            return;
-        }
-
         const request = {
             method: "POST",
             headers: { "Authorization": "Bearer " + accessToken },
-            body: JSON.stringify({amount: selectedAmount, transaction_type: selectedType}),
+            body: JSON.stringify({transaction_type: selectedType, amount: inputAmount}),
         };
 
         const finalProps = await handler(currentPath, requestURL, request);
-        const result = finalProps?.props?.responseData ? [finalProps.props.responseData] : [];
+        const responseData = finalProps?.props?.responseData ? [finalProps.props.responseData] : [];
 
-        if (result.length === 0) {
+        if (responseData.length === 0) {
             console.log("No response after sending transaction request");
             setError("Something went wrong on our end, please try again later.");
             return;
         }
 
-        result.push(selectedType);
-        setDataToDisplay(result);
+        responseData.push(selectedType);
+        setDataToDisplay(responseData);
 
         return router.replace(currentPath.concat("/success"));
     }
@@ -61,29 +56,37 @@ export default function TransactionPage(props) {
 
             <div>
                 <Header title="What would you like to do today?"></Header>
+
                 <form name="transaction-form" onSubmit={handleMakeTransaction}>
-                    <p>Make a &nbsp;
+                    <div>
+                        <label htmlFor="select-transaction-type">Make a </label>
                         <select
+                            id="select-transaction-type"
                             name="transaction-type"
                             value={selectedType}
+                            required
                             onChange={e => setSelectedType(e.target.value)}
                         >
-                            <option value="none">Please select an option</option>
+                            <option value="">Please select an option</option>
                             <option value="deposit">deposit</option>
                             <option value="withdrawal">withdrawal</option>
                         </select>
-                    </p>
+                    </div>
 
-                    <label htmlFor="transaction-amount">Amount: </label>
-                    <input
-                        id="transaction-amount"
-                        name="transaction-amount"
-                        type="text"
-                        required={true}
-                        onChange={e => setSelectedAmount(parseInt(e.target.value, 10))}
-                    />
+                    <div>
+                        <label htmlFor="transaction-amount">Amount: </label>
+                        <input
+                            id="transaction-amount"
+                            name="transaction-amount"
+                            type="text"
+                            required
+                            onChange={e => setInputAmount(parseInt(e.target.value, 10))}
+                        />
+                    </div>
 
-                    <button type="submit">Submit</button>
+                    <div>
+                        <button type="submit">Submit</button>
+                    </div>
                 </form>
             </div>
 

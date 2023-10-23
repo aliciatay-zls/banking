@@ -54,11 +54,20 @@ export default function CustomersPage(props) {
                                     <li>Zip Code: {customerZip}</li>
                                     <li>Customer Status: {customerStatus}</li>
                                 </ul>
-                                <Link href={"/customers".concat("/", customerId)}>
-                                    <button type="button">
-                                        Act on behalf of this customer
-                                    </button>
-                                </Link>
+                                <div>
+                                    <Link href={"/customers".concat("/", customerId)}>
+                                        <button type="button">
+                                            Transact on behalf
+                                        </button>
+                                    </Link>
+                                </div>
+                                <div>
+                                    <Link href={"/customers".concat(`/${customerId}/account/new`)}>
+                                        <button type="button">
+                                            Create new account
+                                        </button>
+                                    </Link>
+                                </div>
                             </Fragment>
                         );
                     })}

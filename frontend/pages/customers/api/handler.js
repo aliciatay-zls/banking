@@ -12,8 +12,6 @@ export default async function handler(currentPath, requestURL, request) {
 
         //GET response error and refresh handling
         if (!response.ok) {
-            console.log("HTTP error: " + errorMessage);
-
             if (response.status === 401) {
                 if (errorMessage === "expired access token") { //NewAuthenticationErrorDueToExpiredAccessToken
                     console.log("Redirecting to refresh");
@@ -21,6 +19,7 @@ export default async function handler(currentPath, requestURL, request) {
                         redirect: {
                             destination: `/login/refresh?callbackURL=${encodeURIComponent(currentPath)}`,
                             permanent: true,
+                            errorMessage: "Refreshing session...",
                         },
                     };
                 }
@@ -30,6 +29,7 @@ export default async function handler(currentPath, requestURL, request) {
                         redirect: {
                             destination: `/login?errorMessage=${encodeURIComponent(errorMessage)}`,
                             permanent: false,
+                            errorMessage: "Session expired or invalid. Please login again.",
                         },
                     };
                 }
@@ -39,14 +39,16 @@ export default async function handler(currentPath, requestURL, request) {
                     redirect: {
                         destination: `/login?errorMessage=${encodeURIComponent(errorMessage)}`,
                         permanent: false,
+                        errorMessage: "Please login again.",
                     }
                 };
             } else if (response.status === 404) {
+                console.log("Redirecting to 404 page");
                 return {
                     notFound: true,
                 };
             } else {
-                throw new Error("HTTP error: " + errorMessage);
+                throw new Error("HTTP error in handler: " + errorMessage);
             }
         }
 

@@ -43,7 +43,7 @@ export default function LoginPage() {
 
             //convert JSON response to JS
             if (!response.ok) {
-                throw new Error("HTTP error: " + responseMessage);
+                throw new Error("HTTP error during login: " + responseMessage);
             }
 
             //store tokens on client side as cookies

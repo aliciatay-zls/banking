@@ -36,8 +36,14 @@ export default function TransactionPage(props) {
         const responseData = finalProps?.props?.responseData ? [finalProps.props.responseData] : [];
 
         if (responseData.length === 0) {
-            console.log("No response after sending transaction request");
-            setError("Something went wrong on our end, please try again later.");
+            const possibleRedirect = finalProps?.redirect?.destination || '';
+            if (possibleRedirect === '') {
+                console.log("No response after sending transaction request");
+                setError("Something went wrong on our end, please try again later.");
+            } else {
+                setError(finalProps.redirect.errorMessage);
+                setTimeout(() => router.replace(possibleRedirect), 3000);
+            }
             return;
         }
 

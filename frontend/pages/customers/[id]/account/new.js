@@ -1,5 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 import handler from "../../api/handler";
@@ -23,6 +24,8 @@ export async function getServerSideProps(context) {
 }
 
 export default function CreateAccountPage(props) {
+    const router = useRouter();
+
     const [selectedType, setSelectedType] = useState('');
     const [inputAmount, setInputAmount] = useState(0);
     const [newAccountInfo, setNewAccountInfo] = useState('');
@@ -44,9 +47,15 @@ export default function CreateAccountPage(props) {
         const finalProps = await handler(props.currentPath, props.requestURL, request);
         const responseData = finalProps?.props?.responseData || '';
 
-        if (responseData.length === 0) {
-            console.log("No response after sending new account request");
-            setError("Something went wrong on our end, please try again later.");
+        if (responseData === '') {
+            const possibleRedirect = finalProps?.redirect?.destination || '';
+            if (possibleRedirect === '') {
+                console.log("No response after sending new account request");
+                setError("Something went wrong on our end, please try again later.");
+            } else {
+                setError(finalProps.redirect.errorMessage);
+                setTimeout(() => router.replace(possibleRedirect), 3000);
+            }
             return;
         }
 

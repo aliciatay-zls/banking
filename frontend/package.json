@@ -3,6 +3,10 @@
     "dev": "next dev"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/roboto": "^5.0.8",
+    "@mui/material": "^5.14.15",
     "cookie": "^0.5.0",
     "next": "^13.5.3",
     "react": "^18.2.0",

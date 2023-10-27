@@ -107,7 +107,7 @@ export default function LoginPage() {
                     <div>
                         <label htmlFor="password">Password</label>
                         <input
-                            type="text"
+                            type="password"
                             id="password"
                             name="password"
                             value={password}

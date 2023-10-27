@@ -2,6 +2,10 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogTitle from "@mui/material/DialogTitle";
 
 import handler from "../../api/handler";
 import serverSideProps from "../../api/serverSideProps";
@@ -30,13 +34,25 @@ export default function CreateAccountPage(props) {
     const [inputAmount, setInputAmount] = useState(0);
     const [newAccountInfo, setNewAccountInfo] = useState('');
     const [error, setError] = useState('');
+    const [openConfirmation, setOpenConfirmation] = useState(false);
 
     const buttonLinkAccounts = `http://localhost:3000/customers/${props.customerId}/account`;
     const buttonLinkAllCustomers = "http://localhost:3000/customers";
 
-    async function handleNewAccount(event) {
+    function handleGetConfirmation(event) {
         event.preventDefault();
         setError('');
+
+        const isValid = event.target.checkValidity();
+        if (!isValid) {
+            setError("Please check that all fields have been correctly filled up.");
+        } else {
+            setOpenConfirmation(true);
+        }
+    }
+
+    async function handleNewAccount() {
+        setOpenConfirmation(false);
 
         const request = {
             method: "POST",
@@ -62,6 +78,10 @@ export default function CreateAccountPage(props) {
         setNewAccountInfo(responseData.account_id);
     }
 
+    function handleCancel() {
+        setOpenConfirmation(false);
+    }
+
     return (
         <div>
             <Head>
@@ -70,9 +90,11 @@ export default function CreateAccountPage(props) {
             </Head>
 
             <div>
-                <Header title={`Creating account for customer ${props.customerId}`}/>
+                <Header title={`Creating account for: Customer ${props.customerId}`}/>
 
-                <form name={"create-account-form"} onSubmit={handleNewAccount}>
+                <p style={{ color: 'blue'}}>Please note that the minimum amount to create an account is $5,000.</p>
+
+                <form name={"create-account-form"} onSubmit={handleGetConfirmation}>
                     <div>
                         <label htmlFor="select-account-type">Account type: </label>
                         <select
@@ -89,15 +111,28 @@ export default function CreateAccountPage(props) {
                     <div>
                         <label htmlFor={"account-amount"}>Initial amount: </label>
                         <input
+                            type="number"
                             id="account-amount"
                             name="account-amount"
-                            type="text"
+                            min="5000"
                             required
                             onChange={e => setInputAmount(parseInt(e.target.value, 10))}
                         />
                     </div>
                     <div>
-                        <button type="submit">Submit</button>
+                        <Button type="submit" variant="contained">Submit</Button>
+                        <Dialog
+                            open={openConfirmation}
+                            onClose={handleCancel}
+                        >
+                            <DialogTitle>
+                                {`Create a ${selectedType} account with an initial amount of $${inputAmount}?`}
+                            </DialogTitle>
+                            <DialogActions>
+                                <Button onClick={handleCancel}>No</Button>
+                                <Button onClick={handleNewAccount}>Yes</Button>
+                            </DialogActions>
+                        </Dialog>
                     </div>
                 </form>
 

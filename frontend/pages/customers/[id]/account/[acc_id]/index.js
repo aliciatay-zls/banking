@@ -1,6 +1,10 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogTitle from '@mui/material/DialogTitle';
 
 import { DataToDisplayContext } from "../../../../_app";
 import handler from "../../../api/handler";
@@ -17,14 +21,26 @@ export default function TransactionPage(props) {
     const [selectedType, setSelectedType] = useState('');
     const [inputAmount, setInputAmount] = useState(0);
     const [error, setError] = useState('');
+    const [openConfirmation, setOpenConfirmation] = useState(false);
 
     const accessToken = props.accessToken;
     const currentPath = props.currentPath;
     const requestURL = props.requestURL;
 
-    async function handleMakeTransaction(event) {
+    function handleGetConfirmation(event) {
         event.preventDefault();
         setError('');
+
+        const isValid = event.target.checkValidity();
+        if (!isValid) {
+            setError("Please check that all fields have been correctly filled up.");
+        } else {
+            setOpenConfirmation(true);
+        }
+    }
+
+    async function handleMakeTransaction() {
+        setOpenConfirmation(false);
 
         const request = {
             method: "POST",
@@ -53,6 +69,10 @@ export default function TransactionPage(props) {
         return router.replace(currentPath.concat("/success"));
     }
 
+    function handleCancel() {
+        setOpenConfirmation(false);
+    }
+
     return (
         <div>
             <Head>
@@ -63,7 +83,9 @@ export default function TransactionPage(props) {
             <div>
                 <Header title="What would you like to do today?"></Header>
 
-                <form name="transaction-form" onSubmit={handleMakeTransaction}>
+                <p style={{ color: 'blue'}}>Please note that only amounts between $1 to $100,000 are allowed.</p>
+
+                <form name="transaction-form" onSubmit={handleGetConfirmation}>
                     <div>
                         <label htmlFor="select-transaction-type">Make a </label>
                         <select
@@ -82,16 +104,30 @@ export default function TransactionPage(props) {
                     <div>
                         <label htmlFor="transaction-amount">Amount: </label>
                         <input
+                            type="number"
                             id="transaction-amount"
                             name="transaction-amount"
-                            type="text"
+                            min="1"
+                            max="100000"
                             required
                             onChange={e => setInputAmount(parseInt(e.target.value, 10))}
                         />
                     </div>
 
                     <div>
-                        <button type="submit">Submit</button>
+                        <Button type="submit" variant="contained">Submit</Button>
+                        <Dialog
+                            open={openConfirmation}
+                            onClose={handleCancel}
+                        >
+                            <DialogTitle>
+                                {`Are you sure you want to make a ${selectedType} of $${inputAmount}?`}
+                            </DialogTitle>
+                            <DialogActions>
+                                <Button onClick={handleCancel}>No</Button>
+                                <Button onClick={handleMakeTransaction}>Yes</Button>
+                            </DialogActions>
+                        </Dialog>
                     </div>
                 </form>
             </div>

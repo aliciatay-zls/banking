@@ -3,7 +3,16 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 
-export default function TempRefreshPage() {
+export function getServerSideProps(context) {
+    return {
+        props: {
+            callbackURL: context.query.callbackURL || '',
+            isFromLogin: context.query.isFromLogin || "false",
+        }
+    };
+}
+
+export default function TempRefreshPage(props) {
     const router = useRouter();
 
     const [error, setError] = useState('');
@@ -27,10 +36,16 @@ export default function TempRefreshPage() {
                 //refresh failed
                 if (!response.ok) {
                     const errorMessage = data?.message || '';
-
                     console.log("HTTP error: " + errorMessage);
+
                     if (errorMessage === "expired or invalid refresh token") {
-                        setTimeout(() => router.replace('/login'), 3000);
+                        if (props.isFromLogin === "true") {
+                            removeCookie('refresh_token', {
+                                path: '/',
+                                sameSite: 'strict',
+                            });
+                        }
+                        setTimeout(() => router.replace('/login'), 3000); //TODO: now login also calls refresh if needed, so need to deal with loop?
                         throw new Error("Session expired or invalid. Please login again.");
                     } else {
                         setTimeout(() => router.replace('/500'), 3000);
@@ -54,14 +69,13 @@ export default function TempRefreshPage() {
 
             tryRefresh()
             .then(() => { //success case
-                const callbackURL = router.query.callbackURL || '';
-                if (callbackURL === '') {
+                if (props.callbackURL === '') {
                     console.log("Refresh successful but no callback url");
                     throw new Error(clientSideErrorDefaultMessage);
                 }
-                return router.replace(callbackURL);
+                return router.replace(props.callbackURL);
             })
-            .catch((err) => { //non-http errors
+            .catch((err) => {
                 setError(err.message);
                 console.log(err);
             });

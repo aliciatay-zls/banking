@@ -4,8 +4,8 @@ import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 
 import { DataToDisplayContext } from "../../../../_app";
-import serverSideProps from "../../../api/serverSideProps"
 import Header from "../../../../../components/header";
+import serverSideProps from "../../../../../src/serverSideProps"
 
 export async function getServerSideProps(context) {
     const initProps = await serverSideProps(context); //just to check cookies are set

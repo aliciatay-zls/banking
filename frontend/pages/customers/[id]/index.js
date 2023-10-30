@@ -1,9 +1,9 @@
 import Head from 'next/head';
 import Link from 'next/link';
 
-import handler from "../api/handler";
-import serverSideProps from "../api/serverSideProps";
 import Header from "../../../components/header";
+import handleFetchResource from "../../../src/handleFetchResource";
+import serverSideProps from "../../../src/serverSideProps";
 
 export async function getServerSideProps(context) {
     const initProps = await serverSideProps(context);
@@ -16,7 +16,7 @@ export async function getServerSideProps(context) {
         headers: { "Authorization": "Bearer " + initProps.props.accessToken },
     };
 
-    return await handler(initProps.props.currentPath, initProps.props.requestURL, request);
+    return await handleFetchResource(initProps.props.currentPath, initProps.props.requestURL, request);
 }
 
 export default function CustomerHomePage(props) {

@@ -1,6 +1,6 @@
 import { parse } from "cookie";
 
-export default async function getServerSideProps(context) {
+export default function getServerSideProps(context) {
     //get cookies
     const { req } = context;
     const rawCookies = req?.headers?.cookie || '';

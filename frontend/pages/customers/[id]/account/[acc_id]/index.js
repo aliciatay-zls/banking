@@ -7,9 +7,9 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import { DataToDisplayContext } from "../../../../_app";
-import handler from "../../../api/handler";
-import serverSideProps from "../../../api/serverSideProps";
 import Header from "../../../../../components/header";
+import handleFetchResource from "../../../../../src/handleFetchResource";
+import serverSideProps from "../../../../../src/serverSideProps";
 
 export async function getServerSideProps(context) {
     return await serverSideProps(context);
@@ -48,7 +48,7 @@ export default function TransactionPage(props) {
             body: JSON.stringify({transaction_type: selectedType, amount: inputAmount}),
         };
 
-        const finalProps = await handler(currentPath, requestURL, request);
+        const finalProps = await handleFetchResource(currentPath, requestURL, request);
         const responseData = finalProps?.props?.responseData ? [finalProps.props.responseData] : [];
 
         if (responseData.length === 0) {

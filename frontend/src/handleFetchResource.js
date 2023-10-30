@@ -1,4 +1,4 @@
-export default async function handler(currentPath, requestURL, request) {
+export default async function handleFetchResource(currentPath, requestURL, request) {
     let data = '';
 
     try {

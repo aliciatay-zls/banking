@@ -1,8 +1,8 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useCookies} from "react-cookie";
 import { useEffect, useState } from 'react';
 import { parse } from "cookie";
+import { useCookies} from "react-cookie";
 
 import Header from "../../components/header";
 import getHomepagePath from "../../src/getHomepagePath";
@@ -106,7 +106,6 @@ export default function LoginPage() {
             const accessToken = data?.access_token || '';
             const refreshToken = data?.refresh_token || '';
 
-            //convert JSON response to JS
             if (!response.ok) {
                 throw new Error("HTTP error during login: " + responseMessage);
             }
@@ -177,6 +176,10 @@ export default function LoginPage() {
                         </button>
                     </div>
                 </form>
+
+                {/*<noscript>*/}
+                {/*    <p style={{ color: 'red'}}>This site requires JavaScript to work. Please enable it to continue.</p>*/}
+                {/*</noscript>*/}
 
                 { error && <div style={{ color: 'red'}}>{error}</div> }
             </div>

@@ -15,6 +15,7 @@ export function getServerSideProps(context) {
 export default function TempRefreshPage(props) {
     const router = useRouter();
 
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [cookies, setCookie, removeCookie] = useCookies(['access_token', 'refresh_token']);
     const serverSideErrorDefaultMessage = "Internal server error.";
@@ -24,9 +25,18 @@ export default function TempRefreshPage(props) {
         let ignore = false;
 
         if (!ignore) {
+            setIsLoading(true);
+
+            const accessToken = cookies?.access_token || '';
+            const refreshToken = cookies?.refresh_token || '';
+            if (accessToken === '' || refreshToken === '') {
+                router.replace('/login');
+                return;
+            }
+
             const newTokenRequest = {
                 method: "POST",
-                body: JSON.stringify({"access_token": cookies.access_token, "refresh_token": cookies.refresh_token}),
+                body: JSON.stringify({"access_token": accessToken, "refresh_token": refreshToken}),
             };
 
             const tryRefresh = async () => {
@@ -45,7 +55,7 @@ export default function TempRefreshPage(props) {
                                 sameSite: 'strict',
                             });
                         }
-                        setTimeout(() => router.replace('/login'), 3000); //TODO: now login also calls refresh if needed, so need to deal with loop?
+                        setTimeout(() => router.replace('/login'), 3000);
                         throw new Error("Session expired or invalid. Please login again.");
                     } else {
                         setTimeout(() => router.replace('/500'), 3000);
@@ -94,7 +104,7 @@ export default function TempRefreshPage(props) {
             </Head>
 
             <div>
-                { !error && <div>Loading...</div> }
+                { isLoading && !error && <div>Loading...</div> }
 
                 { error && <div style={{ color: 'red'}}>{error}</div> }
             </div>

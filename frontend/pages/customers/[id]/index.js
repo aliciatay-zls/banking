@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import Link from 'next/link';
 
+import ButtonAppBar from "../../../components/appbar";
 import Header from "../../../components/header";
 import handleFetchResource from "../../../src/handleFetchResource";
 import serverSideProps from "../../../src/serverSideProps";
@@ -28,6 +29,8 @@ export default function CustomerHomePage(props) {
                 <title>Banking App - Home</title>
                 <link rel="icon" type="image/png" href="/favicon-16x16.png" />
             </Head>
+
+            <ButtonAppBar/>
 
             <div>
                 <div>

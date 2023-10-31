@@ -7,6 +7,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import { DataToDisplayContext } from "../../../../_app";
+import ButtonAppBar from "../../../../../components/appbar";
 import Header from "../../../../../components/header";
 import handleFetchResource from "../../../../../src/handleFetchResource";
 import serverSideProps from "../../../../../src/serverSideProps";
@@ -79,6 +80,8 @@ export default function TransactionPage(props) {
                 <title>Banking App - New Transaction</title>
                 <link rel="icon" type="image/png" href="/favicon-16x16.png" />
             </Head>
+
+            <ButtonAppBar/>
 
             <div>
                 <Header title="What would you like to do today?"></Header>

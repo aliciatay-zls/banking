@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { parse } from "cookie";
 import { useCookies} from "react-cookie";
 
+import ButtonAppBar from "../../components/appbar";
 import Header from "../../components/header";
 import getHomepagePath from "../../src/getHomepagePath";
 
@@ -98,7 +99,6 @@ export default function LoginPage() {
         };
 
         try {
-            //login request
             const response = await fetch("http://127.0.0.1:8181/auth/login", request);
             const data = await response.json();
 
@@ -142,6 +142,8 @@ export default function LoginPage() {
                 <link rel="icon" type="image/png" href="/favicon-16x16.png" />
             </Head>
 
+            <ButtonAppBar/>
+
             <div>
                 <Header title="Welcome back"/>
 
@@ -177,11 +179,9 @@ export default function LoginPage() {
                     </div>
                 </form>
 
-                {/*<noscript>*/}
-                {/*    <p style={{ color: 'red'}}>This site requires JavaScript to work. Please enable it to continue.</p>*/}
-                {/*</noscript>*/}
-
-                { error && <div style={{ color: 'red'}}>{error}</div> }
+                { error &&
+                    <div style={{ color: 'red'}}>{error}</div>
+                }
             </div>
         </div>
     );

@@ -2,26 +2,23 @@ import Head from 'next/head';
 import Link from "next/link";
 import { Fragment } from "react";
 
+import ButtonAppBar from "../../components/appbar";
 import Header from "../../components/header";
 import handleFetchResource from "../../src/handleFetchResource";
 import serverSideProps from "../../src/serverSideProps";
 
 export async function getServerSideProps(context) {
-    try {
-        const initProps = await serverSideProps(context);
-        if (!initProps.props) {
-            return initProps;
-        }
-
-        const request = {
-            method: "GET",
-            headers: { "Authorization": "Bearer " + initProps.props.accessToken },
-        };
-
-        return await handleFetchResource(initProps.props.currentPath, initProps.props.requestURL, request);
-    } catch(err) {
-        console.log(err);
+    const initProps = await serverSideProps(context);
+    if (!initProps.props) {
+        return initProps;
     }
+
+    const request = {
+        method: "GET",
+        headers: { "Authorization": "Bearer " + initProps.props.accessToken },
+    };
+
+    return await handleFetchResource(initProps.props.currentPath, initProps.props.requestURL, request);
 }
 
 export default function CustomersPage(props) {
@@ -31,6 +28,8 @@ export default function CustomersPage(props) {
                 <title>Banking App - Home</title>
                 <link rel="icon" type="image/png" href="/favicon-16x16.png" />
             </Head>
+
+            <ButtonAppBar/>
 
             <div>
                 <Header title="All Customers"/>

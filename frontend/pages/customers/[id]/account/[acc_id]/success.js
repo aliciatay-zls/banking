@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 
 import { DataToDisplayContext } from "../../../../_app";
-import ButtonAppBar from "../../../../../components/appbar";
+import { CustomerAppBar } from "../../../../../components/appbar";
 import Header from "../../../../../components/header";
 import serverSideProps from "../../../../../src/serverSideProps"
 
@@ -55,7 +55,7 @@ export default function TransactionSuccessPage(props) {
                 <link rel="icon" type="image/png" href="/favicon-16x16.png" />
             </Head>
 
-            <ButtonAppBar/>
+            <CustomerAppBar/>
 
             <div>
                 <Header title={`Your ${transactionType} was successful.`}></Header>

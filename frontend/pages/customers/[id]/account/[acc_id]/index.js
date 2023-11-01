@@ -7,7 +7,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import { DataToDisplayContext } from "../../../../_app";
-import { CustomerAppBar } from "../../../../../components/appbar";
+import { LogoutAppBar } from "../../../../../components/appbar";
 import Header from "../../../../../components/header";
 import handleFetchResource from "../../../../../src/handleFetchResource";
 import serverSideProps from "../../../../../src/serverSideProps";
@@ -81,7 +81,7 @@ export default function TransactionPage(props) {
                 <link rel="icon" type="image/png" href="/favicon-16x16.png" />
             </Head>
 
-            <CustomerAppBar/>
+            <LogoutAppBar/>
 
             <div>
                 <Header title="What would you like to do today?"></Header>

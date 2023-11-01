@@ -2,7 +2,7 @@ import Head from 'next/head';
 import Link from "next/link";
 import { Fragment } from "react";
 
-import { BaseAppBar } from "../../components/appbar";
+import { LogoutAppBar } from "../../components/appbar";
 import Header from "../../components/header";
 import handleFetchResource from "../../src/handleFetchResource";
 import serverSideProps from "../../src/serverSideProps";
@@ -29,7 +29,7 @@ export default function CustomersPage(props) {
                 <link rel="icon" type="image/png" href="/favicon-16x16.png" />
             </Head>
 
-            <BaseAppBar/>
+            <LogoutAppBar isCustomer={false}/>
 
             <div>
                 <Header title="All Customers"/>

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { parse } from "cookie";
 import { useCookies} from "react-cookie";
 
-import { BaseAppBar } from "../../components/appbar";
+import { LoginAppBar } from "../../components/appbar";
 import Header from "../../components/header";
 import getHomepagePath from "../../src/getHomepagePath";
 
@@ -142,7 +142,7 @@ export default function LoginPage() {
                 <link rel="icon" type="image/png" href="/favicon-16x16.png" />
             </Head>
 
-            <BaseAppBar isLogin={true}/>
+            <LoginAppBar/>
 
             <div>
                 <Header title="Welcome back"/>

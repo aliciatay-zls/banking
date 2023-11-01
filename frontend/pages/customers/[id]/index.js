@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import Link from 'next/link';
 
-import { CustomerAppBar } from "../../../components/appbar";
+import { LogoutAppBar } from "../../../components/appbar";
 import Header from "../../../components/header";
 import handleFetchResource from "../../../src/handleFetchResource";
 import serverSideProps from "../../../src/serverSideProps";
@@ -30,7 +30,7 @@ export default function CustomerHomePage(props) {
                 <link rel="icon" type="image/png" href="/favicon-16x16.png" />
             </Head>
 
-            <CustomerAppBar/>
+            <LogoutAppBar/>
 
             <div>
                 <div>

@@ -7,7 +7,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
 
-import { CustomerAppBar } from "../../../../components/appbar";
+import { LogoutAppBar } from "../../../../components/appbar";
 import Header from "../../../../components/header";
 import handleFetchResource from "../../../../src/handleFetchResource";
 import serverSideProps from "../../../../src/serverSideProps";
@@ -90,7 +90,7 @@ export default function CreateAccountPage(props) {
                 <link rel="icon" type="image/png" href="/favicon-16x16.png" />
             </Head>
 
-            <CustomerAppBar/>
+            <LogoutAppBar/>
 
             <div>
                 <Header title={`Creating account for: Customer ${props.customerId}`}/>

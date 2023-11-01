@@ -6,7 +6,6 @@ import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -52,40 +51,20 @@ export function BaseAppBar({isLogin = false}) {
 
             await router.replace('/login');
 
-        } catch (err) {
-            console.log(err);
-            setOpenErrorAlert(true);
-        }
-    }
-
+export function LoginAppBar() {
     return (
         <div>
             <Box sx={{ flexGrow: 1 }}>
                 <AppBar position="static">
                     <Toolbar>
-                        { !isLogin &&
-                            <Button type="button" color="inherit" onClick={handleLogout}>Logout</Button>
-                        }
                     </Toolbar>
                 </AppBar>
             </Box>
-
-            { openErrorAlert &&
-                <Alert
-                    onClose={() => {
-                        setOpenErrorAlert(false)
-                    }}
-                    severity="error"
-                >
-                    <AlertTitle>Logout failed</AlertTitle>
-                    Please try again later or <Link href={"/login"}>login again.</Link>
-                </Alert>
-            }
         </div>
     );
 }
 
-export function CustomerAppBar() {
+export function LogoutAppBar({ isCustomer = true }) {
     const router = useRouter();
     const customerID = router.query?.id || '';
 
@@ -158,7 +137,8 @@ export function CustomerAppBar() {
                             <IconButton
                                 onClick={handleOpenMenu}
                                 size="large"
-                                edge="start"
+                                edge="end"
+                                style={{marginLeft: "auto"}}
                                 color="inherit"
                                 aria-label="menu"
                                 sx={{ mr: 2 }}
@@ -166,13 +146,12 @@ export function CustomerAppBar() {
                                 <MenuIcon />
                             </IconButton>
                         </Tooltip>
-                        <Button type="button" color="inherit" onClick={handleLogout}>Logout</Button>
                     </Toolbar>
                 </AppBar>
             </Box>
 
             <Menu
-                id="customer-menu"
+                id="appbar-menu"
                 anchorEl={anchorEl}
                 open={openMenu}
                 onClose={handleCloseMenu}
@@ -180,9 +159,13 @@ export function CustomerAppBar() {
                     'aria-labelledby': 'basic-button',
                 }}
             >
-                <MenuItem onClick={handleNavigateHomepage}>My Profile</MenuItem>
-                <MenuItem onClick={handleNavigateAccount}>My Accounts</MenuItem>
-                <Divider />
+                { isCustomer &&
+                    <div>
+                        <MenuItem onClick={handleNavigateHomepage}>My Profile</MenuItem>
+                        <MenuItem onClick={handleNavigateAccount}>My Accounts</MenuItem>
+                        <Divider/>
+                    </div>
+                }
                 <MenuItem onClick={handleLogout}>
                     <ListItemIcon>
                         <Logout fontSize="small" />

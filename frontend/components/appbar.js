@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
@@ -16,40 +16,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Logout from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 
-export function BaseAppBar({isLogin = false}) {
-    const router = useRouter();
-
-    const [openErrorAlert, setOpenErrorAlert] = useState(false);
-    const [cookies, setCookie, removeCookie] = useCookies(['access_token', 'refresh_token']);
-    const refreshToken = cookies?.refresh_token || '';
-
-    async function handleLogout(event) {
-        event.preventDefault();
-
-        const request = {
-            method: "POST",
-            body: JSON.stringify({refresh_token: refreshToken}),
-        };
-
-        try {
-            const response = await fetch("http://127.0.0.1:8181/auth/logout", request);
-            const data = await response.json();
-
-            if (!response.ok) {
-                const errorMessage = data?.message || '';
-                throw new Error("HTTP error during logout: " + errorMessage);
-            }
-
-            removeCookie('access_token', {
-                path: '/',
-                sameSite: 'strict',
-            });
-            removeCookie('refresh_token', {
-                path: '/',
-                sameSite: 'strict',
-            });
-
-            await router.replace('/login');
+import { DataToDisplayContext } from "../pages/_app";
 
 export function LoginAppBar() {
     return (
@@ -71,6 +38,7 @@ export function LogoutAppBar({ isCustomer = true }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const openMenu = Boolean(anchorEl);
     const [openErrorAlert, setOpenErrorAlert] = useState(false);
+    const { setDataToDisplay } = useContext(DataToDisplayContext);
     const [cookies, setCookie, removeCookie] = useCookies(['access_token', 'refresh_token']);
     const refreshToken = cookies?.refresh_token || '';
 
@@ -100,6 +68,7 @@ export function LogoutAppBar({ isCustomer = true }) {
                 sameSite: 'strict',
             });
 
+            setDataToDisplay(["Logout successful"]);
             await router.replace('/login');
 
         } catch (err) {
@@ -177,7 +146,7 @@ export function LogoutAppBar({ isCustomer = true }) {
             { openErrorAlert &&
                 <Alert
                     onClose={() => {
-                        setOpenErrorAlert(false)
+                        setOpenErrorAlert(false);
                     }}
                     severity="error"
                 >

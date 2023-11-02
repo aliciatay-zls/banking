@@ -1,9 +1,12 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { forwardRef, useContext, useEffect, useState } from 'react';
 import { parse } from "cookie";
 import { useCookies} from "react-cookie";
+import MuiAlert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 
+import { DataToDisplayContext } from "../_app";
 import { LoginAppBar } from "../../components/appbar";
 import Header from "../../components/header";
 import getHomepagePath from "../../src/getHomepagePath";
@@ -81,13 +84,33 @@ export default function LoginPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const [error, setError] = useState('');
+    const { dataToDisplay, setDataToDisplay } = useContext(DataToDisplayContext);
+    const [snackbarMsg, setSnackbarMsg] = useState('');
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [isError, setIsError] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [cookies, setCookie, removeCookie] = useCookies(['access_token', 'refresh_token']);
 
     useEffect(() => {
-        setError(router.query.errorMessage);
-    }, [router.query.errorMessage]);
+        if (dataToDisplay.length === 1) {
+            setSnackbarMsg(dataToDisplay[0]);
+            setOpenSnackbar(true);
+        } else if (router.query.errorMessage && router.query.errorMessage !== '') {
+            setIsError(true);
+            setSnackbarMsg(router.query.errorMessage);
+            setOpenSnackbar(true);
+        }
+    }, [router.query.errorMessage]); //run after initial render and each time value of this query param changes
+
+    const CustomAlert = forwardRef(function CustomAlert(props, ref) {
+        return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+    });
+
+    function handleCloseSnackbar() {
+        setIsError(false);
+        setOpenSnackbar(false);
+        setDataToDisplay([]); //clear data
+    }
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -128,7 +151,9 @@ export default function LoginPage() {
             return router.replace(getHomepagePath(data));
 
         } catch (err) {
-            setError(err.message);
+            setIsError(true);
+            setSnackbarMsg(err.message);
+            setOpenSnackbar(true);
             console.log(err);
         } finally {
             setIsLoading(false);
@@ -179,9 +204,20 @@ export default function LoginPage() {
                     </div>
                 </form>
 
-                { error &&
-                    <div style={{ color: 'red'}}>{error}</div>
-                }
+                <Snackbar
+                    open={openSnackbar}
+                    autoHideDuration={isError ? null : 3000}
+                    onClose={handleCloseSnackbar}
+                >
+                    <CustomAlert
+                        severity={isError ? "error" : "success"}
+                        sx={{ width: '100%' }}
+                        onClose={handleCloseSnackbar}
+                    >
+                        {snackbarMsg}
+                    </CustomAlert>
+                </Snackbar>
+
             </div>
         </div>
     );

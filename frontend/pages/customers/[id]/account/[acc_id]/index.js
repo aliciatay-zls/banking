@@ -18,6 +18,7 @@ export async function getServerSideProps(context) {
 
 export default function TransactionPage(props) {
     const router = useRouter();
+
     const { setDataToDisplay } = useContext(DataToDisplayContext);
     const [selectedType, setSelectedType] = useState('');
     const [inputAmount, setInputAmount] = useState(0);
@@ -31,6 +32,7 @@ export default function TransactionPage(props) {
     function handleGetConfirmation(event) {
         event.preventDefault();
         setError('');
+        setDataToDisplay([]); //clear any previous data
 
         const isValid = event.target.checkValidity();
         if (!isValid) {

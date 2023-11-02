@@ -1,11 +1,9 @@
-import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 
 import { DataToDisplayContext } from "../../../../_app";
-import { LogoutAppBar } from "../../../../../components/appbar";
-import Header from "../../../../../components/header";
+import DefaultLayout from "../../../../../components/defaultLayout";
 import serverSideProps from "../../../../../src/serverSideProps"
 
 export async function getServerSideProps(context) {
@@ -49,25 +47,18 @@ export default function TransactionSuccessPage(props) {
     const transactionType = dataToDisplay[1] || '';
 
     return (
-        <div>
-            <Head>
-                <title>Banking App - Success</title>
-                <link rel="icon" type="image/png" href="/favicon-16x16.png" />
-            </Head>
-
-            <LogoutAppBar/>
-
-            <div>
-                <Header title={`Your ${transactionType} was successful.`}></Header>
-                <ul>
-                    <li>New account balance: {newBalance}</li>
-                    <li>Transaction ID: {transactionID}</li>
-                </ul>
-            </div>
+        <DefaultLayout
+            tabTitle={"Success"}
+            headerTitle={`Your ${transactionType} was successful.`}
+        >
+            <ul>
+                <li>New account balance: {newBalance}</li>
+                <li>Transaction ID: {transactionID}</li>
+            </ul>
 
             <Link href={props.beforeURL}>
                 <button type="button">Make another transaction</button>
             </Link>
-        </div>
+        </DefaultLayout>
     );
 }

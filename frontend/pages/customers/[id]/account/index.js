@@ -1,9 +1,7 @@
-import Head from 'next/head';
 import Link from "next/link";
 import { Fragment } from "react";
 
-import { LogoutAppBar } from "../../../../components/appbar";
-import Header from "../../../../components/header";
+import DefaultLayout from "../../../../components/defaultLayout";
 import handleFetchResource from "../../../../src/handleFetchResource";
 import serverSideProps from "../../../../src/serverSideProps";
 
@@ -23,39 +21,32 @@ export async function getServerSideProps(context) {
 
 export default function AccountsPage(props) {
     return (
-        <div>
-            <Head>
-                <title>Banking App - My Accounts</title>
-                <link rel="icon" type="image/png" href="/favicon-16x16.png" />
-            </Head>
-
-            <LogoutAppBar/>
-
+        <DefaultLayout
+            tabTitle={"My Accounts"}
+            headerTitle={"My Accounts"}
+        >
             <div>
-                <Header title="My Accounts"/>
-                <div>
-                    {props.responseData && props.responseData.map( (acc) => {
-                        const accountId = acc["account_id"];
-                        const accountType = acc["account_type"];
-                        const accountAmount = acc["amount"];
+                {props.responseData && props.responseData.map( (acc) => {
+                    const accountId = acc["account_id"];
+                    const accountType = acc["account_type"];
+                    const accountAmount = acc["amount"];
 
-                        return (
-                            <Fragment key={accountId}>
-                                <ul>
-                                    <li>Account No.: {accountId}</li>
-                                    <li>Type: {accountType}</li>
-                                    <li>Balance: ${accountAmount}</li>
-                                </ul>
-                                <Link href={props.currentPath.concat("/", accountId)}>
-                                    <button type="button">
-                                        Make a transaction
-                                    </button>
-                                </Link>
-                            </Fragment>
-                        );
-                    })}
-                </div>
+                    return (
+                        <Fragment key={accountId}>
+                            <ul>
+                                <li>Account No.: {accountId}</li>
+                                <li>Type: {accountType}</li>
+                                <li>Balance: ${accountAmount}</li>
+                            </ul>
+                            <Link href={props.currentPath.concat("/", accountId)}>
+                                <button type="button">
+                                    Make a transaction
+                                </button>
+                            </Link>
+                        </Fragment>
+                    );
+                })}
             </div>
-        </div>
+        </DefaultLayout>
     );
 }

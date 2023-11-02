@@ -1,4 +1,3 @@
-import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { forwardRef, useContext, useEffect, useState } from 'react';
 import { parse } from "cookie";
@@ -7,8 +6,7 @@ import MuiAlert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 
 import { DataToDisplayContext } from "../_app";
-import { LoginAppBar } from "../../components/appbar";
-import Header from "../../components/header";
+import LoginLayout from "../../components/loginLayout";
 import getHomepagePath from "../../src/getHomepagePath";
 
 export async function getServerSideProps(context) {
@@ -161,64 +159,56 @@ export default function LoginPage() {
     }
 
     return (
-        <div>
-            <Head>
-                <title>Banking App - Login</title>
-                <link rel="icon" type="image/png" href="/favicon-16x16.png" />
-            </Head>
+        <LoginLayout
+            tabTitle={"Login"}
+            headerTitle={"Welcome back"}
+        >
+            <form name="loginform" onSubmit={handleSubmit}>
+                <div>
+                    <label htmlFor="username">Username</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        value={username}
+                        required
+                        autoComplete="name"
+                        onChange={(u) => setUsername(u.target.value)}
+                    />
+                </div>
+                <div>
+                    <label htmlFor="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        value={password}
+                        required
+                        autoComplete="off"
+                        onChange={(p) => setPassword(p.target.value)}
+                    />
+                </div>
+                <div>
+                    <button type="submit">
+                        {isLoading ? 'Loading...' : 'Submit'}
+                    </button>
+                </div>
+            </form>
 
-            <LoginAppBar/>
-
-            <div>
-                <Header title="Welcome back"/>
-
-                <form name="loginform" onSubmit={handleSubmit}>
-                    <div>
-                        <label htmlFor="username">Username</label>
-                        <input
-                            type="text"
-                            id="username"
-                            name="username"
-                            value={username}
-                            required
-                            autoComplete="name"
-                            onChange={(u) => setUsername(u.target.value)}
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="password">Password</label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={password}
-                            required
-                            autoComplete="off"
-                            onChange={(p) => setPassword(p.target.value)}
-                        />
-                    </div>
-                    <div>
-                        <button type="submit">
-                            {isLoading ? 'Loading...' : 'Submit'}
-                        </button>
-                    </div>
-                </form>
-
-                <Snackbar
-                    open={openSnackbar}
-                    autoHideDuration={isError ? null : 3000}
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={isError ? null : 3000}
+                onClose={handleCloseSnackbar}
+            >
+                <CustomAlert
+                    severity={isError ? "error" : "success"}
+                    sx={{ width: '100%' }}
                     onClose={handleCloseSnackbar}
                 >
-                    <CustomAlert
-                        severity={isError ? "error" : "success"}
-                        sx={{ width: '100%' }}
-                        onClose={handleCloseSnackbar}
-                    >
-                        {snackbarMsg}
-                    </CustomAlert>
-                </Snackbar>
+                    {snackbarMsg}
+                </CustomAlert>
+            </Snackbar>
 
-            </div>
-        </div>
+        </LoginLayout>
     );
 }

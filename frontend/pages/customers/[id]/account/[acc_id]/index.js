@@ -1,4 +1,3 @@
-import Head from "next/head";
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";
 import Button from '@mui/material/Button';
@@ -7,8 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import { DataToDisplayContext } from "../../../../_app";
-import { LogoutAppBar } from "../../../../../components/appbar";
-import Header from "../../../../../components/header";
+import DefaultLayout from "../../../../../components/defaultLayout";
 import handleFetchResource from "../../../../../src/handleFetchResource";
 import serverSideProps from "../../../../../src/serverSideProps";
 
@@ -77,65 +75,56 @@ export default function TransactionPage(props) {
     }
 
     return (
-        <div>
-            <Head>
-                <title>Banking App - New Transaction</title>
-                <link rel="icon" type="image/png" href="/favicon-16x16.png" />
-            </Head>
+        <DefaultLayout
+            tabTitle={"New Transaction"}
+            headerTitle={"What would you like to do today?"}
+            importantMsg={"Please note that only amounts between $1 to $100,000 are allowed."}
+        >
+            <form name="transaction-form" onSubmit={handleGetConfirmation}>
+                <div>
+                    <label htmlFor="select-transaction-type">Make a </label>
+                    <select
+                        id="select-transaction-type"
+                        name="transaction-type"
+                        value={selectedType}
+                        required
+                        onChange={e => setSelectedType(e.target.value)}
+                    >
+                        <option value="">Please select an option</option>
+                        <option value="deposit">deposit</option>
+                        <option value="withdrawal">withdrawal</option>
+                    </select>
+                </div>
 
-            <LogoutAppBar/>
+                <div>
+                    <label htmlFor="transaction-amount">Amount: </label>
+                    <input
+                        type="number"
+                        id="transaction-amount"
+                        name="transaction-amount"
+                        min="1"
+                        max="100000"
+                        required
+                        onChange={e => setInputAmount(parseInt(e.target.value, 10))}
+                    />
+                </div>
 
-            <div>
-                <Header title="What would you like to do today?"></Header>
-
-                <p style={{ color: 'blue'}}>Please note that only amounts between $1 to $100,000 are allowed.</p>
-
-                <form name="transaction-form" onSubmit={handleGetConfirmation}>
-                    <div>
-                        <label htmlFor="select-transaction-type">Make a </label>
-                        <select
-                            id="select-transaction-type"
-                            name="transaction-type"
-                            value={selectedType}
-                            required
-                            onChange={e => setSelectedType(e.target.value)}
-                        >
-                            <option value="">Please select an option</option>
-                            <option value="deposit">deposit</option>
-                            <option value="withdrawal">withdrawal</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label htmlFor="transaction-amount">Amount: </label>
-                        <input
-                            type="number"
-                            id="transaction-amount"
-                            name="transaction-amount"
-                            min="1"
-                            max="100000"
-                            required
-                            onChange={e => setInputAmount(parseInt(e.target.value, 10))}
-                        />
-                    </div>
-
-                    <div>
-                        <Button type="submit" variant="contained">Submit</Button>
-                        <Dialog
-                            open={openConfirmation}
-                            onClose={handleCancel}
-                        >
-                            <DialogTitle>
-                                {`Are you sure you want to make a ${selectedType} of $${inputAmount}?`}
-                            </DialogTitle>
-                            <DialogActions>
-                                <Button onClick={handleCancel}>No</Button>
-                                <Button onClick={handleMakeTransaction}>Yes</Button>
-                            </DialogActions>
-                        </Dialog>
-                    </div>
-                </form>
-            </div>
+                <div>
+                    <Button type="submit" variant="contained">Submit</Button>
+                    <Dialog
+                        open={openConfirmation}
+                        onClose={handleCancel}
+                    >
+                        <DialogTitle>
+                            {`Are you sure you want to make a ${selectedType} of $${inputAmount}?`}
+                        </DialogTitle>
+                        <DialogActions>
+                            <Button onClick={handleCancel}>No</Button>
+                            <Button onClick={handleMakeTransaction}>Yes</Button>
+                        </DialogActions>
+                    </Dialog>
+                </div>
+            </form>
 
             { error &&
                 <div style={{ color: 'red'}}>
@@ -143,6 +132,6 @@ export default function TransactionPage(props) {
                     <p>{error}</p>
                 </div>
             }
-        </div>
+        </DefaultLayout>
     );
 }

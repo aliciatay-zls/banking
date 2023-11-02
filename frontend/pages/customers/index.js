@@ -1,9 +1,7 @@
-import Head from 'next/head';
 import Link from "next/link";
 import { Fragment } from "react";
 
-import { LogoutAppBar } from "../../components/appbar";
-import Header from "../../components/header";
+import DefaultLayout from "../../components/defaultLayout";
 import handleFetchResource from "../../src/handleFetchResource";
 import serverSideProps from "../../src/serverSideProps";
 
@@ -23,55 +21,48 @@ export async function getServerSideProps(context) {
 
 export default function CustomersPage(props) {
     return (
-        <div>
-            <Head>
-                <title>Banking App - Home</title>
-                <link rel="icon" type="image/png" href="/favicon-16x16.png" />
-            </Head>
-
-            <LogoutAppBar isCustomer={false}/>
-
+        <DefaultLayout
+            tabTitle={"Home"}
+            headerTitle={"All Customers"}
+            isCustomer={false}
+        >
             <div>
-                <Header title="All Customers"/>
+                { props.responseData && props.responseData.map((cus) => {
+                    const customerId = cus["customer_id"].toString();
+                    const customerName = cus["full_name"];
+                    const customerDOB = cus["date_of_birth"];
+                    const customerCity = cus["city"];
+                    const customerZip = cus["zipcode"];
+                    const customerStatus = cus["status"];
 
-                <div>
-                    { props.responseData && props.responseData.map((cus) => {
-                        const customerId = cus["customer_id"].toString();
-                        const customerName = cus["full_name"];
-                        const customerDOB = cus["date_of_birth"];
-                        const customerCity = cus["city"];
-                        const customerZip = cus["zipcode"];
-                        const customerStatus = cus["status"];
-
-                        return (
-                            <Fragment key={customerId}>
-                                <p>Customer Name: {customerName}</p>
-                                <ul>
-                                    <li>ID: {customerId}</li>
-                                    <li>DOB: {customerDOB}</li>
-                                    <li>City: {customerCity}</li>
-                                    <li>Zip Code: {customerZip}</li>
-                                    <li>Customer Status: {customerStatus}</li>
-                                </ul>
-                                <div>
-                                    <Link href={"/customers".concat("/", customerId)}>
-                                        <button type="button">
-                                            Transact on behalf
-                                        </button>
-                                    </Link>
-                                </div>
-                                <div>
-                                    <Link href={"/customers".concat(`/${customerId}/account/new`)}>
-                                        <button type="button">
-                                            Create new account
-                                        </button>
-                                    </Link>
-                                </div>
-                            </Fragment>
-                        );
-                    })}
-                </div>
+                    return (
+                        <Fragment key={customerId}>
+                            <p>Customer Name: {customerName}</p>
+                            <ul>
+                                <li>ID: {customerId}</li>
+                                <li>DOB: {customerDOB}</li>
+                                <li>City: {customerCity}</li>
+                                <li>Zip Code: {customerZip}</li>
+                                <li>Customer Status: {customerStatus}</li>
+                            </ul>
+                            <div>
+                                <Link href={"/customers".concat("/", customerId)}>
+                                    <button type="button">
+                                        Transact on behalf
+                                    </button>
+                                </Link>
+                            </div>
+                            <div>
+                                <Link href={"/customers".concat(`/${customerId}/account/new`)}>
+                                    <button type="button">
+                                        Create new account
+                                    </button>
+                                </Link>
+                            </div>
+                        </Fragment>
+                    );
+                })}
             </div>
-        </div>
+        </DefaultLayout>
     );
 }

@@ -100,7 +100,7 @@ export default function TempRefreshPage(props) {
         <div>
             <Head>
                 <title>Banking App - Home</title>
-                <link rel="icon" type="image/png" href="/favicon-16x16.png" />
+                <link rel="icon" type="image/png" href="/favicon.ico" />
             </Head>
 
             <div>

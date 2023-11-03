@@ -1,16 +1,17 @@
 import Head from "next/head";
 
-import { LogoutAppBar } from "./appbar";
+import { DefaultAppBar } from "./appbar";
 
 export default function DefaultLayout({ tabTitle, headerTitle, importantMsg, isCustomer, children }) {
+    const title = `Banking App - ${tabTitle}`;
     return (
         <div>
             <Head>
-                <title>Banking App - {tabTitle}</title>
-                <link rel="icon" type="image/png" href="/favicon-16x16.png" />
+                <title>{title}</title>
+                <link rel="icon" type="image/png" href="/favicon.ico" />
             </Head>
 
-            <LogoutAppBar isCustomer={isCustomer}/>
+            <DefaultAppBar isCustomer={isCustomer}/>
 
             <div>
                 <h1>{headerTitle}</h1>

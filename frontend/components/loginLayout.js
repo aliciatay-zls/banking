@@ -1,16 +1,17 @@
 import Head from "next/head";
 
-import { LoginAppBar } from "./appbar";
+import { BaseAppBar } from "./appbar";
 
 export default function LoginLayout({ tabTitle, headerTitle, children }) {
+    const title = `Banking App - ${tabTitle}`;
     return (
         <div>
             <Head>
-                <title>Banking App - {tabTitle}</title>
-                <link rel="icon" type="image/png" href="/favicon-16x16.png" />
+                <title>{title}</title>
+                <link rel="icon" type="image/png" href="/favicon.ico" />
             </Head>
 
-            <LoginAppBar/>
+            <BaseAppBar/>
 
             <div>
                 <h1>{headerTitle}</h1>

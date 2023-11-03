@@ -18,20 +18,30 @@ import MenuIcon from '@mui/icons-material/Menu';
 
 import { DataToDisplayContext } from "../pages/_app";
 
-export function LoginAppBar() {
+export function BaseAppBar({innerChildren, outerChildren}) {
     return (
         <div>
             <Box sx={{ flexGrow: 1 }}>
-                <AppBar position="static">
+                <AppBar position="static" style={{ background: '#85011e' }}>
                     <Toolbar>
+                        <Box
+                            component="img"
+                            src="/logo.png"
+                            alt="app logo"
+                            sx={{height: 60}}
+                        />
+
+                        {innerChildren}
                     </Toolbar>
                 </AppBar>
             </Box>
+
+            {outerChildren}
         </div>
     );
 }
 
-export function LogoutAppBar({ isCustomer = true }) {
+export function DefaultAppBar({ isCustomer = true }) {
     const router = useRouter();
     const customerID = router.query?.id || '';
 
@@ -99,49 +109,48 @@ export function LogoutAppBar({ isCustomer = true }) {
 
     return (
         <div>
-            <Box sx={{ flexGrow: 1 }}>
-                <AppBar position="static">
-                    <Toolbar>
-                        <Tooltip title="Menu">
-                            <IconButton
-                                onClick={handleOpenMenu}
-                                size="large"
-                                edge="end"
-                                style={{marginLeft: "auto"}}
-                                color="inherit"
-                                aria-label="menu"
-                                sx={{ mr: 2 }}
-                            >
-                                <MenuIcon />
-                            </IconButton>
-                        </Tooltip>
-                    </Toolbar>
-                </AppBar>
-            </Box>
-
-            <Menu
-                id="appbar-menu"
-                anchorEl={anchorEl}
-                open={openMenu}
-                onClose={handleCloseMenu}
-                MenuListProps={{
-                    'aria-labelledby': 'basic-button',
-                }}
-            >
-                { isCustomer &&
-                    <div>
-                        <MenuItem onClick={handleNavigateHomepage}>My Profile</MenuItem>
-                        <MenuItem onClick={handleNavigateAccount}>My Accounts</MenuItem>
-                        <Divider/>
-                    </div>
+            <BaseAppBar
+                innerChildren={
+                    <Tooltip title="Menu">
+                        <IconButton
+                            onClick={handleOpenMenu}
+                            size="large"
+                            edge="end"
+                            style={{marginLeft: "auto"}}
+                            color="inherit"
+                            aria-label="menu"
+                            sx={{ mr: 2 }}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                    </Tooltip>
                 }
-                <MenuItem onClick={handleLogout}>
-                    <ListItemIcon>
-                        <Logout fontSize="small" />
-                    </ListItemIcon>
-                    Logout
-                </MenuItem>
-            </Menu>
+                outerChildren={
+                    <Menu
+                        id="appbar-menu"
+                        anchorEl={anchorEl}
+                        open={openMenu}
+                        onClose={handleCloseMenu}
+                        MenuListProps={{
+                            'aria-labelledby': 'basic-button',
+                        }}
+                    >
+                        { isCustomer &&
+                            <div>
+                                <MenuItem onClick={handleNavigateHomepage}>My Profile</MenuItem>
+                                <MenuItem onClick={handleNavigateAccount}>My Accounts</MenuItem>
+                                <Divider/>
+                            </div>
+                        }
+                        <MenuItem onClick={handleLogout}>
+                            <ListItemIcon>
+                                <Logout fontSize="small" />
+                            </ListItemIcon>
+                            Logout
+                        </MenuItem>
+                    </Menu>
+                }
+            />
 
             { openErrorAlert &&
                 <Alert

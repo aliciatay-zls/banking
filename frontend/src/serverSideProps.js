@@ -1,6 +1,7 @@
 import { parse } from "cookie";
+import handleFetchResource from "./handleFetchResource";
 
-export default function getServerSideProps(context) {
+export default async function getServerSideProps(context) {
     //get cookies
     const { req } = context;
     const rawCookies = req?.headers?.cookie || '';
@@ -20,11 +21,23 @@ export default function getServerSideProps(context) {
 
     const currentPath = context.resolvedUrl;
     const requestURL = "http://127.0.0.1:8080".concat(currentPath);
+    const checkLoggedInURL = "http://127.0.0.1:8181/auth/continue";
+    const request = {
+        method: "POST",
+        body: JSON.stringify({"access_token": accessToken, "refresh_token": refreshToken}),
+    };
+
+    const loggedInData = await handleFetchResource(currentPath, checkLoggedInURL, request);
+    if (!loggedInData.props) {
+        return loggedInData;
+    }
+    const clientRole = loggedInData.props.responseData?.role || '';
 
     return {
         props: {
             accessToken: accessToken,
             refreshToken: refreshToken,
+            clientRole: clientRole,
             currentPath: currentPath,
             requestURL: requestURL,
         },

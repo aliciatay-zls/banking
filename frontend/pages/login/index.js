@@ -5,7 +5,7 @@ import { useCookies} from "react-cookie";
 import MuiAlert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 
-import { DataToDisplayContext, LoggedInContext } from "../_app";
+import { DataToDisplayContext } from "../_app";
 import LoginLayout from "../../components/loginLayout";
 import getHomepagePath from "../../src/getHomepagePath";
 
@@ -83,7 +83,6 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
 
     const { dataToDisplay, setDataToDisplay } = useContext(DataToDisplayContext);
-    const { currentLoggedIn, setCurrentLoggedIn } = useContext(LoggedInContext);
     const [snackbarMsg, setSnackbarMsg] = useState('');
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [isError, setIsError] = useState(false);
@@ -91,8 +90,8 @@ export default function LoginPage() {
     const [cookies, setCookie, removeCookie] = useCookies(['access_token', 'refresh_token']);
 
     useEffect(() => {
-        if (dataToDisplay.length === 1) {
-            setSnackbarMsg(dataToDisplay[0]);
+        if (dataToDisplay.pageData?.length === 1) {
+            setSnackbarMsg(dataToDisplay.pageData[0]);
             setOpenSnackbar(true);
         } else if (router.query.errorMessage && router.query.errorMessage !== '') {
             setIsError(true);
@@ -108,7 +107,10 @@ export default function LoginPage() {
     function handleCloseSnackbar() {
         setIsError(false);
         setOpenSnackbar(false);
-        setDataToDisplay([]); //clear data
+        setDataToDisplay({
+            isLoggingOut: false,
+            pageData: [],
+        }); //clear data
     }
 
     async function handleSubmit(event) {
@@ -146,8 +148,6 @@ export default function LoginPage() {
                 maxAge: 60 * 60,
                 sameSite: 'strict',
             });
-            setCurrentLoggedIn({role: (data?.role || '')});
-            console.log("login clientRole: " + currentLoggedIn.role);
 
             return router.replace(getHomepagePath(data));
 

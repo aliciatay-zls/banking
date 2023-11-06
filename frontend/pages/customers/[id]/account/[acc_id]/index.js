@@ -30,7 +30,10 @@ export default function TransactionPage(props) {
     function handleGetConfirmation(event) {
         event.preventDefault();
         setError('');
-        setDataToDisplay([]); //clear any previous data
+        setDataToDisplay({
+            isLoggingOut: false,
+            pageData: [],
+        }); //clear any previous data
 
         const isValid = event.target.checkValidity();
         if (!isValid) {
@@ -65,7 +68,10 @@ export default function TransactionPage(props) {
         }
 
         responseData.push(selectedType);
-        setDataToDisplay(responseData);
+        setDataToDisplay({
+            isLoggingOut: false,
+            pageData: responseData,
+        });
 
         return router.replace(currentPath.concat("/success"));
     }
@@ -76,6 +82,7 @@ export default function TransactionPage(props) {
 
     return (
         <DefaultLayout
+            clientRole={props.clientRole}
             tabTitle={"New Transaction"}
             headerTitle={"What would you like to do today?"}
             importantMsg={"Please note that only amounts between $1 to $100,000 are allowed."}

@@ -16,7 +16,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Logout from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 
-import { DataToDisplayContext, LoggedInContext } from "../pages/_app";
+import { DataToDisplayContext } from "../pages/_app";
 
 export function BaseAppBar({innerChildren, outerChildren}) {
     return (
@@ -41,13 +41,9 @@ export function BaseAppBar({innerChildren, outerChildren}) {
     );
 }
 
-export function DefaultAppBar() {
+export function DefaultAppBar({clientRole}) {
     const router = useRouter();
     const customerID = router.query?.id || '';
-
-    const { currentLoggedIn, setCurrentLoggedIn } = useContext(LoggedInContext);
-    const clientRole = currentLoggedIn.role || '';
-    console.log("appbar clientRole: " + clientRole);
 
     const [anchorEl, setAnchorEl] = useState(null);
     const openMenu = Boolean(anchorEl);
@@ -81,9 +77,11 @@ export function DefaultAppBar() {
                 path: '/',
                 sameSite: 'strict',
             });
-            setCurrentLoggedIn({});
+            setDataToDisplay({
+                isLoggingOut: true,
+                pageData: ["Logout successful"],
+            });
 
-            setDataToDisplay(["Logout successful"]);
             await router.replace('/login');
 
         } catch (err) {

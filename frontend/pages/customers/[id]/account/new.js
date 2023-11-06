@@ -20,6 +20,7 @@ export async function getServerSideProps(context) {
         props: {
             customerId: context.params.id,
             accessToken: initProps.props.accessToken,
+            clientRole: initProps.props.clientRole,
             currentPath: initProps.props.currentPath,
             requestURL: initProps.props.requestURL,
         }
@@ -83,6 +84,7 @@ export default function CreateAccountPage(props) {
 
     return (
         <DefaultLayout
+            clientRole={props.clientRole}
             tabTitle={"Create Account"}
             headerTitle={`Creating account for: Customer ${props.customerId}`}
             importantMsg={"Please note that the minimum amount to create an account is $5,000."}

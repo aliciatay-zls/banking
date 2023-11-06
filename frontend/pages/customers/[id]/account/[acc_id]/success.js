@@ -18,6 +18,7 @@ export async function getServerSideProps(context) {
 
     return {
         props: {
+            clientRole: initProps.props.clientRole,
             beforeURL: beforeURL,
         },
     };
@@ -26,6 +27,7 @@ export async function getServerSideProps(context) {
 export default function TransactionSuccessPage(props) {
     const router = useRouter();
     const { dataToDisplay } = useContext(DataToDisplayContext);
+    const pageData = dataToDisplay?.pageData || [];
     const [shouldRedirectBack, setShouldRedirectBack] = useState(false);
 
     useEffect(() => {
@@ -35,19 +37,19 @@ export default function TransactionSuccessPage(props) {
         }
     }, [shouldRedirectBack]);
 
-
-    if (!dataToDisplay || dataToDisplay.length < 2) {
+    if (pageData.length < 2 && !dataToDisplay.isLoggingOut) {
         if (!shouldRedirectBack) {
             setShouldRedirectBack(true);
         }
     }
 
-    const transactionID = dataToDisplay[0]?.transaction_id || '';
-    const newBalance = dataToDisplay[0]?.new_balance || '';
-    const transactionType = dataToDisplay[1] || '';
+    const transactionID = pageData[0]?.transaction_id || '';
+    const newBalance = pageData[0]?.new_balance || '';
+    const transactionType = pageData[1] || '';
 
     return (
         <DefaultLayout
+            clientRole={props.clientRole}
             tabTitle={"Success"}
             headerTitle={`Your ${transactionType} was successful.`}
         >

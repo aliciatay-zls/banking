@@ -16,12 +16,24 @@ export async function getServerSideProps(context) {
         headers: { "Authorization": "Bearer " + initProps.props.accessToken },
     };
 
-    return await handleFetchResource(initProps.props.currentPath, initProps.props.requestURL, request);
+    const finalProps = await handleFetchResource(initProps.props.currentPath, initProps.props.requestURL, request);
+    if (!finalProps.props) {
+        return finalProps;
+    }
+
+    return {
+        props: {
+            clientRole: initProps.props.clientRole,
+            responseData: finalProps.props.responseData,
+            currentPath: finalProps.props.currentPath,
+        }
+    }
 }
 
 export default function CustomersPage(props) {
     return (
         <DefaultLayout
+            clientRole={props.clientRole}
             tabTitle={"Home"}
             headerTitle={"All Customers"}
         >
@@ -45,7 +57,7 @@ export default function CustomersPage(props) {
                                 <li>Customer Status: {customerStatus}</li>
                             </ul>
                             <div>
-                                <Link href={"/customers".concat("/", customerId)}>
+                                <Link href={"/customers".concat(`/${customerId}/account`)}>
                                     <button type="button">
                                         Transact on behalf
                                     </button>

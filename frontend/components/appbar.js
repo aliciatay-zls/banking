@@ -6,6 +6,7 @@ import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -17,19 +18,19 @@ import Logout from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 
 import { DataToDisplayContext } from "../pages/_app";
+import getHomepagePath from "../src/getHomepagePath";
 
-export function BaseAppBar({innerChildren, outerChildren}) {
+export function BaseAppBar({homepagePath = "/login", innerChildren, outerChildren}) {
     return (
         <div>
             <Box sx={{ flexGrow: 1 }}>
                 <AppBar position="static" style={{ background: '#85011e' }}>
                     <Toolbar>
-                        <Box
-                            component="img"
-                            src="/logo.png"
-                            alt="app logo"
-                            sx={{height: 60}}
-                        />
+                        <Link href={homepagePath}>
+                            <Button>
+                                <img src="/logo.png" alt="app logo" height="60"/>
+                            </Button>
+                        </Link>
 
                         {innerChildren}
                     </Toolbar>
@@ -41,9 +42,11 @@ export function BaseAppBar({innerChildren, outerChildren}) {
     );
 }
 
-export function DefaultAppBar({clientRole}) {
+export function DefaultAppBar({clientInfo}) {
     const router = useRouter();
-    const customerID = router.query?.id || '';
+    const homepagePath = getHomepagePath(clientInfo) || "/login"; //default
+    const clientRole = clientInfo?.role || '';
+    const clientCustomerId = clientInfo?.cid || '';
 
     const [anchorEl, setAnchorEl] = useState(null);
     const openMenu = Boolean(anchorEl);
@@ -99,20 +102,17 @@ export function DefaultAppBar({clientRole}) {
     }
 
     function handleNavigateHomepage() {
-        if (customerID !== '') {
-            router.replace('/customers'.concat('/', customerID));
-        }
+        router.replace(`/customers/${clientCustomerId}`);
     }
 
     function handleNavigateAccount() {
-        if (customerID !== '') {
-            router.replace('/customers'.concat('/', customerID, '/account'));
-        }
+        router.replace(`/customers/${clientCustomerId}/account`);
     }
 
     return (
         <div>
             <BaseAppBar
+                homepagePath={homepagePath}
                 innerChildren={
                     <Tooltip title="Menu">
                         <IconButton

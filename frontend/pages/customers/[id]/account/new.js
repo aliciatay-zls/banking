@@ -7,6 +7,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
 
 import DefaultLayout from "../../../../components/defaultLayout";
+import getHomepagePath from "../../../../src/getHomepagePath";
 import handleFetchResource from "../../../../src/handleFetchResource";
 import serverSideProps from "../../../../src/serverSideProps";
 
@@ -16,11 +17,21 @@ export async function getServerSideProps(context) {
         return initProps;
     }
 
+    const clientRole = initProps.props.clientInfo?.role || '';
+    if (clientRole !== 'admin') {
+        return {
+            redirect: {
+                destination: getHomepagePath(initProps.props.clientInfo) || '/login',
+                permanent: false,
+            }
+        }
+    }
+
     return {
         props: {
             customerId: context.params.id,
             accessToken: initProps.props.accessToken,
-            clientRole: initProps.props.clientRole,
+            clientInfo: initProps.props.clientInfo,
             currentPath: initProps.props.currentPath,
             requestURL: initProps.props.requestURL,
         }
@@ -84,7 +95,7 @@ export default function CreateAccountPage(props) {
 
     return (
         <DefaultLayout
-            clientRole={props.clientRole}
+            clientInfo={props.clientInfo}
             tabTitle={"Create Account"}
             headerTitle={`Creating account for: Customer ${props.customerId}`}
             importantMsg={"Please note that the minimum amount to create an account is $5,000."}

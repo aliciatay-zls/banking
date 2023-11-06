@@ -39,7 +39,9 @@ export default async function handleFetchResource(currentPath, requestURL, reque
                     redirect: {
                         destination: `/login?errorMessage=${encodeURIComponent(errorMessage)}`,
                         permanent: false,
-                        errorMessage: "Please login again.",
+                        errorMessage: `You do not have permission to access this page. 
+                            If you think this is a mistake, kindly contact us at our hotline below.\n
+                            Redirecting you to Home or login...`,
                     }
                 };
             } else if (response.status === 404) {

@@ -23,7 +23,7 @@ export async function getServerSideProps(context) {
 
     return {
         props: {
-            clientRole: initProps.props.clientRole,
+            clientInfo: initProps.props.clientInfo,
             responseData: finalProps.props.responseData,
             currentPath: finalProps.props.currentPath,
         }
@@ -33,7 +33,7 @@ export async function getServerSideProps(context) {
 export default function AccountsPage(props) {
     return (
         <DefaultLayout
-            clientRole={props.clientRole}
+            clientInfo={props.clientInfo}
             tabTitle={"My Accounts"}
             headerTitle={"My Accounts"}
         >

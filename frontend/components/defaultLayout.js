@@ -2,7 +2,7 @@ import Head from "next/head";
 
 import { DefaultAppBar } from "./appbar";
 
-export default function DefaultLayout({ clientRole, tabTitle, headerTitle, importantMsg, children }) {
+export default function DefaultLayout({ clientInfo, tabTitle, headerTitle, importantMsg, children }) {
     const title = `Banking App - ${tabTitle}`;
     return (
         <div>
@@ -11,7 +11,7 @@ export default function DefaultLayout({ clientRole, tabTitle, headerTitle, impor
                 <link rel="icon" type="image/png" href="/favicon.ico" />
             </Head>
 
-            <DefaultAppBar clientRole={clientRole}/>
+            <DefaultAppBar clientInfo={clientInfo}/>
 
             <div>
                 <h1>{headerTitle}</h1>

@@ -31,13 +31,12 @@ export default async function getServerSideProps(context) {
     if (!loggedInData.props) {
         return loggedInData;
     }
-    const clientRole = loggedInData.props.responseData?.role || '';
 
     return {
         props: {
             accessToken: accessToken,
             refreshToken: refreshToken,
-            clientRole: clientRole,
+            clientInfo: loggedInData.props.responseData,
             currentPath: currentPath,
             requestURL: requestURL,
         },

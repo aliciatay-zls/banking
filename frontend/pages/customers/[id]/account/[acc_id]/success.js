@@ -18,7 +18,7 @@ export async function getServerSideProps(context) {
 
     return {
         props: {
-            clientRole: initProps.props.clientRole,
+            clientInfo: initProps.props.clientInfo,
             beforeURL: beforeURL,
         },
     };
@@ -46,21 +46,26 @@ export default function TransactionSuccessPage(props) {
     const transactionID = pageData[0]?.transaction_id || '';
     const newBalance = pageData[0]?.new_balance || '';
     const transactionType = pageData[1] || '';
+    const headerTitle = transactionType !== '' ? `Your ${transactionType} was successful.` : '';
 
     return (
         <DefaultLayout
-            clientRole={props.clientRole}
+            clientInfo={props.clientInfo}
             tabTitle={"Success"}
-            headerTitle={`Your ${transactionType} was successful.`}
+            headerTitle={headerTitle}
         >
-            <ul>
-                <li>New account balance: {newBalance}</li>
-                <li>Transaction ID: {transactionID}</li>
-            </ul>
+            { transactionID !== '' && newBalance !== '' &&
+                <div>
+                    <ul>
+                        <li>New account balance: {newBalance}</li>
+                        <li>Transaction ID: {transactionID}</li>
+                    </ul>
 
-            <Link href={props.beforeURL}>
-                <button type="button">Make another transaction</button>
-            </Link>
+                    <Link href={props.beforeURL}>
+                        <button type="button">Make another transaction</button>
+                    </Link>
+                </div>
+            }
         </DefaultLayout>
     );
 }

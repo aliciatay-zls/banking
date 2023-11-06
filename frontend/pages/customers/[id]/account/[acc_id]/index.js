@@ -62,7 +62,7 @@ export default function TransactionPage(props) {
                 setError("Something went wrong on our end, please try again later.");
             } else {
                 setError(finalProps.redirect.errorMessage);
-                setTimeout(() => router.replace(possibleRedirect), 3000);
+                setTimeout(() => router.replace(possibleRedirect), 10000);
             }
             return;
         }
@@ -82,7 +82,7 @@ export default function TransactionPage(props) {
 
     return (
         <DefaultLayout
-            clientRole={props.clientRole}
+            clientInfo={props.clientInfo}
             tabTitle={"New Transaction"}
             headerTitle={"What would you like to do today?"}
             importantMsg={"Please note that only amounts between $1 to $100,000 are allowed."}

@@ -24,7 +24,6 @@ export default function CustomersPage(props) {
         <DefaultLayout
             tabTitle={"Home"}
             headerTitle={"All Customers"}
-            isCustomer={false}
         >
             <div>
                 { props.responseData && props.responseData.map((cus) => {

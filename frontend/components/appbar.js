@@ -16,7 +16,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Logout from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 
-import { DataToDisplayContext } from "../pages/_app";
+import { DataToDisplayContext, LoggedInContext } from "../pages/_app";
 
 export function BaseAppBar({innerChildren, outerChildren}) {
     return (
@@ -41,9 +41,13 @@ export function BaseAppBar({innerChildren, outerChildren}) {
     );
 }
 
-export function DefaultAppBar({ isCustomer = true }) {
+export function DefaultAppBar() {
     const router = useRouter();
     const customerID = router.query?.id || '';
+
+    const { currentLoggedIn, setCurrentLoggedIn } = useContext(LoggedInContext);
+    const clientRole = currentLoggedIn.role || '';
+    console.log("appbar clientRole: " + clientRole);
 
     const [anchorEl, setAnchorEl] = useState(null);
     const openMenu = Boolean(anchorEl);
@@ -77,6 +81,7 @@ export function DefaultAppBar({ isCustomer = true }) {
                 path: '/',
                 sameSite: 'strict',
             });
+            setCurrentLoggedIn({});
 
             setDataToDisplay(["Logout successful"]);
             await router.replace('/login');
@@ -135,7 +140,7 @@ export function DefaultAppBar({ isCustomer = true }) {
                             'aria-labelledby': 'basic-button',
                         }}
                     >
-                        { isCustomer &&
+                        { clientRole === 'user' &&
                             <div>
                                 <MenuItem onClick={handleNavigateHomepage}>My Profile</MenuItem>
                                 <MenuItem onClick={handleNavigateAccount}>My Accounts</MenuItem>

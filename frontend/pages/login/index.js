@@ -5,7 +5,7 @@ import { useCookies} from "react-cookie";
 import MuiAlert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 
-import { DataToDisplayContext } from "../_app";
+import { DataToDisplayContext, LoggedInContext } from "../_app";
 import LoginLayout from "../../components/loginLayout";
 import getHomepagePath from "../../src/getHomepagePath";
 
@@ -83,6 +83,7 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
 
     const { dataToDisplay, setDataToDisplay } = useContext(DataToDisplayContext);
+    const { currentLoggedIn, setCurrentLoggedIn } = useContext(LoggedInContext);
     const [snackbarMsg, setSnackbarMsg] = useState('');
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [isError, setIsError] = useState(false);
@@ -145,6 +146,8 @@ export default function LoginPage() {
                 maxAge: 60 * 60,
                 sameSite: 'strict',
             });
+            setCurrentLoggedIn({role: (data?.role || '')});
+            console.log("login clientRole: " + currentLoggedIn.role);
 
             return router.replace(getHomepagePath(data));
 

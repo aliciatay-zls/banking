@@ -86,7 +86,6 @@ export default function CreateAccountPage(props) {
             tabTitle={"Create Account"}
             headerTitle={`Creating account for: Customer ${props.customerId}`}
             importantMsg={"Please note that the minimum amount to create an account is $5,000."}
-            isCustomer={false}
         >
             <form name={"create-account-form"} onSubmit={handleGetConfirmation}>
                 <div>

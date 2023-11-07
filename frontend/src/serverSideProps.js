@@ -1,44 +1,31 @@
-import { parse } from "cookie";
+import authServerSideProps from "./authServerSideProps";
 import handleFetchResource from "./handleFetchResource";
 
+/**
+ * Ensures the client is logged in, then sends a GET request to the backend resource server to retrieve the
+ * data to display on the page.
+ */
 export default async function getServerSideProps(context) {
-    //get cookies
-    const { req } = context;
-    const rawCookies = req?.headers?.cookie || '';
-    const cookies = parse(rawCookies);
-    const accessToken = cookies?.access_token || '';
-    const refreshToken = cookies?.refresh_token || '';
-
-    if (accessToken === '' || refreshToken === '') {
-        console.log("no cookies set");
-        return {
-            redirect: {
-                destination: `/login?errorMessage=${encodeURIComponent("Please login.")}`,
-                permanent: false,
-            }
-        };
+    const initProps = await authServerSideProps(context);
+    if (!initProps.props) {
+        return initProps;
     }
 
-    const currentPath = context.resolvedUrl;
-    const requestURL = "http://127.0.0.1:8080".concat(currentPath);
-    const checkLoggedInURL = "http://127.0.0.1:8181/auth/continue";
     const request = {
-        method: "POST",
-        body: JSON.stringify({"access_token": accessToken, "refresh_token": refreshToken}),
+        method: "GET",
+        headers: { "Authorization": "Bearer " + initProps.props.accessToken },
     };
 
-    const loggedInData = await handleFetchResource(currentPath, checkLoggedInURL, request);
-    if (!loggedInData.props) {
-        return loggedInData;
+    const finalProps = await handleFetchResource(initProps.props.currentPath, initProps.props.requestURL, request);
+    if (!finalProps.props) {
+        return finalProps;
     }
 
     return {
         props: {
-            accessToken: accessToken,
-            refreshToken: refreshToken,
-            clientInfo: loggedInData.props.responseData,
-            currentPath: currentPath,
-            requestURL: requestURL,
-        },
-    };
+            clientInfo: initProps.props.clientInfo,
+            responseData: finalProps.props.responseData,
+            currentPath: finalProps.props.currentPath,
+        }
+    }
 }

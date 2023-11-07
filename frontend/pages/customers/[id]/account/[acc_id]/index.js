@@ -7,11 +7,11 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 import { DataToDisplayContext } from "../../../../_app";
 import DefaultLayout from "../../../../../components/defaultLayout";
+import authServerSideProps from "../../../../../src/authServerSideProps";
 import handleFetchResource from "../../../../../src/handleFetchResource";
-import serverSideProps from "../../../../../src/serverSideProps";
 
 export async function getServerSideProps(context) {
-    return await serverSideProps(context);
+    return await authServerSideProps(context);
 }
 
 export default function TransactionPage(props) {

@@ -4,10 +4,10 @@ import { useContext, useEffect, useState } from "react";
 
 import { DataToDisplayContext } from "../../../../_app";
 import DefaultLayout from "../../../../../components/defaultLayout";
-import serverSideProps from "../../../../../src/serverSideProps"
+import authServerSideProps from "../../../../../src/authServerSideProps"
 
 export async function getServerSideProps(context) {
-    const initProps = await serverSideProps(context); //just to check cookies are set
+    const initProps = await authServerSideProps(context);
     if (!initProps.props) {
         return initProps;
     }

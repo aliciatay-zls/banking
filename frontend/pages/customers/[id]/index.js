@@ -1,30 +1,8 @@
 import DefaultLayout from "../../../components/defaultLayout";
-import handleFetchResource from "../../../src/handleFetchResource";
 import serverSideProps from "../../../src/serverSideProps";
 
 export async function getServerSideProps(context) {
-    const initProps = await serverSideProps(context);
-    if (!initProps.props) {
-        return initProps;
-    }
-
-    const request = {
-        method: "GET",
-        headers: { "Authorization": "Bearer " + initProps.props.accessToken },
-    };
-
-    const finalProps = await handleFetchResource(initProps.props.currentPath, initProps.props.requestURL, request);
-    if (!finalProps.props) {
-        return finalProps;
-    }
-
-    return {
-        props: {
-            clientInfo: initProps.props.clientInfo,
-            responseData: finalProps.props.responseData,
-            currentPath: finalProps.props.currentPath,
-        }
-    }
+    return await serverSideProps(context);
 }
 
 export default function CustomerHomePage(props) {

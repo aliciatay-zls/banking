@@ -7,12 +7,12 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
 
 import DefaultLayout from "../../../../components/defaultLayout";
+import authServerSideProps from "../../../../src/authServerSideProps";
 import getHomepagePath from "../../../../src/getHomepagePath";
 import handleFetchResource from "../../../../src/handleFetchResource";
-import serverSideProps from "../../../../src/serverSideProps";
 
 export async function getServerSideProps(context) {
-    const initProps = await serverSideProps(context);
+    const initProps = await authServerSideProps(context);
     if (!initProps.props) {
         return initProps;
     }

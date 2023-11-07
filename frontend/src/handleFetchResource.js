@@ -1,3 +1,11 @@
+/**
+ * Sends a request to a backend API endpoint. If the request is unsuccessful, it handles the different response
+ * codes and errors from the backend, otherwise it returns the response data received.
+ *
+ * @param currentPath {string} The relative URL of the page that the client is currently on.
+ * @param requestURL {string} The API endpoint of either the resource or auth server to send the request to.
+ * @param request {object} The HTTP request to send.
+ */
 export default async function handleFetchResource(currentPath, requestURL, request) {
     let data = '';
 

@@ -40,12 +40,14 @@ const columns = [
     {
         field: 'id',
         headerName: 'ID',
+        flex: 0.5,
         minWidth: 90,
         editable: false,
     },
     {
         field: 'fullName',
         headerName: 'Full Name',
+        flex: 1,
         minWidth: 150,
         editable: false,
         renderCell: (params) =>
@@ -64,6 +66,7 @@ const columns = [
     {
         field: 'dob',
         headerName: 'DOB',
+        flex: 0.5,
         minWidth: 100,
         editable: false,
         type: 'date',
@@ -72,18 +75,21 @@ const columns = [
     {
         field: 'city',
         headerName: 'City',
+        flex: 1,
         minWidth: 150,
         editable: false,
     },
     {
         field: 'zipcode',
         headerName: 'Zip',
+        flex: 0.5,
         minWidth: 80,
         editable: false,
     },
     {
         field: 'status',
         headerName: 'Status',
+        flex: 0.5,
         minWidth: 110,
         editable: false,
         renderCell: ({value}) =>
@@ -96,7 +102,7 @@ const columns = [
     {
         field: 'actions',
         headerName: 'Actions',
-        flex: 0.3,
+        flex: 0.5,
         minWidth: 110,
         type: 'actions',
         getActions: ({row}) => [
@@ -126,6 +132,7 @@ export default function CustomersPage(props) {
     return (
         <DefaultLayout
             clientInfo={props.clientInfo}
+            isPossibleTOB={false}
             tabTitle={"Home"}
             headerTitle={"All Customers"}
         >

@@ -30,6 +30,7 @@ export default function TempRefreshPage(props) {
             const accessToken = cookies?.access_token || '';
             const refreshToken = cookies?.refresh_token || '';
             if (accessToken === '' || refreshToken === '') {
+                console.log("no cookies set");
                 router.replace('/login');
                 return;
             }
@@ -100,7 +101,7 @@ export default function TempRefreshPage(props) {
         <div>
             <Head>
                 <title>Banking App - Home</title>
-                <link rel="icon" type="image/png" href="/favicon.ico" />
+                <link rel="icon" href="/favicon.ico" />
             </Head>
 
             <div>

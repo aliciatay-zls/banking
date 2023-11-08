@@ -8,7 +8,7 @@ export default function LoginLayout({ tabTitle, headerTitle, children }) {
         <div>
             <Head>
                 <title>{title}</title>
-                <link rel="icon" type="image/png" href="/favicon.ico" />
+                <link rel="icon" href="/favicon.ico" />
             </Head>
 
             <BaseAppBar/>

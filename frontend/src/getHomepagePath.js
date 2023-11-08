@@ -5,12 +5,10 @@ export default function getHomepagePath(data) {
     //redirect to diff pages based on role
     if (clientRole === 'admin') {
         return '/customers';
-    } else if (clientRole === 'user') {
-        if (customerId === '') {
-            throw new Error("No cid in response, cannot continue");
-        }
+    } else if (clientRole === 'user' && customerId !== '') {
         return `/customers/${customerId}`;
     }
 
-    throw new Error("Unknown role");
+    console.log("Unknown role or no cid in response");
+    return "/login";
 }

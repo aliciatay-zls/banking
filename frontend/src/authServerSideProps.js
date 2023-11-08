@@ -17,6 +17,7 @@ export default async function getServerSideProps(context) {
     const refreshToken = cookies?.refresh_token || '';
 
     if (accessToken === '' || refreshToken === '') {
+        console.log("no cookies set");
         return {
             redirect: {
                 destination: `/login?errorMessage=${encodeURIComponent("Please login.")}`,

@@ -73,7 +73,7 @@ export default function TransactionPage(props) {
             pageData: responseData,
         });
 
-        return router.replace(currentPath.concat("/success"));
+        return router.replace(`${currentPath}/success`);
     }
 
     function handleCancel() {

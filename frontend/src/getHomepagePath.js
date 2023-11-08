@@ -9,7 +9,7 @@ export default function getHomepagePath(data) {
         if (customerId === '') {
             throw new Error("No cid in response, cannot continue");
         }
-        return '/customers'.concat('/', customerId);
+        return `/customers/${customerId}`;
     }
 
     throw new Error("Unknown role");

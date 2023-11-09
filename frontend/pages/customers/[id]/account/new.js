@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import Box from '@mui/material/Box';
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
 
 import DefaultLayout from "../../../../components/defaultLayout";
 import authServerSideProps from "../../../../src/authServerSideProps";
@@ -43,12 +46,27 @@ export default function CreateAccountPage(props) {
 
     const [selectedType, setSelectedType] = useState('');
     const [inputAmount, setInputAmount] = useState(0);
+    const [errorAmount, setErrorAmount] = useState(false);
     const [newAccountInfo, setNewAccountInfo] = useState('');
     const [error, setError] = useState('');
     const [openConfirmation, setOpenConfirmation] = useState(false);
 
     const buttonLinkAccounts = `http://localhost:3000/customers/${props.customerId}/account`;
     const buttonLinkAllCustomers = "http://localhost:3000/customers";
+
+    function checkInputAmount(rawAmt) {
+        const re = new RegExp("^[0-9]+$");
+        if (re.test(rawAmt)) {
+            const amt = parseInt(rawAmt, 10);
+            if (!isNaN(amt) && amt >= 5000) {
+                setErrorAmount(false);
+                setInputAmount(amt);
+                return;
+            }
+        }
+        setInputAmount(0);
+        setErrorAmount(true);
+    }
 
     function handleGetConfirmation(event) {
         event.preventDefault();
@@ -100,47 +118,58 @@ export default function CreateAccountPage(props) {
             headerTitle={`Creating account for: Customer ${props.customerId}`}
             importantMsg={"Please note that the minimum amount to create an account is $5,000."}
         >
-            <form name={"create-account-form"} onSubmit={handleGetConfirmation}>
+            <Box
+                component="form"
+                name="create-account-form"
+                autoComplete="off"
+                sx={{
+                    '& .MuiTextField-root': { m: 1, width: '25ch' },
+                }}
+                onSubmit={handleGetConfirmation}
+            >
                 <div>
-                    <label htmlFor="select-account-type">Account type: </label>
-                    <select
-                        id="select-account-type"
-                        value={selectedType}
+                    <TextField
                         required
+                        select
+                        id="select-account-type"
+                        label="Account Type"
+                        value={selectedType}
                         onChange={e => setSelectedType(e.target.value)}
                     >
-                        <option value="">Please select an option</option>
-                        <option value="saving">Saving</option>
-                        <option value="checking">Checking</option>
-                    </select>
+                        <MenuItem value={"saving"}>Saving</MenuItem>
+                        <MenuItem value={"checking"}>Checking</MenuItem>
+                    </TextField>
                 </div>
+
                 <div>
-                    <label htmlFor={"account-amount"}>Initial amount: </label>
-                    <input
-                        type="number"
-                        id="account-amount"
-                        name="account-amount"
-                        min="5000"
+                    <TextField
                         required
-                        onChange={e => setInputAmount(parseInt(e.target.value, 10))}
+                        inputMode="numeric"
+                        id="account-amount"
+                        label="Initial Amount"
+                        error={errorAmount === true}
+                        helperText={errorAmount ? "Please enter a valid amount." : ""}
+                        onChange={e => checkInputAmount(e.target.value)}
                     />
                 </div>
+
                 <div>
-                    <Button type="submit" variant="contained">Submit</Button>
-                    <Dialog
-                        open={openConfirmation}
-                        onClose={handleCancel}
-                    >
-                        <DialogTitle>
-                            {`Create a ${selectedType} account with an initial amount of $${inputAmount}?`}
-                        </DialogTitle>
-                        <DialogActions>
-                            <Button onClick={handleCancel}>No</Button>
-                            <Button onClick={handleNewAccount}>Yes</Button>
-                        </DialogActions>
-                    </Dialog>
+                    <Button type="submit" variant="contained">Create</Button>
                 </div>
-            </form>
+            </Box>
+
+            <Dialog
+                open={openConfirmation}
+                onClose={handleCancel}
+            >
+                <DialogTitle>
+                    {`Create a ${selectedType} account with an initial amount of $${inputAmount}?`}
+                </DialogTitle>
+                <DialogActions>
+                    <Button onClick={handleCancel}>No</Button>
+                    <Button onClick={handleNewAccount}>Yes</Button>
+                </DialogActions>
+            </Dialog>
 
             <div>
                 <Link href={buttonLinkAccounts}>

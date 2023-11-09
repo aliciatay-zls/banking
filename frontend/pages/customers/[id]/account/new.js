@@ -6,8 +6,13 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
+import Grid from '@mui/material/Grid';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 import DefaultLayout from "../../../../components/defaultLayout";
 import authServerSideProps from "../../../../src/authServerSideProps";
@@ -47,12 +52,11 @@ export default function CreateAccountPage(props) {
     const [selectedType, setSelectedType] = useState('');
     const [inputAmount, setInputAmount] = useState(0);
     const [errorAmount, setErrorAmount] = useState(false);
-    const [newAccountInfo, setNewAccountInfo] = useState('');
     const [error, setError] = useState('');
     const [openConfirmation, setOpenConfirmation] = useState(false);
+    const [newAccountInfo, setNewAccountInfo] = useState('');
 
     const buttonLinkAccounts = `http://localhost:3000/customers/${props.customerId}/account`;
-    const buttonLinkAllCustomers = "http://localhost:3000/customers";
 
     function checkInputAmount(rawAmt) {
         const re = new RegExp("^[0-9]+$");
@@ -114,81 +118,105 @@ export default function CreateAccountPage(props) {
     return (
         <DefaultLayout
             clientInfo={props.clientInfo}
-            tabTitle={"Create Account"}
-            headerTitle={`Creating account for: Customer ${props.customerId}`}
-            importantMsg={"Please note that the minimum amount to create an account is $5,000."}
+            tabTitle={"Account Opening"}
+            headerTitle={"Account Opening"}
         >
-            <Box
-                component="form"
-                name="create-account-form"
-                autoComplete="off"
-                sx={{
-                    '& .MuiTextField-root': { m: 1, width: '25ch' },
-                }}
-                onSubmit={handleGetConfirmation}
-            >
-                <div>
-                    <TextField
-                        required
-                        select
-                        id="select-account-type"
-                        label="Account Type"
-                        value={selectedType}
-                        onChange={e => setSelectedType(e.target.value)}
-                    >
-                        <MenuItem value={"saving"}>Saving</MenuItem>
-                        <MenuItem value={"checking"}>Checking</MenuItem>
-                    </TextField>
-                </div>
+            { !newAccountInfo ? (
+                <Box
+                    component="form"
+                    name="create-account-form"
+                    autoComplete="off"
+                    onSubmit={handleGetConfirmation}
+                    padding={3}
+                >
+                    <Typography variant="subtitle1" align="center" gutterBottom style={{ color: 'blue', lineHeight: 1.2, marginBottom: 20,}}>
+                        Note: minimum initial amount to open an account is $5,000.
+                    </Typography>
 
-                <div>
-                    <TextField
-                        required
-                        inputMode="numeric"
-                        id="account-amount"
-                        label="Initial Amount"
-                        error={errorAmount === true}
-                        helperText={errorAmount ? "Please enter a valid amount." : ""}
-                        onChange={e => checkInputAmount(e.target.value)}
-                    />
-                </div>
-
-                <div>
-                    <Button type="submit" variant="contained">Create</Button>
-                </div>
-            </Box>
+                    <Grid container spacing={3}>
+                        <Grid item xs={12}>
+                            <TextField
+                                disabled
+                                id="display-customer-id"
+                                label="Customer ID"
+                                fullWidth
+                                variant="standard"
+                                value={props.customerId}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                required
+                                select
+                                id="select-account-type"
+                                label="Account Type"
+                                fullWidth
+                                variant="standard"
+                                value={selectedType}
+                                onChange={e => setSelectedType(e.target.value)}
+                            >
+                                <MenuItem value={"saving"}>Saving</MenuItem>
+                                <MenuItem value={"checking"}>Checking</MenuItem>
+                            </TextField>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                required
+                                inputMode="numeric"
+                                id="input-account-amount"
+                                label="Initial Amount"
+                                fullWidth
+                                variant="standard"
+                                error={errorAmount === true}
+                                helperText={errorAmount ? "Please enter a valid amount." : ""}
+                                onChange={e => checkInputAmount(e.target.value)}
+                            />
+                        </Grid>
+                        <Grid item xs={12} />
+                        <ButtonLinkToAllCustomers />
+                        <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <Button type="submit" variant="contained">
+                                Submit
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Box>
+            ) : (
+                <Grid container spacing={3} name="create-account-success-info">
+                    <Grid item xs={12}>
+                        <Typography variant="h5" align="center" style={{color: 'green', marginTop: 20}}>
+                            <CheckCircleIcon fontSize="small"/> Success.
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Typography variant="subtitle1" align="center">
+                            New account number: {newAccountInfo}
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12} />
+                    <ButtonLinkToAllCustomers />
+                    <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <Link href={buttonLinkAccounts}>
+                            <Button type="button" variant="no-caps" size="small" endIcon={<ArrowForwardIosIcon/>}>
+                                Go to accounts
+                            </Button>
+                        </Link>
+                    </Grid>
+                </Grid>
+            )}
 
             <Dialog
                 open={openConfirmation}
                 onClose={handleCancel}
             >
                 <DialogTitle>
-                    {`Create a ${selectedType} account with an initial amount of $${inputAmount}?`}
+                    {`Open ${selectedType} account of $${inputAmount}?`}
                 </DialogTitle>
                 <DialogActions>
                     <Button onClick={handleCancel}>No</Button>
                     <Button onClick={handleNewAccount}>Yes</Button>
                 </DialogActions>
             </Dialog>
-
-            <div>
-                <Link href={buttonLinkAccounts}>
-                    <button type="button">Go to accounts</button>
-                </Link>
-            </div>
-
-            <div>
-                <Link href={buttonLinkAllCustomers}>
-                    <button type="button">Back to all customers</button>
-                </Link>
-            </div>
-
-            { newAccountInfo &&
-                <div>
-                    <p>Account successfully created </p>
-                    <p>New Account No.: {newAccountInfo}</p>
-                </div>
-            }
 
             { error &&
                 <div style={{ color: 'red'}}>
@@ -197,5 +225,19 @@ export default function CreateAccountPage(props) {
                 </div>
             }
         </DefaultLayout>
+    );
+}
+
+function ButtonLinkToAllCustomers() {
+    const buttonLinkAllCustomers = "http://localhost:3000/customers";
+
+    return (
+        <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+            <Link href={buttonLinkAllCustomers}>
+                <Button type="button" variant="no-caps" size="small" startIcon={<ArrowBackIosIcon/>}>
+                    Back to customers
+                </Button>
+            </Link>
+        </Grid>
     );
 }

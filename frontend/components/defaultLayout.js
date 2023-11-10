@@ -1,10 +1,12 @@
 import Head from "next/head";
 import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 
 import { DefaultAppBar } from "./appbar";
+import BankFooter from "./footer";
 
 export default function DefaultLayout({ clientInfo, isPossibleTOB = true, tabTitle, headerTitle, importantMsg, children }) {
     const title = `Banking App - ${tabTitle}`;
@@ -34,6 +36,8 @@ export default function DefaultLayout({ clientInfo, isPossibleTOB = true, tabTit
                     {children}
                 </Paper>
             </Container>
+
+            <BankFooter/>
         </div>
     );
 }

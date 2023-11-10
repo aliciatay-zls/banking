@@ -2,8 +2,11 @@ import { useRouter } from 'next/router';
 import { forwardRef, useContext, useEffect, useState } from 'react';
 import { parse } from "cookie";
 import { useCookies} from "react-cookie";
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import MuiAlert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
+import TextField from '@mui/material/TextField';
 
 import { DataToDisplayContext } from "../_app";
 import LoginLayout from "../../components/loginLayout";
@@ -162,41 +165,36 @@ export default function LoginPage() {
     }
 
     return (
-        <LoginLayout
-            tabTitle={"Login"}
-            headerTitle={"Welcome back"}
-        >
-            <form name="loginform" onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="username">Username</label>
-                    <input
-                        type="text"
-                        id="username"
-                        name="username"
-                        value={username}
-                        required
-                        autoComplete="name"
-                        onChange={(u) => setUsername(u.target.value)}
-                    />
-                </div>
-                <div>
-                    <label htmlFor="password">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        value={password}
-                        required
-                        autoComplete="off"
-                        onChange={(p) => setPassword(p.target.value)}
-                    />
-                </div>
-                <div>
-                    <button type="submit">
-                        {isLoading ? 'Loading...' : 'Submit'}
-                    </button>
-                </div>
-            </form>
+        <LoginLayout>
+            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                <TextField
+                    required
+                    id="username"
+                    name="username"
+                    label="Username"
+                    autoComplete="name"
+                    margin="normal"
+                    fullWidth
+                    autoFocus
+                    value={username}
+                    onChange={(u) => setUsername(u.target.value)}
+                />
+                <TextField
+                    required
+                    type="password"
+                    id="password"
+                    name="password"
+                    label="Password"
+                    autoComplete="off"
+                    margin="normal"
+                    fullWidth
+                    value={password}
+                    onChange={(p) => setPassword(p.target.value)}
+                />
+                <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+                    {isLoading ? 'Loading...' : 'Submit'}
+                </Button>
+            </Box>
 
             <Snackbar
                 open={openSnackbar}

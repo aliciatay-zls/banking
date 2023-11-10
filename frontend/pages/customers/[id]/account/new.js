@@ -3,11 +3,13 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import Box from '@mui/material/Box';
 import Button from "@mui/material/Button";
+import Container from '@mui/material/Container';
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
 import Grid from '@mui/material/Grid';
 import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
@@ -121,89 +123,101 @@ export default function CreateAccountPage(props) {
             tabTitle={"Account Opening"}
             headerTitle={"Account Opening"}
         >
-            { !newAccountInfo ? (
-                <Box
-                    component="form"
-                    name="create-account-form"
-                    autoComplete="off"
-                    onSubmit={handleGetConfirmation}
-                    padding={3}
+            <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
+                <Paper
+                    variant="outlined"
+                    sx={{
+                       my: { xs: 2, md: 2 },
+                       p: { xs: 2, md: 3 },
+                       minHeight: "400px",
+                       alignContent: "center",
+                       display: "grid",
+                    }}
                 >
-                    <Typography variant="subtitle1" align="center" gutterBottom style={{ color: 'blue', lineHeight: 1.2, marginBottom: 20,}}>
-                        Note: minimum initial amount to open an account is $5,000.
-                    </Typography>
+                    { !newAccountInfo ? (
+                        <Box
+                            component="form"
+                            name="create-account-form"
+                            autoComplete="off"
+                            onSubmit={handleGetConfirmation}
+                        >
+                            <Typography variant="subtitle1" align="center" gutterBottom style={{ color: 'blue', lineHeight: 1.2, marginBottom: 20,}}>
+                                Note: minimum initial amount to open an account is $5,000.
+                            </Typography>
 
-                    <Grid container spacing={3}>
-                        <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                id="display-customer-id"
-                                label="Customer ID"
-                                fullWidth
-                                variant="standard"
-                                value={props.customerId}
-                            />
+                            <Grid container spacing={3}>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        disabled
+                                        id="display-customer-id"
+                                        label="Customer ID"
+                                        fullWidth
+                                        variant="standard"
+                                        value={props.customerId}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        required
+                                        select
+                                        id="select-account-type"
+                                        label="Account Type"
+                                        fullWidth
+                                        variant="standard"
+                                        value={selectedType}
+                                        onChange={e => setSelectedType(e.target.value)}
+                                    >
+                                        <MenuItem value={"saving"}>Saving</MenuItem>
+                                        <MenuItem value={"checking"}>Checking</MenuItem>
+                                    </TextField>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        required
+                                        inputMode="numeric"
+                                        id="input-account-amount"
+                                        label="Initial Amount"
+                                        fullWidth
+                                        variant="standard"
+                                        error={errorAmount === true}
+                                        helperText={errorAmount ? "Please enter a valid amount." : ""}
+                                        onChange={e => checkInputAmount(e.target.value)}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} />
+                                <ButtonLinkToAllCustomers />
+                                <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                    <Button type="submit" variant="contained">
+                                        Submit
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </Box>
+                    ) : (
+                        <Grid container spacing={3} name="create-account-success-info">
+                            <Grid item xs={12}>
+                                <Typography variant="h5" align="center" style={{color: 'green', marginTop: 20}}>
+                                    <CheckCircleIcon fontSize="small"/> Success.
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography variant="subtitle1" align="center">
+                                    New account number: {newAccountInfo}
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={12} />
+                            <ButtonLinkToAllCustomers />
+                            <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                <Link href={buttonLinkAccounts}>
+                                    <Button type="button" variant="no-caps" size="small" endIcon={<ArrowForwardIosIcon/>}>
+                                        Go to accounts
+                                    </Button>
+                                </Link>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                required
-                                select
-                                id="select-account-type"
-                                label="Account Type"
-                                fullWidth
-                                variant="standard"
-                                value={selectedType}
-                                onChange={e => setSelectedType(e.target.value)}
-                            >
-                                <MenuItem value={"saving"}>Saving</MenuItem>
-                                <MenuItem value={"checking"}>Checking</MenuItem>
-                            </TextField>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                required
-                                inputMode="numeric"
-                                id="input-account-amount"
-                                label="Initial Amount"
-                                fullWidth
-                                variant="standard"
-                                error={errorAmount === true}
-                                helperText={errorAmount ? "Please enter a valid amount." : ""}
-                                onChange={e => checkInputAmount(e.target.value)}
-                            />
-                        </Grid>
-                        <Grid item xs={12} />
-                        <ButtonLinkToAllCustomers />
-                        <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                            <Button type="submit" variant="contained">
-                                Submit
-                            </Button>
-                        </Grid>
-                    </Grid>
-                </Box>
-            ) : (
-                <Grid container spacing={3} name="create-account-success-info">
-                    <Grid item xs={12}>
-                        <Typography variant="h5" align="center" style={{color: 'green', marginTop: 20}}>
-                            <CheckCircleIcon fontSize="small"/> Success.
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Typography variant="subtitle1" align="center">
-                            New account number: {newAccountInfo}
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} />
-                    <ButtonLinkToAllCustomers />
-                    <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                        <Link href={buttonLinkAccounts}>
-                            <Button type="button" variant="no-caps" size="small" endIcon={<ArrowForwardIosIcon/>}>
-                                Go to accounts
-                            </Button>
-                        </Link>
-                    </Grid>
-                </Grid>
-            )}
+                    )}
+                </Paper>
+            </Container>
 
             <Dialog
                 open={openConfirmation}

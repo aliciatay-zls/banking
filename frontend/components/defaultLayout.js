@@ -1,8 +1,5 @@
 import Head from "next/head";
 import Alert from '@mui/material/Alert';
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 
 import { DefaultAppBar } from "./appbar";
@@ -22,20 +19,18 @@ export default function DefaultLayout({ clientInfo, isPossibleTOB = true, tabTit
             <DefaultAppBar clientInfo={clientInfo}/>
 
             { isTOB &&
-                <Alert severity="info">
-                    You are acting on behalf of this customer.
-                </Alert>
+                <Typography variant="body1">
+                    <Alert severity="info" sx={{fontSize: "inherit"}}>
+                        You are acting on behalf of this customer.
+                    </Alert>
+                </Typography>
             }
 
-            <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
-                <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
-                    <Typography variant="h4" align="center">
-                        {headerTitle}
-                    </Typography>
+            <Typography variant="h4" align="center" marginTop={5} marginBottom={3}>
+                {headerTitle}
+            </Typography>
 
-                    {children}
-                </Paper>
-            </Container>
+            {children}
 
             <BankFooter/>
         </div>

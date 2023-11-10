@@ -136,7 +136,7 @@ export default function CustomersPage(props) {
             tabTitle={"Home"}
             headerTitle={"All Customers"}
         >
-            <Box sx={{ height: 400, width: '100%' }}>
+            <Box sx={{ height: 400, width: '90%', margin: 'auto', marginBottom: 5}}>
                 <DataGrid
                     rows={props.customerRows}
                     columns={columns}

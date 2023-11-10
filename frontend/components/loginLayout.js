@@ -17,19 +17,20 @@ export default function LoginLayout({ children }) {
 
             <BaseAppBar/>
 
-            <Grid container component="main" sx={{ height: '100vh' }}>
+            <Grid container component="main" sx={{ height: '100vh', maxHeight: '600px' }}>
                 <Grid
                     item
                     xs={false}
                     sm={4}
                     md={7}
                     sx={{
-                        backgroundImage: 'url(https://source.unsplash.com/random?wallpapers)',
+                        backgroundImage: 'url(login_bgd.jpg)',
                         backgroundRepeat: 'no-repeat',
                         backgroundColor: (t) =>
                             t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
+                        opacity: 0.9,
                     }}
                 />
                 <Grid item xs={12} sm={8} md={5} component={Paper} elevation={0} square>
@@ -44,9 +45,6 @@ export default function LoginLayout({ children }) {
                     >
                         <Typography variant="h3" align="center" marginTop={5} marginBottom={3}>
                             Welcome back
-                        </Typography>
-                        <Typography component="h1" variant="h5">
-                            Sign in
                         </Typography>
                         {children}
                     </Box>

@@ -31,6 +31,18 @@ let BankTheme = createTheme({
                         lineHeight: 1.2,
                     },
                 },
+                {
+                    props: { variant: 'contained bank-theme' },
+                    style: {
+                        color: '#FFFFFF',
+                        backgroundColor: '#85011e',
+                        '&:hover': {
+                            backgroundColor: '#9D1A38FF',
+                            borderColor: '#85011e',
+                            boxShadow: 'none',
+                        },
+                    },
+                },
             ],
         }
     }

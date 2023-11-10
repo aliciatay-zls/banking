@@ -25,66 +25,10 @@ export default function BankFooter() {
                         : theme.palette.grey[800],
             }}
         >
-            <Grid container>
-                <Grid item xs={10}>
-                    <Grid container spacing={1}>
-                        <Grid item xs={6}>
-                            <Typography variant="body1">
-                                Customer Support
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography variant="body1">
-                                Useful Links
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography variant="body2">
-                                Hotline: 1234 111 1111
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography variant="body2">
-                                About Us
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography variant="body2">
-                                Enquiry/Feedback: assist@bank.com
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography variant="body2">
-                                Investor Relations
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography variant="body2">
-                                Address: 1 MUI Tower, #23-04, Singapore 567890
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography variant="body2">
-                                Careers
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={6} />
-                        <Grid item xs={6}>
-                            <Typography variant="body2">
-                                Research
-                            </Typography>
-                        </Grid>
-                    </Grid>
-                </Grid>
-
-                <Grid item xs={2}>
-                    <Stack spacing={1}>
-                        <FacebookIcon/>
-                        <InstagramIcon/>
-                        <LinkedInIcon/>
-                        <YouTubeIcon/>
-                    </Stack>
-                </Grid>
+            <Grid container justifyContent="space-evenly" alignItems="top">
+                <CustomerSupportGridColumn/>
+                <HelpfulLinksGridColumn/>
+                <SocialsGridColumn/>
             </Grid>
 
             <Divider style={{margin: 20}}/>
@@ -93,19 +37,73 @@ export default function BankFooter() {
     );
 }
 
+function CustomerSupportGridColumn() {
+    const header = 'Customer Support';
+    const rows = [
+        'Hotline: 1234 111 1111',
+        'Enquiry / Feedback: assist@bank.com',
+        'Address: 1 MUI Tower, #23-04, Singapore 567890'
+    ];
+    return (
+        <Grid item xs={7} sm={2}>
+            <GridColumn header={header} rows={rows}/>
+        </Grid>
+    );
+}
+
+function HelpfulLinksGridColumn() {
+    const header = 'Useful Links';
+    const rows = [
+        'About Us',
+        'Investor Relations',
+        'Careers',
+        'Research',
+    ];
+    return (
+        <Grid item xs={4} sm={2}>
+            <GridColumn header={header} rows={rows}/>
+        </Grid>
+    );
+}
+
+function GridColumn({header, rows}) {
+    return (
+        <Stack spacing={1}>
+            <Grid item>
+                <Typography variant="body1">{header}</Typography>
+            </Grid>
+            {rows.map((val) => (
+                <Grid item>
+                    <Typography variant="body2">{val}</Typography>
+                </Grid>
+            ))}
+        </Stack>
+    );
+}
+
+function SocialsGridColumn() {
+    return (
+        <Grid item xs={1} sm={1}>
+            <Stack spacing={1}>
+                <FacebookIcon/>
+                <InstagramIcon/>
+                <LinkedInIcon/>
+                <YouTubeIcon/>
+            </Stack>
+        </Grid>
+    );
+}
+
 function ProjectSubFooter() {
     return (
         <Typography variant="body2" color="text.secondary" align="center">
-            <div>
-                {'© Copyright '}
-                {new Date().getFullYear()}{' - '}
-                <Link color="inherit" href="https://github.com/udemy-go-1/banking">
-                    View Github Project <GitHubIcon fontSize="inherit"/>
-                </Link>
-            </div>
-            <div>
-                Please note that this is not a real banking site.
-            </div>
+            {'© Copyright '}
+            {new Date().getFullYear()}{' - '}
+            <Link color="inherit" href="https://github.com/udemy-go-1/banking">
+                View Github Project <GitHubIcon fontSize="inherit"/>
+            </Link>
+            <br/>
+            Please note that this is not a real banking site.
         </Typography>
     );
 }

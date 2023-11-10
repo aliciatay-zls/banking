@@ -191,8 +191,8 @@ export default function LoginPage() {
                     value={password}
                     onChange={(p) => setPassword(p.target.value)}
                 />
-                <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-                    {isLoading ? 'Loading...' : 'Submit'}
+                <Button type="submit" fullWidth variant="contained bank-theme" sx={{ mt: 3, mb: 2 }}>
+                    {isLoading ? 'Loading...' : 'Login'}
                 </Button>
             </Box>
 

@@ -69,11 +69,11 @@ function HelpfulLinksGridColumn() {
 function GridColumn({header, rows}) {
     return (
         <Stack spacing={1}>
-            <Grid item>
+            <Grid item key={"footer-column-header".concat("-", header.split(" ").join("-"))}>
                 <Typography variant="body1">{header}</Typography>
             </Grid>
             {rows.map((val) => (
-                <Grid item>
+                <Grid item key={"footer-column-item".concat("-", val.split(" ").join("-"))}>
                     <Typography variant="body2">{val}</Typography>
                 </Grid>
             ))}

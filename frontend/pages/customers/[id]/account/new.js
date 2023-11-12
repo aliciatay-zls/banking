@@ -121,14 +121,13 @@ export default function CreateAccountPage(props) {
         <DefaultLayout
             clientInfo={props.clientInfo}
             tabTitle={"Account Opening"}
-            headerTitle={"Account Opening"}
         >
             <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
                 <Paper
                     variant="outlined"
                     sx={{
                        my: { xs: 2, md: 2 },
-                       p: { xs: 2, md: 3 },
+                       p: { xs: 2, md: 5 },
                        minHeight: "400px",
                        alignContent: "center",
                        display: "grid",
@@ -141,6 +140,9 @@ export default function CreateAccountPage(props) {
                             autoComplete="off"
                             onSubmit={handleGetConfirmation}
                         >
+                            <Typography variant="h4" align="center" fontWeight="600" marginBottom={1}>
+                                Account Opening
+                            </Typography>
                             <Typography variant="subtitle1" align="center" gutterBottom style={{ color: 'blue', lineHeight: 1.2, marginBottom: 20,}}>
                                 Note: minimum initial amount to open an account is $5,000.
                             </Typography>

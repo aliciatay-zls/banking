@@ -169,7 +169,7 @@ export default function LoginPage() {
             <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
                 <TextField
                     required
-                    id="username"
+                    id="login-username"
                     name="username"
                     label="Username"
                     autoComplete="name"
@@ -182,7 +182,7 @@ export default function LoginPage() {
                 <TextField
                     required
                     type="password"
-                    id="password"
+                    id="login-password"
                     name="password"
                     label="Password"
                     autoComplete="off"

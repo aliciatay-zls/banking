@@ -26,7 +26,7 @@ export default function DefaultLayout({ clientInfo, isPossibleTOB = true, tabTit
                 </Typography>
             }
 
-            <Typography variant="h4" align="center" marginTop={5} marginBottom={3}>
+            <Typography variant="h4" align="center" fontWeight="600" marginTop={5} marginBottom={3}>
                 {headerTitle}
             </Typography>
 

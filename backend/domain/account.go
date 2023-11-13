@@ -28,7 +28,12 @@ func NewAccount(customerId string, accountType string, amount float64) Account {
 }
 
 func (a Account) ToDTO() *dto.AccountResponse {
-	return &dto.AccountResponse{AccountId: a.AccountId, AccountType: a.AccountType, Amount: a.Amount}
+	return &dto.AccountResponse{
+		AccountId:   a.AccountId,
+		OpeningDate: a.OpeningDate,
+		AccountType: a.AccountType,
+		Amount:      a.Amount,
+	}
 }
 
 func (a Account) ToNewAccountResponseDTO() *dto.NewAccountResponse {

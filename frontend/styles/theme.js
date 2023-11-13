@@ -29,6 +29,7 @@ let BankTheme = createTheme({
                         textTransform: 'none',
                         textAlign: 'left',
                         lineHeight: 1.2,
+                        color: '#85011e',
                     },
                 },
                 {

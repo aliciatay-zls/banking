@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import { DefaultAppBar } from "./appbar";
 import BankFooter from "./footer";
 
-export default function DefaultLayout({ clientInfo, isPossibleTOB = true, tabTitle, headerTitle, importantMsg, children }) {
+export default function DefaultLayout({ clientInfo, isPossibleTOB = true, tabTitle, headerTitle, children }) {
     const title = `Banking App - ${tabTitle}`;
     const isTOB = isPossibleTOB && ((clientInfo?.role || '') === 'admin');
 

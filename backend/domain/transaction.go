@@ -27,8 +27,9 @@ func NewTransaction(accountId string, amount float64, transactionType string) Tr
 
 func (t Transaction) ToTransactionResponseDTO() *dto.TransactionResponse {
 	return &dto.TransactionResponse{
-		TransactionId: t.TransactionId,
-		Balance:       t.Balance,
+		TransactionId:   t.TransactionId,
+		Balance:         t.Balance,
+		TransactionDate: t.TransactionDate,
 	}
 }
 

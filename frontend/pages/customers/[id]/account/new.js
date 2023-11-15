@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { forwardRef, useState } from "react";
+import AlertTitle from '@mui/material/AlertTitle';
 import Box from '@mui/material/Box';
 import Button from "@mui/material/Button";
 import Container from '@mui/material/Container';
@@ -9,7 +10,9 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
 import Grid from '@mui/material/Grid';
 import MenuItem from '@mui/material/MenuItem';
+import MuiAlert from '@mui/material/Alert';
 import Paper from '@mui/material/Paper';
+import Snackbar from '@mui/material/Snackbar';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
@@ -55,8 +58,13 @@ export default function CreateAccountPage(props) {
     const [inputAmount, setInputAmount] = useState(0);
     const [errorAmount, setErrorAmount] = useState(false);
     const [error, setError] = useState('');
+    const [openErrorAlert, setOpenErrorAlert] = useState(false);
     const [openConfirmation, setOpenConfirmation] = useState(false);
     const [newAccountInfo, setNewAccountInfo] = useState('');
+
+    const CustomAlert = forwardRef(function CustomAlert(props, ref) {
+        return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+    });
 
     const buttonLinkAccounts = `http://localhost:3000/customers/${props.customerId}/account`;
 
@@ -66,6 +74,7 @@ export default function CreateAccountPage(props) {
             const amt = parseInt(rawAmt, 10);
             if (!isNaN(amt) && amt >= 5000) {
                 setErrorAmount(false);
+                setOpenErrorAlert(false); //clear any previous error
                 setInputAmount(amt);
                 return;
             }
@@ -74,13 +83,18 @@ export default function CreateAccountPage(props) {
         setErrorAmount(true);
     }
 
+    function handleCloseErrorAlert() {
+        setOpenErrorAlert(false);
+    }
+
     function handleGetConfirmation(event) {
         event.preventDefault();
         setError('');
 
         const isValid = event.target.checkValidity();
-        if (!isValid) {
-            setError("Please check that all fields have been correctly filled up.");
+        if (!isValid || errorAmount) {
+            setError("Please check that all fields are correctly filled.");
+            setOpenErrorAlert(true);
         } else {
             setOpenConfirmation(true);
         }
@@ -103,9 +117,11 @@ export default function CreateAccountPage(props) {
             if (possibleRedirect === '') {
                 console.log("No response after sending new account request");
                 setError("Something went wrong on our end, please try again later.");
+                setOpenErrorAlert(true);
             } else {
                 setError(finalProps.redirect.errorMessage);
-                setTimeout(() => router.replace(possibleRedirect), 3000);
+                setOpenErrorAlert(true);
+                setTimeout(() => router.replace(possibleRedirect), 10000);
             }
             return;
         }
@@ -234,12 +250,20 @@ export default function CreateAccountPage(props) {
                 </DialogActions>
             </Dialog>
 
-            { error &&
-                <div style={{ color: 'red'}}>
-                    <p>Failed to create account.</p>
-                    <p>{error}</p>
-                </div>
-            }
+            <Snackbar
+                open={openErrorAlert}
+                autoHideDuration={5000}
+                onClose={handleCloseErrorAlert}
+            >
+                <CustomAlert
+                    severity={"error"}
+                    sx={{ width: '100%' }}
+                    onClose={handleCloseErrorAlert}
+                >
+                    <AlertTitle>Failed to create account</AlertTitle>
+                    {error}
+                </CustomAlert>
+            </Snackbar>
         </DefaultLayout>
     );
 }

@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
-import { useContext, useState } from "react";
+import { forwardRef, useContext, useState } from "react";
+import AlertTitle from "@mui/material/AlertTitle";
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -10,7 +11,9 @@ import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import InputAdornment from '@mui/material/InputAdornment';
+import MuiAlert from "@mui/material/Alert";
 import RadioGroup from '@mui/material/RadioGroup';
+import Snackbar from "@mui/material/Snackbar";
 import TextField from '@mui/material/TextField';
 
 import { DataToDisplayContext } from "../../../../_app";
@@ -30,7 +33,12 @@ export default function TransactionPage(props) {
     const [inputAmount, setInputAmount] = useState(0);
     const [errorAmount, setErrorAmount] = useState(false);
     const [error, setError] = useState('');
+    const [openErrorAlert, setOpenErrorAlert] = useState(false);
     const [openConfirmation, setOpenConfirmation] = useState(false);
+
+    const CustomAlert = forwardRef(function CustomAlert(props, ref) {
+        return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+    });
 
     const accessToken = props.accessToken;
     const currentPath = props.currentPath;
@@ -42,6 +50,7 @@ export default function TransactionPage(props) {
             const amt = parseInt(rawAmt, 10);
             if (!isNaN(amt) && amt >= 1 && amt <= 100000) {
                 setErrorAmount(false);
+                setOpenErrorAlert(false); //clear any previous error
                 setInputAmount(amt);
                 return;
             }
@@ -50,9 +59,12 @@ export default function TransactionPage(props) {
         setErrorAmount(true);
     }
 
+    function handleCloseErrorAlert() {
+        setOpenErrorAlert(false);
+    }
+
     function handleGetConfirmation(event) {
         event.preventDefault();
-        console.log(selectedType);
         setError('');
         setDataToDisplay({
             isLoggingOut: false,
@@ -60,8 +72,9 @@ export default function TransactionPage(props) {
         }); //clear any previous data
 
         const isValid = event.target.checkValidity();
-        if (!isValid) {
-            setError("Please check that all fields have been correctly filled up.");
+        if (!isValid || errorAmount) {
+            setError("Please check that all fields are correctly filled.");
+            setOpenErrorAlert(true);
         } else {
             setOpenConfirmation(true);
         }
@@ -84,8 +97,10 @@ export default function TransactionPage(props) {
             if (possibleRedirect === '') {
                 console.log("No response after sending transaction request");
                 setError("Something went wrong on our end, please try again later.");
+                setOpenErrorAlert(true);
             } else {
                 setError(finalProps.redirect.errorMessage);
+                setOpenErrorAlert(true);
                 setTimeout(() => router.replace(possibleRedirect), 10000);
             }
             return;
@@ -200,12 +215,20 @@ export default function TransactionPage(props) {
                 </DialogActions>
             </Dialog>
 
-            { error &&
-                <div style={{ color: 'red'}}>
-                    <p>Transaction failed.</p>
-                    <p>{error}</p>
-                </div>
-            }
+            <Snackbar
+                open={openErrorAlert}
+                autoHideDuration={5000}
+                onClose={handleCloseErrorAlert}
+            >
+                <CustomAlert
+                    severity={"error"}
+                    sx={{ width: '100%' }}
+                    onClose={handleCloseErrorAlert}
+                >
+                    <AlertTitle>Transaction failed.</AlertTitle>
+                    {error}
+                </CustomAlert>
+            </Snackbar>
         </DefaultLayout>
     );
 }

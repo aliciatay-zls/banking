@@ -1,15 +1,14 @@
 import { useRouter } from 'next/router';
-import { forwardRef, useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { parse } from "cookie";
 import { useCookies} from "react-cookie";
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import MuiAlert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
 import TextField from '@mui/material/TextField';
 
 import { DataToDisplayContext } from "../_app";
 import LoginLayout from "../../components/loginLayout";
+import SnackbarAlert from "../../components/snackbar";
 import getHomepagePath from "../../src/getHomepagePath";
 
 export async function getServerSideProps(context) {
@@ -103,19 +102,6 @@ export default function LoginPage() {
         }
     }, [router.query.errorMessage]); //run after initial render and each time value of this query param changes
 
-    const CustomAlert = forwardRef(function CustomAlert(props, ref) {
-        return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-    });
-
-    function handleCloseSnackbar() {
-        setIsError(false);
-        setOpenSnackbar(false);
-        setDataToDisplay({
-            isLoggingOut: false,
-            pageData: [],
-        }); //clear data
-    }
-
     async function handleSubmit(event) {
         event.preventDefault();
         setIsLoading(true);
@@ -175,6 +161,7 @@ export default function LoginPage() {
                     autoComplete="name"
                     margin="normal"
                     fullWidth
+                    size="small"
                     autoFocus
                     value={username}
                     onChange={(u) => setUsername(u.target.value)}
@@ -188,6 +175,7 @@ export default function LoginPage() {
                     autoComplete="off"
                     margin="normal"
                     fullWidth
+                    size="small"
                     value={password}
                     onChange={(p) => setPassword(p.target.value)}
                 />
@@ -196,19 +184,19 @@ export default function LoginPage() {
                 </Button>
             </Box>
 
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={isError ? null : 3000}
-                onClose={handleCloseSnackbar}
-            >
-                <CustomAlert
-                    severity={isError ? "error" : "success"}
-                    sx={{ width: '100%' }}
-                    onClose={handleCloseSnackbar}
-                >
-                    {snackbarMsg}
-                </CustomAlert>
-            </Snackbar>
+            <SnackbarAlert
+                openSnackbarAlert={openSnackbar}
+                handleClose={() => {
+                    setIsError(false);
+                    setOpenSnackbar(false);
+                    setDataToDisplay({
+                        isLoggingOut: false,
+                        pageData: [],
+                    }); //clear data
+                }}
+                isError={isError}
+                title={snackbarMsg}
+            />
 
         </LoginLayout>
     );

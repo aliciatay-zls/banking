@@ -15,7 +15,7 @@ const textFieldProps = {
     input: {
         readOnly: true,
         style: {
-            fontWeight: 'bold',
+            fontWeight: '600',
         },
     },
     label: {

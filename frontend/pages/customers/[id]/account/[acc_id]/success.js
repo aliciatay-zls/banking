@@ -77,11 +77,7 @@ export default function TransactionSuccessPage(props) {
                             display: "grid",
                         }}
                     >
-                        <Box
-                            name="transaction-success-page"
-                            height="300px"
-                            align="center"
-                        >
+                        <Box name="transaction-success-page" align="center">
                             <Grid container spacing={3}>
                                 <Grid item xs={12}>
                                     <Typography variant="h5" style={{color: 'green', marginTop: 20}}>

@@ -2,10 +2,10 @@ import Link from "next/link";
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AddCardIcon from '@mui/icons-material/AddCard';
 import CircleIcon from '@mui/icons-material/Circle';
+import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import { DataGrid } from '@mui/x-data-grid';
 
 import DefaultLayout from "../../components/defaultLayout";
@@ -110,7 +110,7 @@ const columns = [
                 <Link href={`/customers/${row.id}/account`}>
                     <Tooltip title="Transact on behalf">
                         <IconButton size="small">
-                            <AccountBalanceIcon/>
+                            <CurrencyExchangeIcon />
                         </IconButton>
                     </Tooltip>
                 </Link>

@@ -1,23 +1,22 @@
+import Link from "next/link";
 import { useRouter } from "next/router";
-import { forwardRef, useContext, useState } from "react";
-import AlertTitle from "@mui/material/AlertTitle";
+import { useContext, useState } from "react";
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid';
 import InputAdornment from '@mui/material/InputAdornment';
-import MuiAlert from "@mui/material/Alert";
 import RadioGroup from '@mui/material/RadioGroup';
-import Snackbar from "@mui/material/Snackbar";
 import TextField from '@mui/material/TextField';
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 
 import { DataToDisplayContext } from "../../../../_app";
+import ConfirmationDialog from "../../../../../components/dialog";
 import DefaultLayout from "../../../../../components/defaultLayout";
+import SnackbarAlert from "../../../../../components/snackbar";
 import authServerSideProps from "../../../../../src/authServerSideProps";
 import handleFetchResource from "../../../../../src/handleFetchResource";
 
@@ -30,37 +29,35 @@ export default function TransactionPage(props) {
 
     const { setDataToDisplay } = useContext(DataToDisplayContext);
     const [selectedType, setSelectedType] = useState('');
+    const [isTypeInvalid, setIsTypeInvalid] = useState(false);
     const [inputAmount, setInputAmount] = useState(0);
-    const [errorAmount, setErrorAmount] = useState(false);
+    const [isAmountInvalid, setIsAmountInvalid] = useState(false);
     const [error, setError] = useState('');
     const [openErrorAlert, setOpenErrorAlert] = useState(false);
     const [openConfirmation, setOpenConfirmation] = useState(false);
 
-    const CustomAlert = forwardRef(function CustomAlert(props, ref) {
-        return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-    });
-
     const accessToken = props.accessToken;
     const currentPath = props.currentPath;
     const requestURL = props.requestURL;
+
+    function handleSelect(e) {
+        setIsTypeInvalid(false);
+        setSelectedType(e.target.value);
+    }
 
     function checkInputAmount(rawAmt) {
         const re = new RegExp("^[0-9]+$");
         if (re.test(rawAmt)) {
             const amt = parseInt(rawAmt, 10);
             if (!isNaN(amt) && amt >= 1 && amt <= 100000) {
-                setErrorAmount(false);
+                setIsAmountInvalid(false);
                 setOpenErrorAlert(false); //clear any previous error
                 setInputAmount(amt);
                 return;
             }
         }
         setInputAmount(0);
-        setErrorAmount(true);
-    }
-
-    function handleCloseErrorAlert() {
-        setOpenErrorAlert(false);
+        setIsAmountInvalid(true);
     }
 
     function handleGetConfirmation(event) {
@@ -71,8 +68,13 @@ export default function TransactionPage(props) {
             pageData: [],
         }); //clear any previous data
 
+        if (selectedType === '') {
+            setIsTypeInvalid(true);
+            return;
+        }
+
         const isValid = event.target.checkValidity();
-        if (!isValid || errorAmount) {
+        if (!isValid || isAmountInvalid) {
             setError("Please check that all fields are correctly filled.");
             setOpenErrorAlert(true);
         } else {
@@ -115,17 +117,13 @@ export default function TransactionPage(props) {
         return router.replace(`${currentPath}/success`);
     }
 
-    function handleCancel() {
-        setOpenConfirmation(false);
-    }
-
     return (
         <DefaultLayout
             clientInfo={props.clientInfo}
             tabTitle={"New Transaction"}
             headerTitle={"What would you like to do today?"}
         >
-            <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
+            <Container component="main" maxWidth="sm" sx={{ mb: 5, mt: 5 }}>
                 <Box
                     component="form"
                     name="transaction-form"
@@ -134,44 +132,64 @@ export default function TransactionPage(props) {
                     height="300px"
                     align="center"
                 >
-                    <Grid container spacing={3}>
+                    <Grid container spacing={5}>
                         <Grid item xs={12}>
                             <FormControl required>
                                 <RadioGroup
                                     id="select-transaction-type"
                                     sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}
                                 >
-                                    <FormControlLabel
-                                        value="deposit"
-                                        control={
-                                            <Button
-                                                variant={selectedType === "deposit" ? "contained" : "outlined"}
-                                                size="large"
-                                                style={{textTransform: 'none'}}
-                                                onClick={e => setSelectedType(e.target.value)}
-                                            >
-                                                Make a deposit
-                                            </Button>
-                                        }
-                                        label=""
-                                    />
-                                    <FormControlLabel
-                                        value="withdrawal"
-                                        control={
-                                            <Button
-                                                variant={selectedType === "withdrawal" ? "contained" : "outlined"}
-                                                size="large"
-                                                margin={3}
-                                                style={{textTransform: 'none'}}
-                                                onClick={e => setSelectedType(e.target.value)}
-                                            >
-                                                Make a withdrawal
-                                            </Button>
-                                        }
-                                        label=""
-                                    />
+                                    <Grid item xs={6}>
+                                        <FormControlLabel
+                                            value="deposit"
+                                            control={
+                                                <Button
+                                                    variant={selectedType === "deposit" ? "contained" : "outlined"}
+                                                    size="large"
+                                                    style={{
+                                                        minHeight: '45px',
+                                                        lineHeight: 1.2,
+                                                        textTransform: 'none',
+                                                        borderColor: isTypeInvalid ? '#d32f2f' : '',
+                                                        color: isTypeInvalid ? '#d32f2f' : '',
+                                                    }}
+                                                    onClick={handleSelect}
+                                                >
+                                                    Make a deposit
+                                                </Button>
+                                            }
+                                            label=""
+                                        />
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <FormControlLabel
+                                            value="withdrawal"
+                                            control={
+                                                <Button
+                                                    variant={selectedType === "withdrawal" ? "contained" : "outlined"}
+                                                    size="large"
+                                                    style={{
+                                                        maxHeight: '45px',
+                                                        lineHeight: 1.2,
+                                                        textTransform: 'none',
+                                                        borderColor: isTypeInvalid ? '#d32f2f' : '',
+                                                        color: isTypeInvalid ? '#d32f2f' : '',
+                                                    }}
+                                                    onClick={handleSelect}
+                                                >
+                                                    Make a withdrawal
+                                                </Button>
+                                            }
+                                            label=""
+                                        />
+                                    </Grid>
                                 </RadioGroup>
                             </FormControl>
+                            { isTypeInvalid &&
+                                <FormHelperText error sx={{textAlign: 'center'}}>
+                                    Please select an option.
+                                </FormHelperText>
+                            }
                         </Grid>
                         <Grid item xs={12}>
                             <TextField
@@ -188,13 +206,20 @@ export default function TransactionPage(props) {
                                         </InputAdornment>
                                     ),
                                 }}
-                                error={errorAmount === true}
-                                helperText={errorAmount ? "Please enter a valid amount." : "Between $1 to $100,000"}
+                                error={isAmountInvalid}
+                                helperText={isAmountInvalid ? "Please enter a valid amount." : "Between $1 to $100,000"}
                                 onChange={e => checkInputAmount(e.target.value)}
                             />
                         </Grid>
-                        <Grid item xs={12}>
-                            <Button type="submit" variant="contained bank-theme">
+                        <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+                            <Link href={`/customers/${router.query.id}/account`}>
+                                <Button type="button" variant="no-caps" size="small" startIcon={<ArrowBackIosIcon/>}>
+                                    Go back to my accounts
+                                </Button>
+                            </Link>
+                        </Grid>
+                        <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <Button type="submit" variant="contained" sx={{maxHeight: '40px'}}>
                                 Submit
                             </Button>
                         </Grid>
@@ -202,33 +227,20 @@ export default function TransactionPage(props) {
                 </Box>
             </Container>
 
-            <Dialog
+            <ConfirmationDialog
                 open={openConfirmation}
-                onClose={handleCancel}
-            >
-                <DialogTitle>
-                    {`Are you sure you want to make a ${selectedType} of $${inputAmount}?`}
-                </DialogTitle>
-                <DialogActions>
-                    <Button onClick={handleCancel}>No</Button>
-                    <Button onClick={handleMakeTransaction}>Yes</Button>
-                </DialogActions>
-            </Dialog>
+                handleNo={() => setOpenConfirmation(false)}
+                handleYes={handleMakeTransaction}
+                title={`Make a ${selectedType} of $${inputAmount} on Account No.: ${router.query.acc_id}?`}
+            />
 
-            <Snackbar
-                open={openErrorAlert}
-                autoHideDuration={5000}
-                onClose={handleCloseErrorAlert}
-            >
-                <CustomAlert
-                    severity={"error"}
-                    sx={{ width: '100%' }}
-                    onClose={handleCloseErrorAlert}
-                >
-                    <AlertTitle>Transaction failed.</AlertTitle>
-                    {error}
-                </CustomAlert>
-            </Snackbar>
+            <SnackbarAlert
+                openSnackbarAlert={openErrorAlert}
+                handleClose={() => setOpenErrorAlert(false)}
+                isError={true}
+                title={"Transaction failed"}
+                msg={error}
+            />
         </DefaultLayout>
     );
 }

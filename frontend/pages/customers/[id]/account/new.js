@@ -1,25 +1,21 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { forwardRef, useState } from "react";
-import AlertTitle from '@mui/material/AlertTitle';
+import { useState } from "react";
 import Box from '@mui/material/Box';
 import Button from "@mui/material/Button";
 import Container from '@mui/material/Container';
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogTitle from "@mui/material/DialogTitle";
 import Grid from '@mui/material/Grid';
 import MenuItem from '@mui/material/MenuItem';
-import MuiAlert from '@mui/material/Alert';
 import Paper from '@mui/material/Paper';
-import Snackbar from '@mui/material/Snackbar';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
+import ConfirmationDialog from "../../../../components/dialog";
 import DefaultLayout from "../../../../components/defaultLayout";
+import SnackbarAlert from "../../../../components/snackbar";
 import authServerSideProps from "../../../../src/authServerSideProps";
 import getHomepagePath from "../../../../src/getHomepagePath";
 import handleFetchResource from "../../../../src/handleFetchResource";
@@ -56,15 +52,11 @@ export default function CreateAccountPage(props) {
 
     const [selectedType, setSelectedType] = useState('');
     const [inputAmount, setInputAmount] = useState(0);
-    const [errorAmount, setErrorAmount] = useState(false);
+    const [isAmountInvalid, setIsAmountInvalid] = useState(false);
     const [error, setError] = useState('');
     const [openErrorAlert, setOpenErrorAlert] = useState(false);
     const [openConfirmation, setOpenConfirmation] = useState(false);
     const [newAccountInfo, setNewAccountInfo] = useState('');
-
-    const CustomAlert = forwardRef(function CustomAlert(props, ref) {
-        return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-    });
 
     const buttonLinkAccounts = `http://localhost:3000/customers/${props.customerId}/account`;
 
@@ -73,18 +65,14 @@ export default function CreateAccountPage(props) {
         if (re.test(rawAmt)) {
             const amt = parseInt(rawAmt, 10);
             if (!isNaN(amt) && amt >= 5000) {
-                setErrorAmount(false);
+                setIsAmountInvalid(false);
                 setOpenErrorAlert(false); //clear any previous error
                 setInputAmount(amt);
                 return;
             }
         }
         setInputAmount(0);
-        setErrorAmount(true);
-    }
-
-    function handleCloseErrorAlert() {
-        setOpenErrorAlert(false);
+        setIsAmountInvalid(true);
     }
 
     function handleGetConfirmation(event) {
@@ -92,7 +80,7 @@ export default function CreateAccountPage(props) {
         setError('');
 
         const isValid = event.target.checkValidity();
-        if (!isValid || errorAmount) {
+        if (!isValid || isAmountInvalid) {
             setError("Please check that all fields are correctly filled.");
             setOpenErrorAlert(true);
         } else {
@@ -127,10 +115,6 @@ export default function CreateAccountPage(props) {
         }
 
         setNewAccountInfo(responseData.account_id);
-    }
-
-    function handleCancel() {
-        setOpenConfirmation(false);
     }
 
     return (
@@ -197,15 +181,15 @@ export default function CreateAccountPage(props) {
                                         label="Initial Amount"
                                         fullWidth
                                         variant="standard"
-                                        error={errorAmount === true}
-                                        helperText={errorAmount ? "Please enter a valid amount." : ""}
+                                        error={isAmountInvalid}
+                                        helperText={isAmountInvalid ? "Please enter a valid amount." : ""}
                                         onChange={e => checkInputAmount(e.target.value)}
                                     />
                                 </Grid>
                                 <Grid item xs={12} />
                                 <ButtonLinkToAllCustomers />
                                 <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                    <Button type="submit" variant="contained">
+                                    <Button type="submit" variant="contained" sx={{maxHeight: '40px'}}>
                                         Submit
                                     </Button>
                                 </Grid>
@@ -219,8 +203,8 @@ export default function CreateAccountPage(props) {
                                 </Typography>
                             </Grid>
                             <Grid item xs={12}>
-                                <Typography variant="subtitle1" align="center">
-                                    New account number: {newAccountInfo}
+                                <Typography variant="subtitle1" align="center" fontWeight={600}>
+                                    New Account No.: {newAccountInfo}
                                 </Typography>
                             </Grid>
                             <Grid item xs={12} />
@@ -228,7 +212,7 @@ export default function CreateAccountPage(props) {
                             <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                                 <Link href={buttonLinkAccounts}>
                                     <Button type="button" variant="no-caps" size="small" endIcon={<ArrowForwardIosIcon/>}>
-                                        Go to accounts
+                                        Go to accounts for this customer
                                     </Button>
                                 </Link>
                             </Grid>
@@ -237,33 +221,20 @@ export default function CreateAccountPage(props) {
                 </Paper>
             </Container>
 
-            <Dialog
+            <ConfirmationDialog
                 open={openConfirmation}
-                onClose={handleCancel}
-            >
-                <DialogTitle>
-                    {`Open ${selectedType} account of $${inputAmount}?`}
-                </DialogTitle>
-                <DialogActions>
-                    <Button onClick={handleCancel}>No</Button>
-                    <Button onClick={handleNewAccount}>Yes</Button>
-                </DialogActions>
-            </Dialog>
+                handleNo={() => setOpenErrorAlert(false)}
+                handleYes={handleNewAccount}
+                title={`Open ${selectedType} account of $${inputAmount}?`}
+            />
 
-            <Snackbar
-                open={openErrorAlert}
-                autoHideDuration={5000}
-                onClose={handleCloseErrorAlert}
-            >
-                <CustomAlert
-                    severity={"error"}
-                    sx={{ width: '100%' }}
-                    onClose={handleCloseErrorAlert}
-                >
-                    <AlertTitle>Failed to create account</AlertTitle>
-                    {error}
-                </CustomAlert>
-            </Snackbar>
+            <SnackbarAlert
+                openSnackbarAlert={openErrorAlert}
+                handleClose={() => setOpenErrorAlert(false)}
+                isError={true}
+                title={"Failed to create account"}
+                msg={error}
+            />
         </DefaultLayout>
     );
 }

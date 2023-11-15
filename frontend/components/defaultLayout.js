@@ -19,11 +19,11 @@ export default function DefaultLayout({ clientInfo, isPossibleTOB = true, tabTit
             <DefaultAppBar clientInfo={clientInfo}/>
 
             { isTOB &&
-                <Typography variant="body1">
-                    <Alert severity="info" sx={{fontSize: "inherit"}}>
+                <Alert severity="info" sx={{fontSize: "inherit"}}>
+                    <Typography variant="body1">
                         You are acting on behalf of this customer.
-                    </Alert>
-                </Typography>
+                    </Typography>
+                </Alert>
             }
 
             <Typography variant="h4" align="center" fontWeight="600" marginTop={5} marginBottom={3}>

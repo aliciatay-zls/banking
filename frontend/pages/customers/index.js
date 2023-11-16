@@ -31,6 +31,7 @@ export async function getServerSideProps(context) {
 
     return {
         props: {
+            clientInfo: finalProps.props.clientInfo,
             customerRows: customerRows,
         }
     };

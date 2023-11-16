@@ -7,8 +7,9 @@ export default function getHomepagePath(data) {
         return '/customers';
     } else if (clientRole === 'user' && customerId !== '') {
         return `/customers/${customerId}`;
+    } else {
+        console.log("Unknown role or no cid in response");
+        return "/login";
     }
 
-    console.log("Unknown role or no cid in response");
-    return "/login";
 }

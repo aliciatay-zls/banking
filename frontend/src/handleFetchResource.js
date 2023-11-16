@@ -37,7 +37,7 @@ export default async function handleFetchResource(currentPath, requestURL, reque
                         redirect: {
                             destination: `/login?errorMessage=${encodeURIComponent(errorMessage)}`,
                             permanent: false,
-                            errorMessage: "Session expired or invalid. Please login again.",
+                            errorMessage: "Session expired or invalid, please login again. Redirecting...",
                         },
                     };
                 }

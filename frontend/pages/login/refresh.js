@@ -1,7 +1,13 @@
-import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
+import Backdrop from '@mui/material/Backdrop';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
+import ErrorIcon from '@mui/icons-material/Error';
+
+import DefaultLayout from "../../components/defaultLayout";
 
 export function getServerSideProps(context) {
     return {
@@ -15,7 +21,7 @@ export function getServerSideProps(context) {
 export default function TempRefreshPage(props) {
     const router = useRouter();
 
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
     const [cookies, setCookie, removeCookie] = useCookies(['access_token', 'refresh_token']);
     const serverSideErrorDefaultMessage = "Internal server error.";
@@ -25,8 +31,6 @@ export default function TempRefreshPage(props) {
         let ignore = false;
 
         if (!ignore) {
-            setIsLoading(true);
-
             const accessToken = cookies?.access_token || '';
             const refreshToken = cookies?.refresh_token || '';
             if (accessToken === '' || refreshToken === '') {
@@ -47,31 +51,33 @@ export default function TempRefreshPage(props) {
                 //refresh failed
                 if (!response.ok) {
                     const errorMessage = data?.message || '';
-                    console.log("HTTP error: " + errorMessage);
-
                     if (errorMessage === "expired or invalid refresh token") {
                         if (props.isFromLogin === "true") {
+                            removeCookie('access_token', {
+                                path: '/',
+                                sameSite: 'strict',
+                            });
                             removeCookie('refresh_token', {
                                 path: '/',
                                 sameSite: 'strict',
                             });
                         }
-                        setTimeout(() => router.replace('/login'), 3000);
-                        throw new Error("Session expired or invalid. Please login again.");
+                        setTimeout(() => router.replace('/login'), 5000);
+                        throw new Error("Session expired or invalid, please login again. Redirecting...");
                     } else {
-                        setTimeout(() => router.replace('/500'), 3000);
+                        setTimeout(() => router.replace('/500'), 5000);
                         throw new Error(serverSideErrorDefaultMessage);
                     }
                 }
 
                 if (!data || !("new_access_token" in data) || data.new_access_token === "") {
                     console.log("No token in response, cannot continue");
-                    setTimeout(() => router.replace('/500'), 3000);
+                    setTimeout(() => router.replace('/500'), 5000);
                     throw new Error(serverSideErrorDefaultMessage);
                 }
 
                 //refresh succeeded, update token on client side
-                return setCookie('access_token', data.new_access_token, {
+                setCookie('access_token', data.new_access_token, {
                     path: '/',
                     maxAge: 60 * 60,
                     sameSite: 'strict',
@@ -79,7 +85,10 @@ export default function TempRefreshPage(props) {
             };
 
             tryRefresh()
-            .then(() => { //success case
+            .then(() => { //success case: go back to caller page
+                if (props.isFromLogin === "true") { //caller was login page
+                    return router.replace('/login');
+                }
                 if (props.callbackURL === '') {
                     console.log("Refresh successful but no callback url");
                     throw new Error(clientSideErrorDefaultMessage);
@@ -87,6 +96,7 @@ export default function TempRefreshPage(props) {
                 return router.replace(props.callbackURL);
             })
             .catch((err) => {
+                setIsLoading(false);
                 setError(err.message);
                 console.log(err);
             });
@@ -98,17 +108,24 @@ export default function TempRefreshPage(props) {
     }, []);
 
     return (
-        <div>
-            <Head>
-                <title>Banking App - Home</title>
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
+        <DefaultLayout
+            isPossibleTOB={false}
+            tabTitle="Home"
+        >
+            <Box height="100vh" align="center">
+                <Backdrop
+                    sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                    open={isLoading}
+                >
+                    <CircularProgress color="inherit" />
+                </Backdrop>
 
-            <div>
-                { isLoading && !error && <div>Loading...</div> }
-
-                { error && <div style={{ color: 'red'}}>{error}</div> }
-            </div>
-        </div>
+                { error &&
+                    <Typography variant="h5" style={{color: '#d32f2f'}}>
+                        <ErrorIcon fontSize="inherit"/> {error}
+                    </Typography>
+                }
+            </Box>
+        </DefaultLayout>
     );
 }

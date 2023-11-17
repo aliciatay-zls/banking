@@ -52,16 +52,14 @@ export default function TempRefreshPage(props) {
                 if (!response.ok) {
                     const errorMessage = data?.message || '';
                     if (errorMessage === "expired or invalid refresh token") {
-                        if (props.isFromLogin === "true") {
-                            removeCookie('access_token', {
-                                path: '/',
-                                sameSite: 'strict',
-                            });
-                            removeCookie('refresh_token', {
-                                path: '/',
-                                sameSite: 'strict',
-                            });
-                        }
+                        removeCookie('access_token', {
+                            path: '/',
+                            sameSite: 'strict',
+                        });
+                        removeCookie('refresh_token', {
+                            path: '/',
+                            sameSite: 'strict',
+                        });
                         setTimeout(() => router.replace('/login'), 5000);
                         throw new Error("Session expired or invalid, please login again. Redirecting...");
                     } else {

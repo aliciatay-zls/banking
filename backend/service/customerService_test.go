@@ -30,8 +30,8 @@ func setupCustomerServiceTest(t *testing.T) func() {
 
 func getDefaultDummyCustomers() []domain.Customer {
 	return []domain.Customer{
-		{"1", "Dorothy", "Emerald City", "12345", "11/11/2011", "1"},
-		{"2", "Luke", "Tatooine", "67890", "12/12/2012", "0"},
+		{"1", "Dorothy", "11/11/2011", "dorothy_gale@somemail.com", "Emerald City", "12345", "1"},
+		{"2", "Luke", "12/12/2012", "luke.skywalker@tsomemail.com", "Tatooine", "67890", "0"},
 	}
 }
 
@@ -93,8 +93,8 @@ func TestDefaultCustomerService_GetAllCustomers_returns_customers_when_repo_succ
 	mockCustomerRepo.EXPECT().FindAll(dummyConvertedStatus).Return(dummyCustomers, nil)
 
 	expectedCustomerResponses := []dto.CustomerResponse{
-		{"1", "Dorothy", "Emerald City", "12345", "11/11/2011", "active"},
-		{"2", "Luke", "Tatooine", "67890", "12/12/2012", "inactive"},
+		{"1", "Dorothy", "11/11/2011", "dorothy_gale@somemail.com", "Emerald City", "12345", "active"},
+		{"2", "Luke", "12/12/2012", "luke.skywalker@tsomemail.com", "Tatooine", "67890", "inactive"},
 	}
 
 	//Act

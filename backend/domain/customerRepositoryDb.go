@@ -25,10 +25,10 @@ func (d CustomerRepositoryDb) FindAll(status string) ([]Customer, *errs.AppError
 	customers := make([]Customer, 0)
 
 	if status == "" {
-		findAllSql := "SELECT customer_id, name, city, zipcode, date_of_birth, status FROM customers"
+		findAllSql := "SELECT customer_id, name, date_of_birth, email, city, zipcode, status FROM customers"
 		err = d.client.Select(&customers, findAllSql)
 	} else {
-		findAllSql := "SELECT customer_id, name, city, zipcode, date_of_birth, status FROM customers WHERE status = ?"
+		findAllSql := "SELECT customer_id, name, date_of_birth, email, city, zipcode, status FROM customers WHERE status = ?"
 		err = d.client.Select(&customers, findAllSql, status)
 	}
 	if err != nil {
@@ -42,7 +42,7 @@ func (d CustomerRepositoryDb) FindAll(status string) ([]Customer, *errs.AppError
 func (d CustomerRepositoryDb) FindById(id string) (*Customer, *errs.AppError) {
 	var c Customer
 
-	findCustomerSql := "SELECT customer_id, name, city, zipcode, date_of_birth, status FROM customers WHERE customer_id = ?"
+	findCustomerSql := "SELECT customer_id, name, date_of_birth, email, city, zipcode, status FROM customers WHERE customer_id = ?"
 	err := d.client.Get(&c, findCustomerSql, id) // (**)
 	if err != nil {
 		logger.Error("Error while querying/scanning customer: " + err.Error())

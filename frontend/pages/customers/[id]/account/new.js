@@ -114,7 +114,7 @@ export default function CreateAccountPage(props) {
             return;
         }
 
-        setNewAccountInfo(responseData.account_id);
+        setNewAccountInfo(responseData);
     }
 
     return (
@@ -203,8 +203,11 @@ export default function CreateAccountPage(props) {
                                 </Typography>
                             </Grid>
                             <Grid item xs={12}>
-                                <Typography variant="subtitle1" align="center" fontWeight={600}>
-                                    New Account No.: {newAccountInfo}
+                                <Typography component="p"  variant="subtitle1" align="center" fontWeight={600}>
+                                    New Account No.: {newAccountInfo.account_id}
+                                </Typography>
+                                <Typography component="p"  variant="caption" align="center"  color="text.secondary">
+                                    Time completed: {newAccountInfo.opening_date}
                                 </Typography>
                             </Grid>
                             <Grid item xs={12} />

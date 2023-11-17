@@ -3,9 +3,10 @@ package dto
 type CustomerResponse struct { //DTO
 	Id          string `json:"customer_id"`
 	Name        string `json:"full_name"`
+	DateOfBirth string `json:"date_of_birth"`
+	Email       string `json:"email"`
 	City        string `json:"city"`
 	Zipcode     string `json:"zipcode"`
-	DateOfBirth string `json:"date_of_birth"`
 	Status      string `json:"status"`
 }
 

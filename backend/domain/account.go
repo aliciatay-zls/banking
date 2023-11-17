@@ -37,7 +37,7 @@ func (a Account) ToDTO() *dto.AccountResponse {
 }
 
 func (a Account) ToNewAccountResponseDTO() *dto.NewAccountResponse {
-	return &dto.NewAccountResponse{AccountId: a.AccountId}
+	return &dto.NewAccountResponse{AccountId: a.AccountId, OpeningDate: a.OpeningDate}
 }
 
 func (a Account) CanWithdraw(withdrawalAmount float64) bool {

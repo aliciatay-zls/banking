@@ -23,6 +23,7 @@ export async function getServerSideProps(context) {
             id: cus["customer_id"].toString(),
             fullName: cus["full_name"],
             dob: cus["date_of_birth"],
+            email: cus["email"],
             city: cus["city"],
             zipcode: cus["zipcode"],
             status: cus["status"],
@@ -72,6 +73,13 @@ const columns = [
         editable: false,
         type: 'date',
         valueGetter: ({value}) => value && new Date(value),
+    },
+    {
+        field: 'email',
+        headerName: 'Email',
+        flex: 1,
+        minWidth: 300,
+        editable: false,
     },
     {
         field: 'city',

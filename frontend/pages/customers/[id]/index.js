@@ -75,6 +75,14 @@ export default function CustomerHomePage(props) {
                         variant="standard"
                     />
                     <TextField
+                        id="profile-email"
+                        label="EMAIL"
+                        defaultValue={props.responseData["email"]}
+                        InputProps={textFieldProps.input}
+                        InputLabelProps={textFieldProps.label}
+                        variant="standard"
+                    />
+                    <TextField
                         id="profile-city"
                         label="CITY"
                         defaultValue={props.responseData["city"]}

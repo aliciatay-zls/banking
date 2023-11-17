@@ -10,9 +10,10 @@ import (
 type Customer struct { //business/domain object
 	Id          string `db:"customer_id"`
 	Name        string
+	DateOfBirth string `db:"date_of_birth"`
+	Email       string
 	City        string
 	Zipcode     string
-	DateOfBirth string `db:"date_of_birth"`
 	Status      string
 }
 
@@ -21,9 +22,10 @@ func (c Customer) ToDTO() *dto.CustomerResponse {
 	return &dto.CustomerResponse{
 		Id:          c.Id,
 		Name:        c.Name,
+		DateOfBirth: c.DateOfBirth,
+		Email:       c.Email,
 		City:        c.City,
 		Zipcode:     c.Zipcode,
-		DateOfBirth: c.DateOfBirth,
 		Status:      c.AsStatusName(),
 	}
 }

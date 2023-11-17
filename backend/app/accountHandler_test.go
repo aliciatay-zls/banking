@@ -24,6 +24,8 @@ var dummyAmount float64 = 6000
 var dummyAccountType = dto.AccountTypeSaving
 var dummyTransactionType = dto.TransactionTypeDeposit
 
+const dummyDate = "2006-01-02 15:04:05"
+
 const getAccountsPath = "/customers/{customer_id:[0-9]+}/account"
 const dummyGetAccountsPath = "/customers/2/account"
 
@@ -108,8 +110,8 @@ func TestAccountHandler_accountsHandler_respondsWith_accountsAndStatusCode200_wh
 	router.HandleFunc(getAccountsPath, ah.accountsHandler).Methods(http.MethodGet)
 
 	dummyAccounts := []dto.AccountResponse{
-		{dummyAccountId, dummyAccountType, dummyAmount},
-		{"1980", dto.AccountTypeChecking, 7000},
+		{dummyAccountId, dummyDate, dummyAccountType, dummyAmount},
+		{"1980", dummyDate, dto.AccountTypeChecking, 7000},
 	}
 	mockAccountService.EXPECT().GetAllAccounts(dummyCustomerId).Return(dummyAccounts, nil)
 

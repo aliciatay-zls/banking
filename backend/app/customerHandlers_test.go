@@ -54,8 +54,8 @@ func setupCustomerHandlersTest(t *testing.T, path string) func() {
 
 func setVariableDummyCustomers() {
 	dummyCustomers = []dto.CustomerResponse{
-		{"1", "Dorothy", "Emerald City", "12345", "11/11/2011", "1"},
-		{"2", "Luke", "Tatooine", "67890", "12/12/2012", "0"},
+		{"1", "Dorothy", "11/11/2011", "dorothy_gale@somemail.com", "Emerald City", "12345", "1"},
+		{"2", "Luke", "12/12/2012", "luke.skywalker@tsomemail.com", "Tatooine", "67890", "0"},
 	}
 }
 

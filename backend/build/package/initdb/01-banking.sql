@@ -118,6 +118,24 @@ INSERT INTO `users` VALUES
 
 UNLOCK TABLES;
 
+DROP TABLE IF EXISTS `registrations`;
+
+CREATE TABLE `registrations` (
+  `email` varchar(100) NOT NULL,
+  `customer_id` int(11) DEFAULT NULL,
+  `name` varchar(100) NOT NULL,
+  `date_of_birth` date NOT NULL,
+  `city` varchar(100) NOT NULL,
+  `zipcode` varchar(10) NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT '0',
+  `username` varchar(20) NOT NULL,
+  `password` varchar(20) NOT NULL,
+  `role` varchar(20) NOT NULL,
+  `requested_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `confirmed_on` datetime DEFAULT NULL,
+  PRIMARY KEY (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 DROP TABLE IF EXISTS `refresh_token_store`;
 
 CREATE TABLE `refresh_token_store` (

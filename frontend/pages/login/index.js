@@ -40,31 +40,33 @@ export async function getServerSideProps(context) {
 
         data = await response.json();
 
-        if (!response.ok) {
-            const errorMessage = data?.message || '';
+        const errorMessage = data?.message || '';
 
-            if (response.status === 401 && errorMessage === "expired access token") { //NewAuthenticationErrorDueToExpiredAccessToken
-                console.log("Redirecting to refresh");
-                return {
-                    redirect: {
-                        destination: `/login/refresh?isFromLogin=${encodeURIComponent(true)}`,
-                        permanent: true,
-                    },
-                };
-            }
-
-            console.log("Error while checking if already logged in: " + errorMessage);
+        //already logged in, redirect to respective homepage
+        if (response.ok) {
             return {
-                props: {},
+                redirect: {
+                    destination: getHomepagePath(data),
+                    permanent: true,
+                }
             };
         }
 
-        //already logged in, redirect to respective homepage
+        if (response.status === 401 && errorMessage === "expired access token") { //NewAuthenticationErrorDueToExpiredAccessToken
+            console.log("Redirecting to refresh");
+            return {
+                redirect: {
+                    destination: `/login/refresh?isFromLogin=${encodeURIComponent(true)}`,
+                    permanent: true,
+                },
+            };
+        }
+        if (errorMessage !== '') {
+            console.log("Error while checking if already logged in: " + errorMessage);
+        }
+
         return {
-            redirect: {
-                destination: getHomepagePath(data),
-                permanent: true,
-            }
+            props: {},
         };
 
     } catch (err) {
@@ -115,15 +117,22 @@ export default function LoginPage() {
             const response = await fetch("http://127.0.0.1:8181/auth/login", request);
             const data = await response.json();
 
-            const responseMessage = data?.message || '';
+            const errorMessage = data?.message || '';
+            const isPendingConfirmation = data?.is_pending || '';
             const accessToken = data?.access_token || '';
             const refreshToken = data?.refresh_token || '';
 
+            //login unsuccessful
             if (!response.ok) {
-                throw new Error("HTTP error during login: " + responseMessage);
+                throw new Error("HTTP error during login: " + errorMessage);
             }
 
-            //store tokens on client side as cookies
+            //200 ok but cannot log in yet
+            if (isPendingConfirmation === true) {
+                return router.replace('/register/pending');
+            }
+
+            //200 ok and logged in, store tokens on client side as cookies
             if (accessToken === '' || refreshToken === '') {
                 throw new Error("No token in response, cannot continue");
             }

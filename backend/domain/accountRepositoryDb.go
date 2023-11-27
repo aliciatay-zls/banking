@@ -92,10 +92,10 @@ func (d AccountRepositoryDb) Transact(transaction Transaction) (*Transaction, *e
 	}
 	_, err = tx.Exec(updateAccountSql, transaction.Amount, transaction.AccountId)
 	if err != nil {
+		logger.Error("Error while updating account: " + err.Error())
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
 			logger.Fatal("Error while rolling back updating of account: " + rollbackErr.Error())
 		}
-		logger.Error("Error while updating account: " + err.Error())
 		return nil, errs.NewUnexpectedError("Unexpected database error")
 	}
 
@@ -104,10 +104,10 @@ func (d AccountRepositoryDb) Transact(transaction Transaction) (*Transaction, *e
 	result, err = tx.Exec(addTransactionSql,
 		transaction.AccountId, transaction.Amount, transaction.TransactionType, transaction.TransactionDate)
 	if err != nil {
+		logger.Error("Error while creating new bank account transaction: " + err.Error())
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
 			logger.Fatal("Error while rolling back creating of new bank account transaction: " + rollbackErr.Error())
 		}
-		logger.Error("Error while creating new bank account transaction: " + err.Error())
 		return nil, errs.NewUnexpectedError("Unexpected database error")
 	}
 

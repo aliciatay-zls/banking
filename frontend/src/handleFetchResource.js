@@ -31,7 +31,7 @@ export default async function handleFetchResource(currentPath, requestURL, reque
                         },
                     };
                 }
-                if (errorMessage === "invalid access token") { //NewAuthenticationErrorDueToInvalidAccessToken
+                if (errorMessage === "invalid access token" || errorMessage === "missing token") { //NewAuthenticationErrorDueToInvalidAccessToken
                     console.log("Redirecting to login");
                     return {
                         redirect: {

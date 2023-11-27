@@ -88,7 +88,7 @@ func TestAuthMiddleware_AuthMiddlewareHandler_respondsWith_errorStatusCode_when_
 	defer teardownAll()
 
 	expectedStatusCode := http.StatusUnauthorized
-	expectedMessage := "Missing token"
+	expectedMessage := "missing token"
 
 	logs := logger.ReplaceWithTestLogger()
 	expectedLogMessage := "Client did not provide a token"

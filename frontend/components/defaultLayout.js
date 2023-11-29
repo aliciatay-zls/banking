@@ -1,20 +1,16 @@
-import Head from "next/head";
 import Alert from '@mui/material/Alert';
 import Typography from '@mui/material/Typography';
 
 import { DefaultAppBar } from "./appbar";
 import BankFooter from "./footer";
+import BankHead from "./Head";
 
 export default function DefaultLayout({ clientInfo, isPossibleTOB = true, tabTitle, headerTitle, children }) {
-    const title = `Banking App - ${tabTitle}`;
     const isTOB = isPossibleTOB && ((clientInfo?.role || '') === 'admin');
 
     return (
         <div>
-            <Head>
-                <title>{title}</title>
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
+            <BankHead title={tabTitle}/>
 
             <DefaultAppBar clientInfo={clientInfo}/>
 

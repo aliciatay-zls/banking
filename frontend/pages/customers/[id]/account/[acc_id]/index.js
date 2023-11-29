@@ -231,7 +231,7 @@ export default function TransactionPage(props) {
                 open={openConfirmation}
                 handleNo={() => setOpenConfirmation(false)}
                 handleYes={handleMakeTransaction}
-                title={`Make a ${selectedType} of $${inputAmount} on Account No.: ${router.query.acc_id}?`}
+                title={`Make a ${selectedType} of $${inputAmount} on Account No. ${router.query.acc_id}?`}
             />
 
             <SnackbarAlert

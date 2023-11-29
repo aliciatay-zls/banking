@@ -1,4 +1,3 @@
-import Head from "next/head";
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
@@ -6,14 +5,12 @@ import Typography from "@mui/material/Typography";
 
 import { BaseAppBar } from "./appbar";
 import BankFooter from "./footer";
+import BankHead from "./Head";
 
 export default function LoginLayout({ children }) {
     return (
         <div>
-            <Head>
-                <title>Banking App - Login</title>
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
+            <BankHead title="Login"/>
 
             <BaseAppBar/>
 

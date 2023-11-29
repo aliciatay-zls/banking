@@ -12,7 +12,11 @@ import PersonalDetailsForm from "./PersonalDetailsForm";
 import RegisterLayout from "../../components/RegisterLayout";
 import SnackbarAlert from "../../components/snackbar";
 
-const steps = ['Personal Details', 'Login Details', 'Email Confirmation'];
+const steps = [
+    'Personal Details',
+    'Login Details',
+    'Email Confirmation',
+];
 const formFields = [
     {id: "register-first-name", value: ""},
     {id: "register-last-name", value: ""},
@@ -23,6 +27,11 @@ const formFields = [
     {id: "register-username", value: ""},
     {id: "register-password", value: ""},
     {id: "register-tc", value: false}
+];
+const alreadyRegisteredMessages = [
+    "Email is already used",
+    "Email is already registered for an account and already confirmed",
+    "Email is already registered for an account but not confirmed",
 ];
 
 export default function RegistrationPage() {
@@ -78,9 +87,24 @@ export default function RegistrationPage() {
             const data = await response.json();
 
             if (!response.ok) {
-                const errorMessage = data?.message || '';
-                console.log("HTTP error during registration")
-                throw new Error(errorMessage);
+                const responseErrMsg = data?.message || '';
+                console.log("HTTP error during registration: "+ responseErrMsg);
+
+                if (response.status === 409) { //"Username is already taken"
+                    setErrorMsg(responseErrMsg);
+                    setOpenErrorAlert(true);
+                    return;
+                }
+
+                if (alreadyRegisteredMessages.indexOf(responseErrMsg) !== -1) {
+                    setErrorMsg("Already registered before.");
+                    setOpenErrorAlert(true);
+                    return;
+                }
+
+                setErrorMsg("Please try again later.");
+                setOpenErrorAlert(true);
+                return;
             }
 
             setSuccessInfo(data);
@@ -88,7 +112,7 @@ export default function RegistrationPage() {
 
         } catch (err) {
             console.log(err);
-            setErrorMsg(err.message)
+            setErrorMsg(err.message);
             setOpenErrorAlert(true);
         }
     }

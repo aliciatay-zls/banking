@@ -1,10 +1,13 @@
+import Link from "next/link";
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { parse } from "cookie";
 import { useCookies} from "react-cookie";
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 
 import { DataToDisplayContext } from "../_app";
 import LoginLayout from "../../components/loginLayout";
@@ -188,9 +191,14 @@ export default function LoginPage() {
                     value={password}
                     onChange={(p) => setPassword(p.target.value)}
                 />
-                <Button type="submit" fullWidth variant="contained bank-theme" sx={{ mt: 3, mb: 2 }}>
+                <Button type="submit" fullWidth variant="contained bank-theme" sx={{ mt: 2, mb: 2 }}>
                     {isLoading ? 'Loading...' : 'Login'}
                 </Button>
+                <Grid item align="right">
+                    <Typography variant="body2">
+                        Don't have an account? <Link href={'/register'}>Sign up now</Link>
+                    </Typography>
+                </Grid>
             </Box>
 
             <SnackbarAlert
@@ -210,3 +218,11 @@ export default function LoginPage() {
         </LoginLayout>
     );
 }
+
+/*
+                <Link href={'/register'}>
+                    <Button fullWidth variant="outlined" style={{borderColor: '#85011e', color: '#85011e'}}>
+                        Register
+                    </Button>
+                </Link>
+ */

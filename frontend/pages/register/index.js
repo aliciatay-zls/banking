@@ -20,7 +20,7 @@ const steps = [
     'Email Confirmation',
 ];
 const stepFieldNames = {
-    0: ['firstName', 'lastName', 'email', 'dob', 'city', 'zipcode'],
+    0: ['firstName', 'lastName', 'email', 'dob', 'country', 'zipcode'],
     1: ['username', 'password'],
 };
 const alreadyRegisteredMessages = [
@@ -37,7 +37,7 @@ export default function RegistrationPage() {
         lastName: "",
         email: "",
         dob: "",
-        city: "Singapore",
+        country: "Singapore",
         zipcode: "",
         username: "",
         password: "",
@@ -90,8 +90,8 @@ export default function RegistrationPage() {
         const request = {
             method: "POST",
             body: JSON.stringify({
-                name: fields.firstName.concat(" ", fields.lastName),
-                city: fields.city,
+                full_name: fields.firstName.concat(" ", fields.lastName),
+                country: fields.country,
                 zipcode: fields.zipcode,
                 date_of_birth: fields.dob,
                 email: fields.email,
@@ -152,7 +152,7 @@ export default function RegistrationPage() {
             return false;
         }
 
-        if (!Countries.includes(fields.city)) {
+        if (!Countries.includes(fields.country)) {
             openValidationErrorAlert("Please check that the Country selected is correct.");
             return false;
         }

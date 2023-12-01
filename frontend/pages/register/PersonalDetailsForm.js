@@ -68,14 +68,14 @@ export default function PersonalDetailsForm({handleChange, fields}) {
             </Grid>
             <Grid item xs={12} sm={6}>
                 <FormControl fullWidth>
-                    <InputLabel htmlFor="register-city">Country</InputLabel>
+                    <InputLabel htmlFor="register-country">Country</InputLabel>
                         <Select
                             required
-                            id="register-city"
-                            name="city"
+                            id="register-country"
+                            name="country"
                             label="Country"
                             size="small"
-                            value={fields.city}
+                            value={fields.country}
                             onChange={e => handleChange(e)}
                         >
                             {Countries.map((c) => (

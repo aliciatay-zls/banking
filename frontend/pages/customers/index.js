@@ -24,7 +24,7 @@ export async function getServerSideProps(context) {
             fullName: cus["full_name"],
             dob: cus["date_of_birth"],
             email: cus["email"],
-            city: cus["city"],
+            country: cus["country"],
             zipcode: cus["zipcode"],
             status: cus["status"],
         })
@@ -82,8 +82,8 @@ const columns = [
         editable: false,
     },
     {
-        field: 'city',
-        headerName: 'City',
+        field: 'country',
+        headerName: 'Country',
         flex: 1,
         minWidth: 150,
         editable: false,

@@ -31,7 +31,7 @@ CREATE TABLE `customers` (
   `name` varchar(100) NOT NULL,
   `date_of_birth` date NOT NULL,
   `email` varchar(100) NOT NULL,
-  `city` varchar(100) NOT NULL,
+  `country` varchar(100) NOT NULL,
   `zipcode` varchar(10) NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`customer_id`)
@@ -40,12 +40,12 @@ CREATE TABLE `customers` (
 LOCK TABLES `customers` WRITE;
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
 INSERT INTO `customers` VALUES 
-	(2000,'Steve','1978-12-15','steve.jobs@somemail.com','Delhi','110075',1),
-	(2001,'Arian','1988-05-21','arian@somemail.com','Newburgh, NY','12550',1),
-	(2002,'Hadley','1988-04-30','sir_hadley@somemail.com','Englewood, NJ','07631',1),
-	(2003,'Ben','1988-01-04','ben_cumberbatch@somemail.com','Manchester, NH','03102',0),
-	(2004,'Nina','1988-05-14','ninadobrev@somemail.com','Clarkston, MI','48348',1),
-	(2005,'Osman','1988-11-08','osman@somemail.com','Hyattsville, MD','20782',0);
+	(2000,'Steve','1978-12-15','steve.jobs@somemail.com','India','110075',1),
+	(2001,'Arian','1988-05-21','arian@somemail.com','United States','12550',1),
+	(2002,'Hadley','1988-04-30','sir_hadley@somemail.com','Norway','07631',1),
+	(2003,'Ben','1988-01-04','ben_cumberbatch@somemail.com','United Kingdom','03102',0),
+	(2004,'Nina','1988-05-14','ninadobrev@somemail.com','Canada','48348',1),
+	(2005,'Osman','1988-11-08','osman@somemail.com','Iran','20782',0);
 
 
 UNLOCK TABLES;
@@ -98,7 +98,7 @@ DROP TABLE IF EXISTS `users`;
 
 CREATE TABLE `users` (
   `username` varchar(20) NOT NULL,
-  `password` varchar(20) NOT NULL,
+  `password` varchar(100) NOT NULL,
   `role` varchar(20) NOT NULL,
   `customer_id` int(11) DEFAULT NULL,
   `created_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -125,11 +125,11 @@ CREATE TABLE `registrations` (
   `customer_id` int(11) DEFAULT NULL,
   `name` varchar(100) NOT NULL,
   `date_of_birth` date NOT NULL,
-  `city` varchar(100) NOT NULL,
+  `country` varchar(100) NOT NULL,
   `zipcode` varchar(10) NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '0',
   `username` varchar(20) NOT NULL,
-  `password` varchar(20) NOT NULL,
+  `password` varchar(100) NOT NULL,
   `role` varchar(20) NOT NULL,
   `requested_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `confirmed_on` datetime DEFAULT NULL,

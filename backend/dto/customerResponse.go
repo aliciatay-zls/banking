@@ -5,7 +5,7 @@ type CustomerResponse struct { //DTO
 	Name        string `json:"full_name"`
 	DateOfBirth string `json:"date_of_birth"`
 	Email       string `json:"email"`
-	City        string `json:"city"`
+	Country     string `json:"country"`
 	Zipcode     string `json:"zipcode"`
 	Status      string `json:"status"`
 }

@@ -1,4 +1,5 @@
 import { Fragment, useState } from "react";
+import Alert from "@mui/material/Alert";
 import Checkbox from "@mui/material/Checkbox";
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -8,6 +9,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
@@ -24,6 +26,45 @@ export default function LoginDetailsForm({handleChange, fields}) {
 
     return (
         <Fragment>
+            <Alert
+                severity="info"
+                sx={{
+                    justifyContent: 'center',
+                    backgroundColor: (theme) =>
+                        theme.palette.mode === 'light'
+                            ? theme.palette.grey[100]
+                            : theme.palette.grey[900],
+                }}
+            >
+                <Grid container direction="row">
+                    <Grid item>
+                        <Typography variant="subtitle2" sx={{mb: -1}}>
+                            Username requirements:
+                        </Typography>
+                        <Typography component="div" variant="caption" sx={{ml: -3}}>
+                            <ul>
+                                <li>Minimum of 6 characters and maximum of 20 characters long</li>
+                                <li>Begins with an alphabet</li>
+                                <li>Only alphabets and underscore allowed</li>
+                            </ul>
+                        </Typography>
+                    </Grid>
+                    <Grid item>
+                        <Typography variant="subtitle2" sx={{mb: -1}}>
+                            Password requirements:
+                        </Typography>
+                        <Typography component="div" variant="caption" sx={{ml: -3}}>
+                            <ul>
+                                <li>Minimum of 12 characters long</li>
+                                <li>At least 1 digit</li>
+                                <li>At least 1 uppercase letter</li>
+                                <li>At least 1 lowercase letter</li>
+                                <li>At least 1 special character (!, @, #, $, etc)</li>
+                            </ul>
+                        </Typography>
+                    </Grid>
+                </Grid>
+            </Alert>
             <Grid item xs={12}>
                 <TextField
                     required

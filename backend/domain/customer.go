@@ -12,7 +12,7 @@ type Customer struct { //business/domain object
 	Name        string
 	DateOfBirth string `db:"date_of_birth"`
 	Email       string
-	City        string
+	Country     string
 	Zipcode     string
 	Status      string
 }
@@ -24,7 +24,7 @@ func (c Customer) ToDTO() *dto.CustomerResponse {
 		Name:        c.Name,
 		DateOfBirth: c.DateOfBirth,
 		Email:       c.Email,
-		City:        c.City,
+		Country:     c.Country,
 		Zipcode:     c.Zipcode,
 		Status:      c.AsStatusName(),
 	}

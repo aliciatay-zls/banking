@@ -17,12 +17,12 @@ const driverName = "mysql"
 
 // Test common variables and inputs
 var cusRepoDb CustomerRepositoryDb
-var customersTableColumns = []string{"customer_id", "name", "date_of_birth", "email", "city", "zipcode", "status"}
+var customersTableColumns = []string{"customer_id", "name", "date_of_birth", "email", "country", "zipcode", "status"}
 
 const dummyStatus = ""
-const selectAllCustomersSql = "SELECT  customer_id, name, date_of_birth, email, city, zipcode, status FROM customers"
-const selectSpecificCustomersSql = "SELECT  customer_id, name, date_of_birth, email, city, zipcode, status FROM customers WHERE status = ?"
-const selectCustomersSql = "SELECT  customer_id, name, date_of_birth, email, city, zipcode, status FROM customers WHERE customer_id = ?"
+const selectAllCustomersSql = "SELECT  customer_id, name, date_of_birth, email, country, zipcode, status FROM customers"
+const selectSpecificCustomersSql = "SELECT  customer_id, name, date_of_birth, email, country, zipcode, status FROM customers WHERE status = ?"
+const selectCustomersSql = "SELECT  customer_id, name, date_of_birth, email, country, zipcode, status FROM customers WHERE customer_id = ?"
 
 func setupDB(t *testing.T) func() {
 	var err error
@@ -80,7 +80,7 @@ func TestCustomerRepositoryDb_FindAll_returns_all_customers_when_selectCustomers
 	dummyCustomers := getDefaultCustomers()
 	dummyRows := sqlmock.NewRows(customersTableColumns)
 	for _, v := range dummyCustomers {
-		dummyRows.AddRow(v.Id, v.Name, v.DateOfBirth, v.Email, v.City, v.Zipcode, v.Status)
+		dummyRows.AddRow(v.Id, v.Name, v.DateOfBirth, v.Email, v.Country, v.Zipcode, v.Status)
 	}
 	mockDB.ExpectQuery(selectAllCustomersSql).WillReturnRows(dummyRows)
 
@@ -108,7 +108,7 @@ func TestCustomerRepositoryDb_FindAll_returns_specific_customers_when_selectCust
 
 	dummyActiveCustomer := getDefaultCustomers()[0]
 	dummyRows := sqlmock.NewRows(customersTableColumns).
-		AddRow(dummyActiveCustomer.Id, dummyActiveCustomer.Name, dummyActiveCustomer.DateOfBirth, dummyActiveCustomer.Email, dummyActiveCustomer.City, dummyActiveCustomer.Zipcode, dummyActiveCustomer.Status)
+		AddRow(dummyActiveCustomer.Id, dummyActiveCustomer.Name, dummyActiveCustomer.DateOfBirth, dummyActiveCustomer.Email, dummyActiveCustomer.Country, dummyActiveCustomer.Zipcode, dummyActiveCustomer.Status)
 	mockDB.ExpectQuery(selectSpecificCustomersSql).
 		WithArgs("1").
 		WillReturnRows(dummyRows)
@@ -180,7 +180,7 @@ func TestCustomerRepositoryDb_FindById_returns_customer_when_selectCustomers_suc
 
 	dummyCustomer := getDefaultCustomers()[1]
 	dummyRows := sqlmock.NewRows(customersTableColumns).
-		AddRow(dummyCustomer.Id, dummyCustomer.Name, dummyCustomer.DateOfBirth, dummyCustomer.Email, dummyCustomer.City, dummyCustomer.Zipcode, dummyCustomer.Status)
+		AddRow(dummyCustomer.Id, dummyCustomer.Name, dummyCustomer.DateOfBirth, dummyCustomer.Email, dummyCustomer.Country, dummyCustomer.Zipcode, dummyCustomer.Status)
 	mockDB.ExpectQuery(selectCustomersSql).
 		WithArgs(dummyCustomer.Id).
 		WillReturnRows(dummyRows)

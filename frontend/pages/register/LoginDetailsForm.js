@@ -11,7 +11,7 @@ import TextField from "@mui/material/TextField";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-export default function LoginDetailsForm({handleChange, getValue}) {
+export default function LoginDetailsForm({handleChange, fields}) {
     const [showPassword, setShowPassword] = useState(false);
 
     function handleClickShowPassword() {
@@ -34,8 +34,8 @@ export default function LoginDetailsForm({handleChange, getValue}) {
                     fullWidth
                     size="small"
                     autoFocus
-                    value={getValue("register-username")}
-                    onChange={e => handleChange(e.target)}
+                    value={fields.username}
+                    onChange={e => handleChange(e)}
                 />
             </Grid>
             <Grid item xs={12}>
@@ -49,6 +49,7 @@ export default function LoginDetailsForm({handleChange, getValue}) {
                     <OutlinedInput
                         type={showPassword ? 'text' : 'password'}
                         id="register-password"
+                        name="password"
                         label="Password"
                         endAdornment={
                             <InputAdornment position="end">
@@ -61,8 +62,8 @@ export default function LoginDetailsForm({handleChange, getValue}) {
                                 </IconButton>
                             </InputAdornment>
                         }
-                        value={getValue("register-password")}
-                        onChange={e => handleChange(e.target)}
+                        value={fields.password}
+                        onChange={e => handleChange(e)}
                     />
                 </FormControl>
             </Grid>
@@ -72,8 +73,10 @@ export default function LoginDetailsForm({handleChange, getValue}) {
                     control={
                         <Checkbox
                             id="register-tc"
+                            name="tcCheckbox"
                             color="primary"
-                            onChange={e => handleChange(e.target)}
+                            checked={fields.tcCheckbox}
+                            onChange={e => handleChange(e)}
                         />
                     }
                     label="By signing up, I agree to the terms and conditions set out by BANK."

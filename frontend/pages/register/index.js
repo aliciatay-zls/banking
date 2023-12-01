@@ -1,4 +1,5 @@
 import { Fragment, useState } from "react";
+import dayjs from 'dayjs';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
@@ -8,57 +9,63 @@ import Stepper from '@mui/material/Stepper';
 
 import EmailConfirmation from "./EmailConfirmation";
 import LoginDetailsForm from "./LoginDetailsForm";
-import PersonalDetailsForm from "./PersonalDetailsForm";
+import PersonalDetailsForm, { Countries } from "./PersonalDetailsForm";
 import RegisterLayout from "../../components/RegisterLayout";
 import SnackbarAlert from "../../components/snackbar";
+import { validateNumeric, validateNewEmail, validateNewUsername, validateNewPassword } from "../../src/validationUtils";
 
 const steps = [
     'Personal Details',
     'Login Details',
     'Email Confirmation',
 ];
-const formFields = [
-    {id: "register-first-name", value: ""},
-    {id: "register-last-name", value: ""},
-    {id: "register-email", value: ""},
-    {id: "register-dob", value: ""},
-    {id: "register-city", value: ""},
-    {id: "register-zip", value: ""},
-    {id: "register-username", value: ""},
-    {id: "register-password", value: ""},
-    {id: "register-tc", value: false}
-];
+const stepFieldNames = {
+    0: ['firstName', 'lastName', 'email', 'dob', 'city', 'zipcode'],
+    1: ['username', 'password'],
+};
 const alreadyRegisteredMessages = [
     "Email is already used",
     "Email is already registered for an account and already confirmed",
     "Email is already registered for an account but not confirmed",
 ];
+const errorDefaultMessage = "Registration failed";
 
 export default function RegistrationPage() {
     const [activeStep, setActiveStep] = useState(0);
-    const [fields, setFields] = useState(formFields);
+    const [fields, setFields] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        dob: "",
+        city: "Singapore",
+        zipcode: "",
+        username: "",
+        password: "",
+        tcCheckbox: false,
+    });
+    const [errorTitle, setErrorTitle] = useState(errorDefaultMessage);
     const [errorMsg, setErrorMsg] = useState('');
     const [openErrorAlert, setOpenErrorAlert] = useState(false);
     const [successInfo, setSuccessInfo] = useState({});
 
     //record field value whenever it changes
-    function handleChange(field) {
-        setFields(
-            fields.map((existing) => {
-                if (existing.id === field.id) {
-                    existing.value = (field.id === "register-tc" ? field.checked : field.value);
-                }
-                return existing;
-            })
-        );
+    function handleChange(event) {
+        const { name, value } = event.target;
+        setFields({
+            ...fields,
+            [name]: name === "tcCheckbox" ? event.target.checked : value,
+        });
     }
 
-    function getFieldValue(id) {
-        return fields.find(f => f.id === id).value;
-    }
+    //check field inputs for PersonalDetailsForm
+    function handleNext(event) {
+        event.preventDefault();
+        resetErrorAlert();
 
-    function handleNext() {
-        //TODO: frontend validation
+        if (!isFieldsFilled(activeStep) || !validatePersonalDetails()) {
+            return;
+        }
+
         setActiveStep(activeStep + 1);
     }
 
@@ -68,17 +75,28 @@ export default function RegistrationPage() {
 
     async function handleSubmit(event) {
         event.preventDefault();
+        resetErrorAlert();
+
+        //do all checks for previous form again
+        if (!isFieldsFilled(activeStep - 1) || !validatePersonalDetails()) {
+            return;
+        }
+
+        //do checks for current form
+        if (!isFieldsFilled(activeStep) || !validateLoginDetails()) {
+            return;
+        }
 
         const request = {
             method: "POST",
             body: JSON.stringify({
-                name: getFieldValue("register-first-name").concat(" ", getFieldValue("register-last-name")),
-                city: getFieldValue("register-city"),
-                zipcode: getFieldValue("register-zip"),
-                date_of_birth: getFieldValue("register-dob"),
-                email: getFieldValue("register-email"),
-                username: getFieldValue("register-username"),
-                password: getFieldValue("register-password"),
+                name: fields.firstName.concat(" ", fields.lastName),
+                city: fields.city,
+                zipcode: fields.zipcode,
+                date_of_birth: fields.dob,
+                email: fields.email,
+                username: fields.username,
+                password: fields.password,
             }),
         };
 
@@ -92,29 +110,96 @@ export default function RegistrationPage() {
 
                 if (response.status === 409) { //"Username is already taken"
                     setErrorMsg(responseErrMsg);
-                    setOpenErrorAlert(true);
-                    return;
-                }
-
-                if (alreadyRegisteredMessages.indexOf(responseErrMsg) !== -1) {
+                } else if (alreadyRegisteredMessages.indexOf(responseErrMsg) !== -1) {
                     setErrorMsg("Already registered before.");
-                    setOpenErrorAlert(true);
-                    return;
+                } else {
+                    setErrorMsg("Please try again later.");
                 }
 
-                setErrorMsg("Please try again later.");
                 setOpenErrorAlert(true);
                 return;
             }
 
             setSuccessInfo(data);
-            setActiveStep(2);
+            setActiveStep(activeStep + 1);
 
         } catch (err) {
             console.log(err);
             setErrorMsg(err.message);
             setOpenErrorAlert(true);
         }
+    }
+
+    function isFieldsFilled(step) {
+        const fieldNames = stepFieldNames[step];
+        for (let i=0; i<fieldNames.length; i++) {
+            if (fields[fieldNames[i]] === "") {
+                openValidationErrorAlert("Please check that all fields are filled before continuing.");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function validatePersonalDetails() {
+        if (!validateNewEmail(fields.email)) {
+            openValidationErrorAlert("Please check that the Email entered is correct.");
+            return false;
+        }
+
+        if (fields.dob < "1923-01-01") { //e.g. year not filled properly
+            openValidationErrorAlert("Please check that the Date of Birth entered is correct.");
+            return false;
+        }
+
+        if (!Countries.includes(fields.city)) {
+            openValidationErrorAlert("Please check that the Country selected is correct.");
+            return false;
+        }
+
+        //check zipcode: numbers only, max 10 digits long
+        let [isValid, zip] = validateNumeric(fields.zipcode);
+        if (!isValid) {
+            openValidationErrorAlert("Please check that the Postal/Zip Code entered is a number.");
+            return false;
+        }
+        let numDigits = 0;
+        while (zip >= 1) {
+            zip /= 10;
+            numDigits++;
+        }
+        if (numDigits > 10) {
+            openValidationErrorAlert("Please check that the Postal/Zip Code entered is correct.");
+            return false;
+        }
+
+        return true;
+    }
+
+    function validateLoginDetails() {
+        if (!validateNewUsername(fields.username)) {
+            openValidationErrorAlert("Please check that the Username meets the requirements");
+            return false;
+        }
+
+        if (!validateNewPassword(fields.password)) {
+            openValidationErrorAlert("Please check that the Password meets the requirements");
+            return false;
+        }
+
+        return true;
+    }
+
+    function openValidationErrorAlert(msg) {
+        setErrorTitle("Cannot continue");
+        setErrorMsg(msg);
+        setOpenErrorAlert(true);
+    }
+
+    function resetErrorAlert() {
+        setErrorTitle(errorDefaultMessage);
+        setErrorMsg('');
+        setOpenErrorAlert(false);
     }
 
     return (
@@ -131,10 +216,10 @@ export default function RegistrationPage() {
             </Stepper>
 
             <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-                <Grid container spacing={2}>
+                <Grid container spacing={3}>
                     {activeStep === 0 &&
                         <Fragment>
-                            <PersonalDetailsForm handleChange={handleChange} getValue={getFieldValue} />
+                            <PersonalDetailsForm handleChange={handleChange} fields={fields} />
 
                             <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                                 <NavButton text={"Next"} handler={handleNext}/>
@@ -143,7 +228,7 @@ export default function RegistrationPage() {
                     }
                     {activeStep === 1 && (
                         <Fragment>
-                            <LoginDetailsForm handleChange={handleChange} getValue={getFieldValue} />
+                            <LoginDetailsForm handleChange={handleChange} fields={fields} />
 
                             <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
                                 <NavButton text={"Back"} handler={handleBack}/>
@@ -163,7 +248,7 @@ export default function RegistrationPage() {
                 openSnackbarAlert={openErrorAlert}
                 handleClose={() => setOpenErrorAlert(false)}
                 isError={true}
-                title={"Registration failed"}
+                title={errorTitle}
                 msg={errorMsg}
             />
         </RegisterLayout>

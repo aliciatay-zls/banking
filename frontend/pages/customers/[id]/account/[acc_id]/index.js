@@ -19,6 +19,7 @@ import DefaultLayout from "../../../../../components/defaultLayout";
 import SnackbarAlert from "../../../../../components/snackbar";
 import authServerSideProps from "../../../../../src/authServerSideProps";
 import handleFetchResource from "../../../../../src/handleFetchResource";
+import { validateNumeric } from "../../../../../src/validationUtils";
 
 export async function getServerSideProps(context) {
     return await authServerSideProps(context);
@@ -46,18 +47,15 @@ export default function TransactionPage(props) {
     }
 
     function checkInputAmount(rawAmt) {
-        const re = new RegExp("^[0-9]+$");
-        if (re.test(rawAmt)) {
-            const amt = parseInt(rawAmt, 10);
-            if (!isNaN(amt) && amt >= 1 && amt <= 100000) {
-                setIsAmountInvalid(false);
-                setOpenErrorAlert(false); //clear any previous error
-                setInputAmount(amt);
-                return;
-            }
+        const [isValid, amt] = validateNumeric(rawAmt);
+        if (!isValid || amt < 1 || amt > 100000) {
+            setInputAmount(0);
+            setIsAmountInvalid(true);
+            return;
         }
-        setInputAmount(0);
-        setIsAmountInvalid(true);
+        setIsAmountInvalid(false);
+        setOpenErrorAlert(false); //clear any previous error
+        setInputAmount(amt);
     }
 
     function handleGetConfirmation(event) {

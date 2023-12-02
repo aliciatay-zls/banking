@@ -1,5 +1,4 @@
 import { Fragment, useState } from "react";
-import dayjs from 'dayjs';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
@@ -12,7 +11,7 @@ import LoginDetailsForm from "./LoginDetailsForm";
 import PersonalDetailsForm, { Countries } from "./PersonalDetailsForm";
 import RegisterLayout from "../../components/RegisterLayout";
 import SnackbarAlert from "../../components/snackbar";
-import { validateNumeric, validateNewEmail, validateNewUsername, validateNewPassword } from "../../src/validationUtils";
+import { validateNumeric, validateDate, validateNewEmail, validateNewUsername, validateNewPassword } from "../../src/validationUtils";
 
 const steps = [
     'Personal Details',
@@ -147,7 +146,7 @@ export default function RegistrationPage() {
             return false;
         }
 
-        if (fields.dob < "1923-01-01") { //e.g. year not filled properly
+        if (!validateDate(fields.dob)) {
             openValidationErrorAlert("Please check that the Date of Birth entered is correct.");
             return false;
         }

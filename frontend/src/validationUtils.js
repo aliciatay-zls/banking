@@ -10,6 +10,12 @@ export function validateNumeric(input) {
     return [true, integer];
 }
 
+export function validateDate(input) {
+    const currYear = new Date().getFullYear();
+    const date = new Date(input);
+    return !isNaN(date) && (date.getFullYear() >= currYear - 100) && (date.getFullYear() <= currYear);
+}
+
 //source of regexp: discussion at https://emailregex.com/#disqus_footer
 //in the form xxx@xxx.xxx, max 100 chars long
 export function validateNewEmail(input) {

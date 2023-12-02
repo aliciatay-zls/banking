@@ -1,12 +1,11 @@
 import Link from "next/link";
-import { useState } from "react";
-import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Typography from "@mui/material/Typography";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from '@mui/icons-material/Error';
 
 import RegisterLayout from "../../components/RegisterLayout";
+import ResendEmailButton from "../../components/ResendEmailButton";
 
 export async function getServerSideProps(context) {
     const ott = context.query.ott || '';
@@ -106,26 +105,9 @@ function getHeaderTitle(isExpired, isOtherError) {
 }
 
 export default function CheckRegistrationPage(props) {
-    const [resendOutcome, setResendOutcome] = useState('');
-
     const isExpired = props.isExpired || false;
     const isOtherError = props.isOtherError || false;
     const ott = props.ott || '';
-
-    async function handleResend() {
-        console.log("resend using " + ott);
-        const response = await fetch(`http://127.0.0.1:8181/auth/register/resend?ott=${encodeURIComponent(ott)}`);
-        const data = await response.json();
-
-        if (!response.ok) {
-            const errorMessage = data.message || '';
-            console.log("HTTP error while resending confirmation link: " + errorMessage);
-            setResendOutcome("Could not resend confirmation link at this time. Please try again later.");
-            return;
-        }
-
-        setResendOutcome("A new confirmation link has been sent to the same email.");
-    }
 
     return (
         <RegisterLayout
@@ -134,16 +116,10 @@ export default function CheckRegistrationPage(props) {
             headerTitle={getHeaderTitle(isExpired, isOtherError)}
         >
             <Grid container spacing={2}>
+                { isExpired &&
+                    <ResendEmailButton requestType={"UsingToken"} identifier={ott} />
+                }
                 <Grid item xs={12} align="center" sx={{ mt: 3 }}>
-                    { isExpired &&
-                        <Button
-                            variant="contained bank-theme"
-                            sx={{ mt: 3, mb: 2, textTransform: 'none' }}
-                            onClick={handleResend}
-                        >
-                            Resend confirmation email
-                        </Button>
-                    }
                     { isOtherError &&
                         <Typography component="p" variant="body1">
                             Please try again later.
@@ -155,13 +131,6 @@ export default function CheckRegistrationPage(props) {
                         </Typography>
                     }
                 </Grid>
-                { resendOutcome &&
-                    <Grid item xs={12} align="center">
-                        <Typography component="p" variant="body1">
-                            {resendOutcome}
-                        </Typography>
-                    </Grid>
-                }
             </Grid>
         </RegisterLayout>
     );

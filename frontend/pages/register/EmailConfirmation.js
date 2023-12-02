@@ -2,6 +2,8 @@ import { Fragment } from "react";
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
+import ResendEmailButton from "../../components/ResendEmailButton";
+
 export default function EmailConfirmation({details}) {
     return(
         <Fragment>
@@ -23,6 +25,7 @@ export default function EmailConfirmation({details}) {
                     Please note that the link will expire in 1 hour.
                 </Typography>
             </Grid>
+            <ResendEmailButton requestType={"UsingEmail"} identifier={details.email} />
         </Fragment>
     );
 }

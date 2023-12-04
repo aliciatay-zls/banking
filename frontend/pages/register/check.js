@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { Fragment } from "react";
+import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Typography from "@mui/material/Typography";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from '@mui/icons-material/Error';
 
@@ -96,11 +99,25 @@ export async function getServerSideProps(context) {
 function getHeaderTitle(isExpired, isOtherError) {
     if (isExpired || isOtherError) {
         return (
-            <span style={{color: "red"}}><ErrorIcon /> {isExpired ? "Link has expired." : "Something went wrong."}</span>
+            <Fragment>
+                <ErrorIcon color="error" sx={{fontSize: '40px', mb: -3}} />
+                <p>{isExpired ? "This link has expired." : "Something went wrong."}</p>
+            </Fragment>
         );
     }
     return (
-        <span style={{color: "green"}}><CheckCircleIcon /> Email successfully confirmed.</span>
+        <Fragment>
+            <CheckCircleIcon color="success" sx={{fontSize: '40px', mb: -3}} />
+            <p>Email successfully confirmed.</p>
+            <Typography component="div" variant="h4" align="right">
+                <Link href={'/login'}>
+                    <Button type="button" variant="no-caps" size="small" endIcon={<ArrowForwardIosIcon/>} sx={{mt: -3}}>
+                        Login again
+                    </Button>
+                </Link>
+            </Typography>
+
+        </Fragment>
     );
 }
 
@@ -112,25 +129,18 @@ export default function CheckRegistrationPage(props) {
     return (
         <RegisterLayout
             isForm={false}
-            tabTitle="Confirm Email"
+            tabTitle="Email Confirmation"
             headerTitle={getHeaderTitle(isExpired, isOtherError)}
         >
-            <Grid container spacing={2}>
+            <Grid item xs={12} align="center">
                 { isExpired &&
                     <ResendEmailButton requestType={"UsingToken"} identifier={ott} />
                 }
-                <Grid item xs={12} align="center" sx={{ mt: 3 }}>
-                    { isOtherError &&
-                        <Typography component="p" variant="body1">
-                            Please try again later.
-                        </Typography>
-                    }
-                    { !isExpired && !isOtherError &&
-                        <Typography component="p" variant="body1">
-                            Please <Link href={'/login'}>login again</Link>.
-                        </Typography>
-                    }
-                </Grid>
+                { isOtherError &&
+                    <Typography component="p" variant="body1">
+                        Please try again later or contact us if the issue persists.
+                    </Typography>
+                }
             </Grid>
         </RegisterLayout>
     );

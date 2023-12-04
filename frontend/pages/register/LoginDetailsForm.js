@@ -1,29 +1,14 @@
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import Alert from "@mui/material/Alert";
 import Checkbox from "@mui/material/Checkbox";
-import FormControl from '@mui/material/FormControl';
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
-import IconButton from '@mui/material/IconButton';
-import InputAdornment from '@mui/material/InputAdornment';
-import InputLabel from '@mui/material/InputLabel';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
+
+import PasswordField from "../../components/PasswordField";
 
 export default function LoginDetailsForm({handleChange, fields}) {
-    const [showPassword, setShowPassword] = useState(false);
-
-    function handleClickShowPassword() {
-        setShowPassword(!showPassword);
-    }
-
-    function handleMouseDownPassword(event) {
-        event.preventDefault();
-    }
-
     return (
         <Fragment>
             <Alert
@@ -80,33 +65,10 @@ export default function LoginDetailsForm({handleChange, fields}) {
                 />
             </Grid>
             <Grid item xs={12}>
-                <FormControl
-                    required
-                    variant="outlined"
-                    fullWidth
-                    size="small"
-                >
-                    <InputLabel htmlFor="register-password">Password</InputLabel>
-                    <OutlinedInput
-                        type={showPassword ? 'text' : 'password'}
-                        id="register-password"
-                        name="password"
-                        label="Password"
-                        endAdornment={
-                            <InputAdornment position="end">
-                                <IconButton
-                                    onClick={handleClickShowPassword}
-                                    onMouseDown={handleMouseDownPassword}
-                                    edge="end"
-                                >
-                                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                                </IconButton>
-                            </InputAdornment>
-                        }
-                        value={fields.password}
-                        onChange={e => handleChange(e)}
-                    />
-                </FormControl>
+                <PasswordField id={"register-initial-password"} val={fields.password} handler={handleChange} />
+            </Grid>
+            <Grid item xs={12}>
+                <PasswordField id={"register-confirm-password"} name="confirmPassword" label="Confirm Password" val={fields.confirmPassword} handler={handleChange} />
             </Grid>
             <Grid item xs={12}>
                 <FormControlLabel

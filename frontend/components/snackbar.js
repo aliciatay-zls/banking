@@ -5,7 +5,7 @@ import Snackbar from "@mui/material/Snackbar";
 
 export default function SnackbarAlert({openSnackbarAlert, handleClose, isError, title, msg}) {
     const CustomAlert = forwardRef(function CustomAlert(props, ref) {
-        return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+        return <MuiAlert elevation={6} ref={ref} variant="standard" {...props} />;
     });
 
     return (
@@ -16,7 +16,7 @@ export default function SnackbarAlert({openSnackbarAlert, handleClose, isError, 
         >
             <CustomAlert
                 severity={isError ? "error" : "success"}
-                sx={{ width: '100%' }}
+                sx={{ width: '100%', textAlign: 'left' }}
                 onClose={handleClose}
             >
                 <AlertTitle>{title}</AlertTitle>

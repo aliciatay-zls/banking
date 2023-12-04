@@ -17,6 +17,7 @@ export default function PersonalDetailsForm({handleChange, fields}) {
                     name="firstName"
                     label="First Name"
                     autoComplete="given-name"
+                    autoCapitalize="words"
                     fullWidth
                     size="small"
                     autoFocus
@@ -31,6 +32,7 @@ export default function PersonalDetailsForm({handleChange, fields}) {
                     name="lastName"
                     label="Last Name"
                     autoComplete="family-name"
+                    autoCapitalize="words"
                     fullWidth
                     size="small"
                     value={fields.lastName}

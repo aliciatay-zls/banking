@@ -11,7 +11,7 @@ import LoginDetailsForm from "./LoginDetailsForm";
 import PersonalDetailsForm, { Countries } from "./PersonalDetailsForm";
 import RegisterLayout from "../../components/RegisterLayout";
 import SnackbarAlert from "../../components/snackbar";
-import { validateNumeric, validateDate, validateNewEmail, validateNewUsername, validateNewPassword } from "../../src/validationUtils";
+import * as v from "../../src/validationUtils";
 
 const steps = [
     'Personal Details',
@@ -40,6 +40,7 @@ export default function RegistrationPage() {
         zipcode: "",
         username: "",
         password: "",
+        confirmPassword: "",
         tcCheckbox: false,
     });
     const [errorTitle, setErrorTitle] = useState(errorDefaultMessage);
@@ -50,9 +51,17 @@ export default function RegistrationPage() {
     //record field value whenever it changes
     function handleChange(event) {
         const { name, value } = event.target;
+
+        let newValue = value;
+        if (name === "tcCheckbox") {
+            newValue = event.target.checked;
+        } else if (name === "firstName" || name === "lastName") {
+            newValue = v.capitalize(value);
+        }
+
         setFields({
             ...fields,
-            [name]: name === "tcCheckbox" ? event.target.checked : value,
+            [name]: newValue,
         });
     }
 
@@ -89,7 +98,8 @@ export default function RegistrationPage() {
         const request = {
             method: "POST",
             body: JSON.stringify({
-                full_name: fields.firstName.concat(" ", fields.lastName),
+                full_name: v.removeSpaces(fields.firstName)
+                    .concat(" ", v.removeSpaces(fields.lastName)),
                 country: fields.country,
                 zipcode: fields.zipcode,
                 date_of_birth: fields.dob,
@@ -133,7 +143,7 @@ export default function RegistrationPage() {
         const fieldNames = stepFieldNames[step];
         for (let i=0; i<fieldNames.length; i++) {
             if (fields[fieldNames[i]] === "") {
-                openValidationErrorAlert("Please check that all fields are filled before continuing.");
+                openValidationErrorAlert("Please check that all fields are filled.");
                 return false;
             }
         }
@@ -141,12 +151,12 @@ export default function RegistrationPage() {
     }
 
     function validatePersonalDetails() {
-        if (!validateNewEmail(fields.email)) {
+        if (!v.validateNewEmail(fields.email)) {
             openValidationErrorAlert("Please check that the Email entered is correct.");
             return false;
         }
 
-        if (!validateDate(fields.dob)) {
+        if (!v.validateDate(fields.dob)) {
             openValidationErrorAlert("Please check that the Date of Birth entered is correct.");
             return false;
         }
@@ -157,7 +167,7 @@ export default function RegistrationPage() {
         }
 
         //check zipcode: numbers only, max 10 digits long
-        let [isValid, zip] = validateNumeric(fields.zipcode);
+        let [isValid, zip] = v.validateNumeric(fields.zipcode);
         if (!isValid) {
             openValidationErrorAlert("Please check that the Postal/Zip Code entered is a number.");
             return false;
@@ -176,13 +186,23 @@ export default function RegistrationPage() {
     }
 
     function validateLoginDetails() {
-        if (!validateNewUsername(fields.username)) {
+        if (!v.validateNewUsername(fields.username)) {
             openValidationErrorAlert("Please check that the Username meets the requirements");
             return false;
         }
 
-        if (!validateNewPassword(fields.password)) {
+        if (!v.validateNewPassword(fields.password)) {
             openValidationErrorAlert("Please check that the Password meets the requirements");
+            return false;
+        }
+
+        if (fields.password !== fields.confirmPassword) {
+            openValidationErrorAlert("Passwords do not match");
+            return false;
+        }
+
+        if (!fields.tcCheckbox) {
+            openValidationErrorAlert("Please review and accept the terms and conditions");
             return false;
         }
 

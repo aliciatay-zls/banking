@@ -1,16 +1,27 @@
 import { Fragment, useState } from "react";
-import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
+
+import SnackbarAlert from "./snackbar";
+
+const errorMessage = {
+    title: "Could not resend confirmation link at this time.",
+    msg: "Please try again later.",
+};
+const successMessage = {
+    title: "A new confirmation link has been sent to the same email.",
+};
 
 export default function ResendEmailButton({requestType, identifier}) {
-    const [resendOutcome, setResendOutcome] = useState('');
-    const errorDefaultMessage = "Could not resend confirmation link at this time. Please try again later.";
+    const [openOutcomeAlert, setOpenOutcomeAlert] = useState(false);
+    const [isError, setIsError] = useState(true);
 
     async function handleResend() {
+        setIsError(false); //clear previous state
+
         if (requestType === "" || identifier === "") {
             console.log("Error while resending confirmation link: Props are empty");
-            setResendOutcome(errorDefaultMessage);
+            setIsError(true);
+            setOpenOutcomeAlert(true);
             return;
         }
 
@@ -25,7 +36,8 @@ export default function ResendEmailButton({requestType, identifier}) {
             response = await fetch("http://127.0.0.1:8181/auth/register/resend", request);
         } else {
             console.log("Error while resending confirmation link: Unknown request type");
-            setResendOutcome(errorDefaultMessage);
+            setIsError(true);
+            setOpenOutcomeAlert(true);
             return;
         }
 
@@ -33,31 +45,31 @@ export default function ResendEmailButton({requestType, identifier}) {
         if (!response.ok) {
             const errorMessage = data.message || '';
             console.log("HTTP error while resending confirmation link: " + errorMessage);
-            setResendOutcome(errorDefaultMessage);
+            setIsError(true);
+            setOpenOutcomeAlert(true);
             return;
         }
 
-        setResendOutcome("A new confirmation link has been sent to the same email.");
+        setIsError(false);
+        setOpenOutcomeAlert(true);
     }
 
     return (
         <Fragment>
-            <Grid item xs={12} align="center" sx={{ mt: 3 }}>
-                <Button
-                    variant="contained bank-theme"
-                    sx={{ mt: 3, mb: 2, textTransform: 'none' }}
-                    onClick={handleResend}
-                >
-                    Resend confirmation email
-                </Button>
-            </Grid>
-            { resendOutcome &&
-                <Grid item xs={12} align="center">
-                    <Typography component="p" variant="body1">
-                        {resendOutcome}
-                    </Typography>
-                </Grid>
-            }
+            <Button
+                variant="contained bank-theme"
+                sx={{ mt: 3, mb: 2, textTransform: 'none' }}
+                onClick={handleResend}
+            >
+                Resend confirmation email
+            </Button>
+            <SnackbarAlert
+                openSnackbarAlert={openOutcomeAlert}
+                handleClose={() => setOpenOutcomeAlert(false)}
+                isError={isError}
+                title={isError ? errorMessage.title : successMessage.title}
+                msg={isError ? errorMessage.msg : ""}
+            />
         </Fragment>
     );
 }

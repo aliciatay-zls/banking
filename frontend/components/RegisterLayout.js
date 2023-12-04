@@ -1,7 +1,5 @@
-import Alert from "@mui/material/Alert";
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
 import Typography from "@mui/material/Typography";
 
 import { BaseAppBar } from "./appbar";
@@ -26,7 +24,7 @@ export default function RegisterLayout({ isForm = true, tabTitle, headerTitle, c
                         minHeight: "500px",
                     }}
                 >
-                    <Typography component="h1" variant="h4" align="center">
+                    <Typography component="div" variant="h4" align="center">
                         {headerTitle}
                     </Typography>
 

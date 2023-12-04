@@ -16,6 +16,33 @@ export function validateDate(input) {
     return !isNaN(date) && (date.getFullYear() >= currYear - 100) && (date.getFullYear() <= currYear);
 }
 
+export function capitalize(input) {
+    if (input.length === 0) {
+        return input;
+    }
+    let words = input.split(" ");
+    for (let i=0; i<words.length; i++) {
+        if (words[i].length > 0) {
+            words[i] = words[i][0].toUpperCase().concat(words[i].slice(1));
+        }
+    }
+    return words.join(" ");
+}
+
+export function removeSpaces(input) {
+    if (input.length === 0) {
+        return input;
+    }
+    let words = input.trim().split(" ");
+    let result = [];
+    for (let i=0; i<words.length; i++) {
+        if (words[i].length > 0) {
+            result.push(words[i]);
+        }
+    }
+    return result.join(" ");
+}
+
 //source of regexp: discussion at https://emailregex.com/#disqus_footer
 //in the form xxx@xxx.xxx, max 100 chars long
 export function validateNewEmail(input) {

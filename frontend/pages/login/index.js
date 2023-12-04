@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography';
 
 import { DataToDisplayContext } from "../_app";
 import LoginLayout from "../../components/loginLayout";
+import PasswordField from "../../components/PasswordField";
 import SnackbarAlert from "../../components/snackbar";
 import getHomepagePath from "../../src/getHomepagePath";
 
@@ -107,6 +108,10 @@ export default function LoginPage() {
         }
     }, [router.query.errorMessage]); //run after initial render and each time value of this query param changes
 
+    function handleSetPassword(event) {
+        setPassword(event.target.value);
+    }
+
     async function handleSubmit(event) {
         event.preventDefault();
         setIsLoading(true);
@@ -178,19 +183,7 @@ export default function LoginPage() {
                     value={username}
                     onChange={(u) => setUsername(u.target.value)}
                 />
-                <TextField
-                    required
-                    type="password"
-                    id="login-password"
-                    name="password"
-                    label="Password"
-                    autoComplete="off"
-                    margin="normal"
-                    fullWidth
-                    size="small"
-                    value={password}
-                    onChange={(p) => setPassword(p.target.value)}
-                />
+                <PasswordField id={"login-password"} val={password} handler={handleSetPassword} />
                 <Button type="submit" fullWidth variant="contained bank-theme" sx={{ mt: 2, mb: 2 }}>
                     {isLoading ? 'Loading...' : 'Login'}
                 </Button>
@@ -218,11 +211,3 @@ export default function LoginPage() {
         </LoginLayout>
     );
 }
-
-/*
-                <Link href={'/register'}>
-                    <Button fullWidth variant="outlined" style={{borderColor: '#85011e', color: '#85011e'}}>
-                        Register
-                    </Button>
-                </Link>
- */

@@ -18,7 +18,7 @@ import Logout from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 
 import { DataToDisplayContext } from "../pages/_app";
-import getHomepagePath from "../src/getHomepagePath";
+import { getHomepagePath } from "../src/authUtils";
 
 export function BaseAppBar({homepagePath = "/login", innerChildren, outerChildren}) {
     return (
@@ -52,7 +52,7 @@ export function DefaultAppBar({clientInfo}) {
     const openMenu = Boolean(anchorEl);
     const [openErrorAlert, setOpenErrorAlert] = useState(false);
     const { setDataToDisplay } = useContext(DataToDisplayContext);
-    const [cookies, setCookie, removeCookie] = useCookies(['access_token', 'refresh_token']);
+    const [cookies, , removeCookie] = useCookies(['access_token', 'refresh_token']);
     const refreshToken = cookies?.refresh_token || '';
 
     async function handleLogout(event) {

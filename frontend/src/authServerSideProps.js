@@ -1,5 +1,4 @@
-import { parse } from "cookie";
-
+import { checkIsLoggedIn } from "./authUtils";
 import handleFetchResource from "./handleFetchResource";
 
 /**
@@ -9,15 +8,9 @@ import handleFetchResource from "./handleFetchResource";
  * @param context The getServerSideProps context parameter that is passed from the getServerSideProps call above.
  */
 export default async function getServerSideProps(context) {
-    //get cookies
-    const { req } = context;
-    const rawCookies = req?.headers?.cookie || '';
-    const cookies = parse(rawCookies);
-    const accessToken = cookies?.access_token || '';
-    const refreshToken = cookies?.refresh_token || '';
+    const [isLoggedIn, accessToken, refreshToken] = checkIsLoggedIn(context);
 
-    if (accessToken === '' || refreshToken === '') {
-        console.log("no cookies set");
+    if (!isLoggedIn) {
         return {
             redirect: {
                 destination: `/login?errorMessage=${encodeURIComponent("Please login.")}`,

@@ -25,7 +25,9 @@ export default function EmailConfirmation({details}) {
                     Please note that the link will expire in 1 hour.
                 </Typography>
             </Grid>
-            <ResendEmailButton requestType={"UsingEmail"} identifier={details.email} />
+            <Grid item xs={12} align="center">
+                <ResendEmailButton requestType={"UsingEmail"} identifier={details.email} />
+            </Grid>
         </Fragment>
     );
 }

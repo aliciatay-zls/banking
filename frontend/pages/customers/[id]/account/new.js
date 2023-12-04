@@ -17,7 +17,7 @@ import ConfirmationDialog from "../../../../components/dialog";
 import DefaultLayout from "../../../../components/defaultLayout";
 import SnackbarAlert from "../../../../components/snackbar";
 import authServerSideProps from "../../../../src/authServerSideProps";
-import getHomepagePath from "../../../../src/getHomepagePath";
+import { getHomepagePath } from "../../../../src/authUtils";
 import handleFetchResource from "../../../../src/handleFetchResource";
 import { validateNumeric } from "../../../../src/validationUtils";
 

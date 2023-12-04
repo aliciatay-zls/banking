@@ -9,8 +9,19 @@ import ErrorIcon from '@mui/icons-material/Error';
 
 import RegisterLayout from "../../components/RegisterLayout";
 import ResendEmailButton from "../../components/ResendEmailButton";
+import { checkIsLoggedIn } from "../../src/authUtils";
 
 export async function getServerSideProps(context) {
+    const [isLoggedIn, ] = checkIsLoggedIn(context);
+    if (isLoggedIn){
+        return {
+            redirect: {
+                destination: '/login',
+                permanent: false,
+            }
+        };
+    }
+
     const ott = context.query.ott || '';
     if (ott === '') {
         console.log("Redirecting to 404 page");

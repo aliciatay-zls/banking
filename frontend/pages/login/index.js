@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
-import { parse } from "cookie";
 import { useCookies} from "react-cookie";
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -13,18 +12,13 @@ import { DataToDisplayContext } from "../_app";
 import LoginLayout from "../../components/loginLayout";
 import PasswordField from "../../components/PasswordField";
 import SnackbarAlert from "../../components/snackbar";
-import getHomepagePath from "../../src/getHomepagePath";
+import * as utils from "../../src/authUtils";
 
 export async function getServerSideProps(context) {
-    //get cookies
-    const { req } = context;
-    const rawCookies = req?.headers?.cookie || '';
-    const cookies = parse(rawCookies);
-    const accessToken = cookies?.access_token || '';
-    const refreshToken = cookies?.refresh_token || '';
+    const [isLoggedIn, accessToken, refreshToken] = utils.checkIsLoggedIn(context);
 
     //not logged in or failed to refresh, proceed to render form to make client log in again
-    if (accessToken === '' || refreshToken === '') {
+    if (!isLoggedIn) {
         return {
             props: {},
         };
@@ -50,7 +44,7 @@ export async function getServerSideProps(context) {
         if (response.ok) {
             return {
                 redirect: {
-                    destination: getHomepagePath(data),
+                    destination: utils.getHomepagePath(data),
                     permanent: true,
                 }
             };
@@ -95,7 +89,7 @@ export default function LoginPage() {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [isError, setIsError] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [cookies, setCookie, removeCookie] = useCookies(['access_token', 'refresh_token']);
+    const [, setCookie, ] = useCookies(['access_token', 'refresh_token']);
 
     useEffect(() => {
         if (dataToDisplay.pageData?.length === 1) {
@@ -137,6 +131,11 @@ export default function LoginPage() {
 
             //200 ok but cannot log in yet
             if (isPendingConfirmation === true) {
+                setCookie('temporary_token', accessToken, {
+                    path: '/',
+                    maxAge: 60 * 60, //1 hour
+                    sameSite: 'strict',
+                });
                 return router.replace('/register/pending');
             }
 
@@ -155,7 +154,7 @@ export default function LoginPage() {
                 sameSite: 'strict',
             });
 
-            return router.replace(getHomepagePath(data));
+            return router.replace(utils.getHomepagePath(data));
 
         } catch (err) {
             setIsError(true);

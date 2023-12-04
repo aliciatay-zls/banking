@@ -34,7 +34,6 @@ export default function TempRefreshPage(props) {
             const accessToken = cookies?.access_token || '';
             const refreshToken = cookies?.refresh_token || '';
             if (accessToken === '' || refreshToken === '') {
-                console.log("no cookies set");
                 router.replace('/login');
                 return;
             }

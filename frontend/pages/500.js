@@ -10,7 +10,7 @@ export default function Custom500() {
             tabTitle={"Error"}
         >
             <Box height="100vh">
-                <Typography variant="h1" align="center">
+                <Typography variant="h2" align="center">
                     500 Server Error
                 </Typography>
                 <Box sx={{mt: 3, display: 'flex', justifyContent: 'center', flexWrap: 'wrap'}}>

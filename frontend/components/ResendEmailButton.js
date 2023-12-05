@@ -1,22 +1,42 @@
-import { Fragment, useState } from "react";
+import { useRouter } from "next/router";
+import { Fragment, useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 
 import SnackbarAlert from "./snackbar";
 
-const errorMessage = {
+const defaultErrorMessage = {
     title: "Could not resend confirmation link at this time.",
     msg: "Please try again later.",
 };
-const successMessage = {
+const defaultSuccessMessage = {
     title: "A new confirmation link has been sent to the same email.",
 };
 
 export default function ResendEmailButton({requestType, identifier}) {
+    const router = useRouter();
+
     const [openOutcomeAlert, setOpenOutcomeAlert] = useState(false);
-    const [isError, setIsError] = useState(true);
+    const [isError, setIsError] = useState(false);
+    const [errorMsg, setErrorMsg] = useState(defaultErrorMessage);
+    const [isDisabled, setIsDisabled] = useState(false);
+    const [isDisabledForever, setIsDisabledForever] = useState(false);
+    const [successMsg, setSuccessMsg] = useState(defaultSuccessMessage);
+
+    useEffect(() => {
+        if (isDisabled && !isDisabledForever) {
+            setTimeout(() => setIsDisabled(false), 60000);
+        }
+    }, [isDisabled]);
+
+    function resetStates() {
+        setOpenOutcomeAlert(false);
+        setIsError(false);
+        setErrorMsg(defaultErrorMessage);
+        setSuccessMsg(defaultSuccessMessage);
+    }
 
     async function handleResend() {
-        setIsError(false); //clear previous state
+        await resetStates();
 
         if (requestType === "" || identifier === "") {
             console.log("Error while resending confirmation link: Props are empty");
@@ -43,23 +63,39 @@ export default function ResendEmailButton({requestType, identifier}) {
 
         const data = await response.json();
         if (!response.ok) {
-            const errorMessage = data.message || '';
-            console.log("HTTP error while resending confirmation link: " + errorMessage);
+            const responseErrorMsg = data.message || '';
+            console.log("HTTP error while resending confirmation link: " + responseErrorMsg);
+
+            if (response.status === 422) {
+                if (responseErrorMsg === "Already confirmed") {
+                    setSuccessMsg({title: responseErrorMsg, msg: "Redirecting you to login now..."})
+                    setOpenOutcomeAlert(true);
+                    setTimeout(() => router.replace('/login'), 5000);
+                    return;
+                } else if (responseErrorMsg === "Maximum daily attempts reached") {
+                    setErrorMsg({title: responseErrorMsg, msg: "Please try logging in tomorrow, or contact us if the issue persists."});
+                    setIsDisabled(true);
+                    setIsDisabledForever(true);
+                } else if (responseErrorMsg === "Too many attempts") {
+                    setErrorMsg({title: responseErrorMsg, msg: "Please try again after 1 minute."});
+                    setIsDisabled(true);
+                }
+            }
             setIsError(true);
             setOpenOutcomeAlert(true);
             return;
         }
 
-        setIsError(false);
         setOpenOutcomeAlert(true);
     }
 
     return (
         <Fragment>
             <Button
-                variant="contained bank-theme"
+                variant={isDisabled ? "contained" : "contained bank-theme"}
                 sx={{ mt: 3, mb: 2, textTransform: 'none' }}
                 onClick={handleResend}
+                disabled={isDisabled}
             >
                 Resend confirmation email
             </Button>
@@ -67,8 +103,8 @@ export default function ResendEmailButton({requestType, identifier}) {
                 openSnackbarAlert={openOutcomeAlert}
                 handleClose={() => setOpenOutcomeAlert(false)}
                 isError={isError}
-                title={isError ? errorMessage.title : successMessage.title}
-                msg={isError ? errorMessage.msg : ""}
+                title={isError ? errorMsg.title : successMsg.title}
+                msg={isError ? errorMsg.msg : successMsg.msg}
             />
         </Fragment>
     );

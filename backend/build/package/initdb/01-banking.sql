@@ -131,7 +131,9 @@ CREATE TABLE `registrations` (
   `username` varchar(20) NOT NULL,
   `password` varchar(100) NOT NULL,
   `role` varchar(20) NOT NULL,
-  `requested_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `email_attempts` tinyint(1) NOT NULL DEFAULT '0',
+  `created_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `last_emailed_on` datetime DEFAULT NULL,
   `confirmed_on` datetime DEFAULT NULL,
   PRIMARY KEY (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

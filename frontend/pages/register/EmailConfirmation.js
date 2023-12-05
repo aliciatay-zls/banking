@@ -9,7 +9,7 @@ export default function EmailConfirmation({details}) {
         <Fragment>
             <Grid item xs={12}>
                 <Typography component="p" variant="caption" align="center">
-                    Time completed: {details.requested_on}
+                    Time completed: {details.created_on}
                 </Typography>
             </Grid>
             <Grid item xs={12}>

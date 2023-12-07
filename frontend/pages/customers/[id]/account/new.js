@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import escape from 'validator/lib/escape';
 import Box from '@mui/material/Box';
 import Button from "@mui/material/Button";
 import Container from '@mui/material/Container';
@@ -92,7 +93,7 @@ export default function CreateAccountPage(props) {
         const request = {
             method: "POST",
             headers: { "Authorization": "Bearer " + props.accessToken },
-            body: JSON.stringify({account_type: selectedType, amount: inputAmount})
+            body: JSON.stringify({account_type: escape(selectedType), amount: inputAmount}),
         };
 
         const finalProps = await handleFetchResource(props.currentPath, props.requestURL, request);
@@ -224,7 +225,7 @@ export default function CreateAccountPage(props) {
 
             <ConfirmationDialog
                 open={openConfirmation}
-                handleNo={() => setOpenErrorAlert(false)}
+                handleNo={() => setOpenConfirmation(false)}
                 handleYes={handleNewAccount}
                 title={`Open ${selectedType} account of $${inputAmount}?`}
             />

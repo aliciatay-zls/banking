@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
 import { useCookies } from 'react-cookie';
+import isJWT from "validator/lib/isJWT";
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import AppBar from '@mui/material/AppBar';
@@ -58,12 +59,15 @@ export function DefaultAppBar({clientInfo}) {
     async function handleLogout(event) {
         event.preventDefault();
 
-        const request = {
-            method: "POST",
-            body: JSON.stringify({refresh_token: refreshToken}),
-        };
-
         try {
+            if (!isJWT(refreshToken)) {
+                throw new Error("Refresh token is not a valid JWT");
+            }
+            const request = {
+                method: "POST",
+                body: JSON.stringify({refresh_token: refreshToken}),
+            };
+
             const response = await fetch("http://127.0.0.1:8181/auth/logout", request);
             const data = await response.json();
 

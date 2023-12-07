@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
+import isJWT from "validator/lib/isJWT";
 import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -33,7 +34,8 @@ export default function TempRefreshPage(props) {
         if (!ignore) {
             const accessToken = cookies?.access_token || '';
             const refreshToken = cookies?.refresh_token || '';
-            if (accessToken === '' || refreshToken === '') {
+            if (accessToken === '' || !isJWT(accessToken) || refreshToken === '' || !isJWT(refreshToken)) {
+                console.log("No or invalid token");
                 router.replace('/login');
                 return;
             }
@@ -46,6 +48,8 @@ export default function TempRefreshPage(props) {
             const tryRefresh = async () => {
                 const response = await fetch("http://127.0.0.1:8181/auth/refresh", newTokenRequest);
                 const data = await response.json();
+
+                const newAccessToken = data?.new_access_token || '';
 
                 //refresh failed
                 if (!response.ok) {
@@ -67,14 +71,14 @@ export default function TempRefreshPage(props) {
                     }
                 }
 
-                if (!data || !("new_access_token" in data) || data.new_access_token === "") {
+                if (newAccessToken === '' || !isJWT(newAccessToken)) {
                     console.log("No token in response, cannot continue");
                     setTimeout(() => router.replace('/500'), 5000);
                     throw new Error(serverSideErrorDefaultMessage);
                 }
 
                 //refresh succeeded, update token on client side
-                setCookie('access_token', data.new_access_token, {
+                setCookie('access_token', newAccessToken, {
                     path: '/',
                     maxAge: 60 * 60,
                     sameSite: 'strict',

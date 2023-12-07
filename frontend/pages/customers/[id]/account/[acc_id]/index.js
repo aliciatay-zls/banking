@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";
+import escape from 'validator/lib/escape';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -86,7 +87,7 @@ export default function TransactionPage(props) {
         const request = {
             method: "POST",
             headers: { "Authorization": "Bearer " + accessToken },
-            body: JSON.stringify({transaction_type: selectedType, amount: inputAmount}),
+            body: JSON.stringify({transaction_type: escape(selectedType), amount: inputAmount}),
         };
 
         const finalProps = await handleFetchResource(currentPath, requestURL, request);

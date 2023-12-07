@@ -1,8 +1,10 @@
 import { useRouter } from "next/router";
 import { Fragment, useEffect, useState } from "react";
+import isJWT from 'validator/lib/isJWT';
 import Button from "@mui/material/Button";
 
 import SnackbarAlert from "./snackbar";
+import { validateEmail } from "../src/validationUtils";
 
 const defaultErrorMessage = {
     title: "Could not resend confirmation link at this time.",
@@ -47,8 +49,20 @@ export default function ResendEmailButton({requestType, identifier}) {
 
         let response;
         if (requestType === "UsingToken") {
+            if (!isJWT(identifier)) {
+                console.log("Temporary token is not a valid JWT");
+                setIsError(true);
+                setOpenOutcomeAlert(true);
+                return;
+            }
             response = await fetch(`http://127.0.0.1:8181/auth/register/resend?ott=${encodeURIComponent(identifier)}`);
         } else if (requestType === "UsingEmail") {
+            if (!validateEmail(identifier)) {
+                console.log("Email is not valid");
+                setIsError(true);
+                setOpenOutcomeAlert(true);
+                return;
+            }
             const request = {
                 method: "POST",
                 body: JSON.stringify({email: identifier})

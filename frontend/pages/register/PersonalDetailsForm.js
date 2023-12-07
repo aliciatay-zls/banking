@@ -77,6 +77,7 @@ export default function PersonalDetailsForm({handleChange, fields}) {
                             id="register-country"
                             name="country"
                             label="Country"
+                            autoComplete="off"
                             size="small"
                             value={fields.country}
                             onChange={e => handleChange(e)}

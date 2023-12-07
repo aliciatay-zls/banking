@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Fragment } from "react";
+import isJWT from 'validator/lib/isJWT';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Typography from "@mui/material/Typography";
@@ -23,7 +24,7 @@ export async function getServerSideProps(context) {
     }
 
     const ott = context.query.ott || '';
-    if (ott === '') {
+    if (ott === '' || !isJWT(ott)) {
         console.log("Redirecting to 404 page");
         return {
             notFound: true,

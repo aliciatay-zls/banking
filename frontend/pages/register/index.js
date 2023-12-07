@@ -1,4 +1,6 @@
 import { Fragment, useState } from "react";
+import isAscii from 'validator/lib/isAscii';
+import escape from 'validator/lib/escape';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
@@ -70,7 +72,7 @@ export default function RegistrationPage() {
         event.preventDefault();
         resetErrorAlert();
 
-        if (!isFieldsFilled(activeStep) || !validatePersonalDetails()) {
+        if (!isFieldsFilledAndEnglish(activeStep) || !validatePersonalDetails()) {
             return;
         }
 
@@ -86,26 +88,26 @@ export default function RegistrationPage() {
         resetErrorAlert();
 
         //do all checks for previous form again
-        if (!isFieldsFilled(activeStep - 1) || !validatePersonalDetails()) {
+        if (!isFieldsFilledAndEnglish(activeStep - 1) || !validatePersonalDetails()) {
             return;
         }
-
         //do checks for current form
-        if (!isFieldsFilled(activeStep) || !validateLoginDetails()) {
+        if (!isFieldsFilledAndEnglish(activeStep) || !validateLoginDetails()) {
             return;
         }
 
         const request = {
             method: "POST",
             body: JSON.stringify({
-                full_name: v.removeSpaces(fields.firstName)
-                    .concat(" ", v.removeSpaces(fields.lastName)),
-                country: fields.country,
-                zipcode: fields.zipcode,
+                full_name: escape(
+                    v.removeSpaces(fields.firstName).concat(" ", v.removeSpaces(fields.lastName))
+                ),
+                country: escape(fields.country),
+                zipcode: escape(fields.zipcode),
                 date_of_birth: fields.dob,
-                email: fields.email,
-                username: fields.username,
-                password: fields.password,
+                email: escape(fields.email),
+                username: escape(fields.username),
+                password: escape(fields.password),
             }),
         };
 
@@ -139,11 +141,16 @@ export default function RegistrationPage() {
         }
     }
 
-    function isFieldsFilled(step) {
+    function isFieldsFilledAndEnglish(step) {
         const fieldNames = stepFieldNames[step];
         for (let i=0; i<fieldNames.length; i++) {
-            if (fields[fieldNames[i]] === "") {
+            const val = fields[fieldNames[i]];
+            if (val === "") {
                 openValidationErrorAlert("Please check that all fields are filled.");
+                return false;
+            }
+            if (!isAscii(val)) {
+                openValidationErrorAlert("Please ensure that all fields are in English.");
                 return false;
             }
         }
@@ -151,33 +158,23 @@ export default function RegistrationPage() {
     }
 
     function validatePersonalDetails() {
-        if (!v.validateNewEmail(fields.email)) {
+        if (!v.validateName(fields.firstName, fields.lastName)) {
+            openValidationErrorAlert("Please check that the First Name and Last Name do not contain numbers.");
+            return false;
+        }
+        if (!v.validateEmail(fields.email)) {
             openValidationErrorAlert("Please check that the Email entered is correct.");
             return false;
         }
-
-        if (!v.validateDate(fields.dob)) {
+        if (!v.validateDOB(fields.dob)) {
             openValidationErrorAlert("Please check that the Date of Birth entered is correct.");
             return false;
         }
-
         if (!Countries.includes(fields.country)) {
             openValidationErrorAlert("Please check that the Country selected is correct.");
             return false;
         }
-
-        //check zipcode: numbers only, max 10 digits long
-        let [isValid, zip] = v.validateNumeric(fields.zipcode);
-        if (!isValid) {
-            openValidationErrorAlert("Please check that the Postal/Zip Code entered is a number.");
-            return false;
-        }
-        let numDigits = 0;
-        while (zip >= 1) {
-            zip /= 10;
-            numDigits++;
-        }
-        if (numDigits > 10) {
+        if (!v.validateZipcode(fields.zipcode)) {
             openValidationErrorAlert("Please check that the Postal/Zip Code entered is correct.");
             return false;
         }
@@ -190,17 +187,14 @@ export default function RegistrationPage() {
             openValidationErrorAlert("Please check that the Username meets the requirements");
             return false;
         }
-
         if (!v.validateNewPassword(fields.password)) {
             openValidationErrorAlert("Please check that the Password meets the requirements");
             return false;
         }
-
         if (fields.password !== fields.confirmPassword) {
             openValidationErrorAlert("Passwords do not match");
             return false;
         }
-
         if (!fields.tcCheckbox) {
             openValidationErrorAlert("Please review and accept the terms and conditions");
             return false;

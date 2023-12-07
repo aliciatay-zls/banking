@@ -1,3 +1,7 @@
+import isDate from 'validator/lib/isDate';
+import isEmail from 'validator/lib/isEmail';
+import isPostalCode from 'validator/lib/isPostalCode';
+
 export function validateNumeric(input) {
     const re = new RegExp("^[0-9]+$");
     if (!re.test(input)) {
@@ -10,10 +14,19 @@ export function validateNumeric(input) {
     return [true, integer];
 }
 
-export function validateDate(input) {
+export function containsNumber(input) {
+    const re = new RegExp("[0-9]+");
+    return re.test(input);
+}
+
+//allowed birthdays: 100 years before current date up to 1 year before current date
+export function validateDOB(input) {
+    if (!isDate(input, {format: 'YYYY-MM-DD', strictMode: true})) {
+        return false;
+    }
     const currYear = new Date().getFullYear();
     const date = new Date(input);
-    return !isNaN(date) && (date.getFullYear() >= currYear - 100) && (date.getFullYear() <= currYear);
+    return (date.getFullYear() >= currYear - 100) && (date.getFullYear() < currYear);
 }
 
 export function capitalize(input) {
@@ -43,11 +56,16 @@ export function removeSpaces(input) {
     return result.join(" ");
 }
 
-//source of regexp: discussion at https://emailregex.com/#disqus_footer
-//in the form xxx@xxx.xxx, max 100 chars long
-export function validateNewEmail(input) {
-    const re = new RegExp("[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,63}");
-    return re.test(input) && input.length <= 100;
+export function validateName(first, last) {
+    return !containsNumber(first) && !containsNumber(last);
+}
+
+export function validateEmail(input) {
+    return isEmail(input, {allow_utf8_local_part: false}) && input.length <= 100;
+}
+
+export function validateZipcode(input) {
+    return isPostalCode(input, 'any') && input.length <= 10;
 }
 
 //starts with alphabet, only underscore allowed, min 6 chars and max 20 chars long

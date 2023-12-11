@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"github.com/udemy-go-1/banking-lib/errs"
 	"github.com/udemy-go-1/banking-lib/logger"
 	"github.com/udemy-go-1/banking/backend/dto"
 	"github.com/udemy-go-1/banking/backend/service"
@@ -33,13 +34,7 @@ func (h AccountHandler) newAccountHandler(w http.ResponseWriter, r *http.Request
 
 	if err := json.NewDecoder(r.Body).Decode(&newAccountRequest); err != nil {
 		logger.Error("Error while decoding json body of new account request: " + err.Error())
-		writeJsonResponse(w, http.StatusBadRequest, err.Error())
-		return
-	}
-	if newAccountRequest.AccountType == nil || newAccountRequest.Amount == nil {
-		logger.Error("Field(s) missing or null in request body")
-		writeJsonResponse(w, http.StatusBadRequest,
-			"Field(s) missing or null in request body: account_type, amount")
+		writeJsonResponse(w, http.StatusBadRequest, errs.NewMessageObject("Please check the fields filled or try again later."))
 		return
 	}
 
@@ -61,13 +56,7 @@ func (h AccountHandler) transactionHandler(w http.ResponseWriter, r *http.Reques
 
 	if err := json.NewDecoder(r.Body).Decode(&transactionRequest); err != nil { // (*)
 		logger.Error("Error while decoding json body of transaction request: " + err.Error())
-		writeJsonResponse(w, http.StatusBadRequest, err.Error())
-		return
-	}
-	if transactionRequest.TransactionType == nil || transactionRequest.Amount == nil {
-		logger.Error("Field(s) missing or null in request body")
-		writeJsonResponse(w, http.StatusBadRequest,
-			"Field(s) missing or null in request body: transaction_type, amount")
+		writeJsonResponse(w, http.StatusBadRequest, errs.NewMessageObject("Please check the fields filled or try again later."))
 		return
 	}
 

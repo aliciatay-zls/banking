@@ -2,6 +2,7 @@ package dto
 
 import (
 	"fmt"
+	"github.com/asaskevich/govalidator"
 	"github.com/udemy-go-1/banking-lib/errs"
 	"github.com/udemy-go-1/banking-lib/logger"
 )
@@ -9,38 +10,46 @@ import (
 const TransactionTypeWithdrawal = "withdrawal"
 const TransactionTypeDeposit = "deposit"
 const TransactionMinAmountAllowed float64 = 0
+const TransactionMaxAmountAllowed float64 = 99999999.99
 
-type TransactionRequest struct { // (**)
-	AccountId       string   `json:"account_id"`
-	Amount          *float64 `json:"amount"`
-	TransactionType *string  `json:"transaction_type"`
-	CustomerId      string   `json:"customer_id"`
+type TransactionRequest struct {
+	AccountId       string  `json:"account_id" valid:"numeric"`
+	Amount          float64 `json:"amount" valid:"float,optional"` //to allow 0 since SetFieldsRequiredByDefault() is used
+	TransactionType string  `json:"transaction_type" valid:"alpha,in(withdrawal|deposit)"`
+	CustomerId      string  `json:"customer_id" valid:"numeric"`
 }
 
 func (r TransactionRequest) Validate() *errs.AppError {
-	if *r.Amount < TransactionMinAmountAllowed {
-		logger.Error("Transaction amount is invalid")
-		return errs.NewValidationError(fmt.Sprintf("Transaction amount cannot be less than %v", TransactionMinAmountAllowed))
+	errMsgByField := []struct {
+		Name string
+		Msg  string
+	}{
+		{"account_id", "Account ID must be present and a number"},
+		{"amount", fmt.Sprintf("Transaction amount cannot be less than $%v", TransactionMinAmountAllowed)},
+		{"transaction_type", fmt.Sprintf("Transaction type should be %s or %s", TransactionTypeWithdrawal, TransactionTypeDeposit)},
+		{"customer_id", "Customer ID must be present and a number"},
 	}
-	if *r.TransactionType != TransactionTypeWithdrawal && *r.TransactionType != TransactionTypeDeposit { // (*)
-		logger.Error("Transaction type is invalid")
-		return errs.NewValidationError(fmt.Sprintf("Transaction type should be %s or %s", TransactionTypeWithdrawal, TransactionTypeDeposit))
+
+	isValid, err := govalidator.ValidateStruct(r)
+	if err != nil || !isValid {
+		logger.Error("Transaction request is invalid: " + err.Error())
+		for _, v := range errMsgByField {
+			dueToField := govalidator.ErrorByField(err, v.Name)
+			if dueToField != "" {
+				return errs.NewValidationError(v.Msg)
+			}
+		}
+	}
+
+	isAmountValid := govalidator.InRangeFloat64(r.Amount, TransactionMinAmountAllowed, TransactionMaxAmountAllowed)
+	if !isAmountValid {
+		return errs.NewValidationError(errMsgByField[1].Msg)
+	}
+
+	//fallback msg
+	if err != nil || !isValid {
+		logger.Error("Transaction amount is invalid")
+		return errs.NewValidationError("The account ID, amount, transaction type or customer ID is invalid")
 	}
 	return nil
 }
-
-// (*)
-//Chose not to use strings.ToLower() here unlike in the lecture, because will have to ensure case-insensitivity
-//throughout entire app (e.g. do for customers APIs --> need to use it in customerRepositoryDb.go as well),
-//otherwise can have errors + records in database can get messed up due to uppercase/lowercase variations of
-//"withdrawal" and "deposit" allowed in.
-//Becomes more of job of input sanitization at the very start (e.g. handler?) before passing down these json values
-//to the rest of the app.
-
-// (**)
-//Made some fields pointers (those that are filled from the POST request body) = allows nil, useful for checking.
-//Handler will check if they were filled first before app does anything else.
-//Fields that are filled from the route variables remain regular variables = impossible for route variables to be nil
-//as mux would have ensured that to land on this route, the route variable was passed in and adheres to the regex expr.
-//
-//Same for NewAccountRequest.

@@ -20,7 +20,7 @@ import DefaultLayout from "../../../../../components/defaultLayout";
 import SnackbarAlert from "../../../../../components/snackbar";
 import authServerSideProps from "../../../../../src/authServerSideProps";
 import handleFetchResource from "../../../../../src/handleFetchResource";
-import { validateNumeric } from "../../../../../src/validationUtils";
+import { validateFloat } from "../../../../../src/validationUtils";
 
 export async function getServerSideProps(context) {
     return await authServerSideProps(context);
@@ -32,7 +32,7 @@ export default function TransactionPage(props) {
     const { setDataToDisplay } = useContext(DataToDisplayContext);
     const [selectedType, setSelectedType] = useState('');
     const [isTypeInvalid, setIsTypeInvalid] = useState(false);
-    const [inputAmount, setInputAmount] = useState(0);
+    const [inputAmount, setInputAmount] = useState(0.00);
     const [isAmountInvalid, setIsAmountInvalid] = useState(false);
     const [error, setError] = useState('');
     const [openErrorAlert, setOpenErrorAlert] = useState(false);
@@ -48,9 +48,9 @@ export default function TransactionPage(props) {
     }
 
     function checkInputAmount(rawAmt) {
-        const [isValid, amt] = validateNumeric(rawAmt);
-        if (!isValid || amt < 1 || amt > 100000) {
-            setInputAmount(0);
+        const [isValid, amt] = validateFloat(rawAmt, 0.00);
+        if (!isValid) {
+            setInputAmount(0.00);
             setIsAmountInvalid(true);
             return;
         }
@@ -95,14 +95,18 @@ export default function TransactionPage(props) {
 
         if (responseData.length === 0) {
             const possibleRedirect = finalProps?.redirect?.destination || '';
-            if (possibleRedirect === '') {
+            const possibleErrInfo = finalProps?.redirect || '';
+            if (possibleRedirect !== '') {
+                setError(possibleErrInfo.errorMessage);
+                setOpenErrorAlert(true);
+                setTimeout(() => router.replace(possibleRedirect), 10000);
+            } else if (possibleErrInfo !== '' && possibleErrInfo.statusCode === 422) {
+                setError(possibleErrInfo.errorMessage);
+                setOpenErrorAlert(true);
+            } else {
                 console.log("No response after sending transaction request");
                 setError("Something went wrong on our end, please try again later.");
                 setOpenErrorAlert(true);
-            } else {
-                setError(finalProps.redirect.errorMessage);
-                setOpenErrorAlert(true);
-                setTimeout(() => router.replace(possibleRedirect), 10000);
             }
             return;
         }
@@ -193,7 +197,6 @@ export default function TransactionPage(props) {
                         <Grid item xs={12}>
                             <TextField
                                 required
-                                inputMode="numeric"
                                 id="input-transaction-amount"
                                 label="Amount"
                                 variant="standard"
@@ -206,7 +209,7 @@ export default function TransactionPage(props) {
                                     ),
                                 }}
                                 error={isAmountInvalid}
-                                helperText={isAmountInvalid ? "Please enter a valid amount." : "Between $1 to $100,000"}
+                                helperText={isAmountInvalid ? "Please enter a valid amount." : ""}
                                 onChange={e => checkInputAmount(e.target.value)}
                             />
                         </Grid>

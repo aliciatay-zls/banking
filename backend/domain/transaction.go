@@ -1,8 +1,8 @@
 package domain
 
 import (
+	"github.com/udemy-go-1/banking-lib/clock"
 	"github.com/udemy-go-1/banking/backend/dto"
-	"time"
 )
 
 //Business Domain
@@ -16,12 +16,12 @@ type Transaction struct { //business/domain object
 	TransactionDate string `db:"transaction_date"`
 }
 
-func NewTransaction(accountId string, amount float64, transactionType string) Transaction {
+func NewTransaction(accountId string, amount float64, transactionType string, c clock.Clock) Transaction {
 	return Transaction{
 		AccountId:       accountId,
 		Amount:          amount,
 		TransactionType: transactionType,
-		TransactionDate: time.Now().Format("2006-01-02 15:04:05"),
+		TransactionDate: c.NowAsString(),
 	}
 }
 

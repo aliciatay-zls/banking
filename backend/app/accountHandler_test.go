@@ -2,6 +2,7 @@ package app
 
 import (
 	"bytes"
+	"github.com/asaskevich/govalidator"
 	"github.com/gorilla/mux"
 	"github.com/udemy-go-1/banking-lib/errs"
 	"github.com/udemy-go-1/banking-lib/logger"
@@ -40,6 +41,10 @@ const dummyNewTransactionPayload = `{"transaction_type": "deposit", "amount": 60
 const dummyTransactionId = "7791"
 const dummyBalance float64 = 12000
 
+func init() {
+	govalidator.SetFieldsRequiredByDefault(true)
+}
+
 func setupAccountHandlerTest(t *testing.T, path string, payload string) func() {
 	ctrl := gomock.NewController(t)
 	mockAccountService = service.NewMockAccountService(ctrl)
@@ -63,8 +68,8 @@ func setupAccountHandlerTest(t *testing.T, path string, payload string) func() {
 func getDefaultDummyNewAccountRequestObject() dto.NewAccountRequest {
 	return dto.NewAccountRequest{
 		CustomerId:  dummyCustomerId,
-		AccountType: &dummyAccountType,
-		Amount:      &dummyAmount,
+		AccountType: dummyAccountType,
+		Amount:      dummyAmount,
 	}
 }
 
@@ -73,8 +78,8 @@ func getDefaultDummyNewAccountRequestObject() dto.NewAccountRequest {
 func getDefaultDummyNewTransactionRequestObject() dto.TransactionRequest {
 	return dto.TransactionRequest{
 		AccountId:       dummyAccountId,
-		Amount:          &dummyAmount,
-		TransactionType: &dummyTransactionType,
+		Amount:          dummyAmount,
+		TransactionType: dummyTransactionType,
 		CustomerId:      dummyCustomerId,
 	}
 }
@@ -134,7 +139,7 @@ func TestAccountHandler_accountsHandler_respondsWith_accountsAndStatusCode200_wh
 
 func TestAccountHandler_newAccountHandler_respondsWith_errorStatusCode_when_payload_malformed(t *testing.T) {
 	//Arrange
-	badPayload := `{"account_type": "saving", "amount": "string instead of number"}`
+	badPayload := `{"customer_id": "2"", account_type": "saving", "amount": "string instead of number"}`
 	teardown := setupAccountHandlerTest(t, dummyNewAccountPath, badPayload)
 	defer teardown()
 	router.HandleFunc(newAccountPath, ah.newAccountHandler).Methods(http.MethodPost)
@@ -158,52 +163,6 @@ func TestAccountHandler_newAccountHandler_respondsWith_errorStatusCode_when_payl
 	if !strings.Contains(actualLogMessage, expectedLogMessagePrefix) {
 		t.Errorf("Expected log message to contain \"%s\" but got log message: \"%s\"", expectedLogMessagePrefix, actualLogMessage)
 	}
-}
-
-func TestAccountHandler_newAccountHandler_respondsWith_errorStatusCode_when_payloadField_missingOrNull(t *testing.T) {
-	//Arrange
-	tests := []struct {
-		name    string
-		payload string
-	}{
-		{"amount missing", `{"account_type": "saving"}`},
-		{"amount null", `{"account_type": "saving", "amount": null}`},
-	}
-	expectedStatusCode := http.StatusBadRequest
-	expectedResponse := "\"Field(s) missing or null in request body: account_type, amount\""
-	expectedLogMessage := "Field(s) missing or null in request body"
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			teardown := setupAccountHandlerTest(t, dummyNewAccountPath, tc.payload)
-			router.HandleFunc(newAccountPath, ah.newAccountHandler).Methods(http.MethodPost)
-
-			logs := logger.ReplaceWithTestLogger()
-
-			//Act
-			router.ServeHTTP(recorder, request)
-
-			//Assert
-			if recorder.Result().StatusCode != expectedStatusCode {
-				t.Errorf("Expecting status code %d but got %d", expectedStatusCode, recorder.Result().StatusCode)
-			}
-			actualResponse, _ := io.ReadAll(recorder.Result().Body)
-			if !strings.Contains(string(actualResponse), expectedResponse) {
-				t.Errorf("Expecting response to contain %s but got %s", expectedResponse, actualResponse)
-			}
-			if logs.Len() != 1 {
-				t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
-			}
-			actualLogMessage := logs.All()[0].Message
-			if actualLogMessage != expectedLogMessage {
-				t.Errorf("Expected log message to be \"%s\" but got \"%s\"", expectedLogMessage, actualLogMessage)
-			}
-
-			//Cleanup
-			teardown()
-		})
-	}
-
 }
 
 func TestAccountHandler_newAccountHandler_respondsWith_newAccountAndStatusCode200_when_service_succeeds(t *testing.T) {
@@ -255,7 +214,7 @@ func TestAccountHandler_newAccountHandler_respondsWith_errorStatusCode_when_serv
 
 func TestAccountHandler_transactionHandler_respondsWith_errorStatusCode_when_payload_malformed(t *testing.T) {
 	//Arrange
-	badPayload := `{"transaction_type": "deposit", "amount": "string instead of number"}`
+	badPayload := `{"account_id": "1977", "customer_id": "2", "transaction_type": "deposit", "amount": "string instead of number"}`
 	teardown := setupAccountHandlerTest(t, dummyNewTransactionPath, badPayload)
 	defer teardown()
 	router.HandleFunc(newTransactionPath, ah.transactionHandler).Methods(http.MethodPost)
@@ -279,52 +238,6 @@ func TestAccountHandler_transactionHandler_respondsWith_errorStatusCode_when_pay
 	if !strings.Contains(actualLogMessage, expectedLogMessagePrefix) {
 		t.Errorf("Expected log message to contain \"%s\" but got log message: \"%s\"", expectedLogMessagePrefix, actualLogMessage)
 	}
-}
-
-func TestAccountHandler_transactionHandler_respondsWith_errorStatusCode_when_payloadField_missingOrNull(t *testing.T) {
-	//Arrange
-	tests := []struct {
-		name    string
-		payload string
-	}{
-		{"transaction_type missing", `{"amount": 6000}`},
-		{"transaction_type null", `{"transaction_type": null, "amount": 6000}`},
-	}
-	expectedStatusCode := http.StatusBadRequest
-	expectedResponse := "\"Field(s) missing or null in request body: transaction_type, amount\""
-	expectedLogMessage := "Field(s) missing or null in request body"
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			teardown := setupAccountHandlerTest(t, dummyNewTransactionPath, tc.payload)
-			router.HandleFunc(newTransactionPath, ah.transactionHandler).Methods(http.MethodPost)
-
-			logs := logger.ReplaceWithTestLogger()
-
-			//Act
-			router.ServeHTTP(recorder, request)
-
-			//Assert
-			if recorder.Result().StatusCode != expectedStatusCode {
-				t.Errorf("Expecting status code %d but got %d", expectedStatusCode, recorder.Result().StatusCode)
-			}
-			actualResponse, _ := io.ReadAll(recorder.Result().Body)
-			if !strings.Contains(string(actualResponse), expectedResponse) {
-				t.Errorf("Expecting response to contain %s but got %s", expectedResponse, actualResponse)
-			}
-			if logs.Len() != 1 {
-				t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
-			}
-			actualLogMessage := logs.All()[0].Message
-			if actualLogMessage != expectedLogMessage {
-				t.Errorf("Expected log message to be \"%s\" but got \"%s\"", expectedLogMessage, actualLogMessage)
-			}
-
-			//Cleanup
-			teardown()
-		})
-	}
-
 }
 
 func TestAccountHandler_transactionHandler_respondsWith_newTransactionAndStatusCode200_when_service_succeeds(t *testing.T) {

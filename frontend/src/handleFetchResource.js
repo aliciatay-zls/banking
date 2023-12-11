@@ -57,6 +57,13 @@ export default async function handleFetchResource(currentPath, requestURL, reque
                 return {
                     notFound: true,
                 };
+            } else if (response.status === 400 || response.status === 422) { //for forms
+                return {
+                    redirect: { //wrap around in case unintended pages receive this code
+                        isFormValidationError: true,
+                        errorMessage: errorMessage,
+                    }
+                };
             } else {
                 throw new Error("HTTP error in handler: " + errorMessage);
             }

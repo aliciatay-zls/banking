@@ -54,7 +54,11 @@ export default function TempRefreshPage(props) {
                 //refresh failed
                 if (!response.ok) {
                     const errorMessage = data?.message || '';
-                    if (errorMessage === "expired or invalid refresh token") {
+                    console.log(errorMessage);
+                    if (errorMessage === "access token not expired yet") {
+                        router.replace(props.callbackURL === '' ? '/login' : props.callbackURL);
+                        return;
+                    } else if (errorMessage === "expired or invalid refresh token") {
                         removeCookie('access_token', {
                             path: '/',
                             sameSite: 'strict',
@@ -77,25 +81,25 @@ export default function TempRefreshPage(props) {
                     throw new Error(serverSideErrorDefaultMessage);
                 }
 
-                //refresh succeeded, update token on client side
+                //refresh succeeded: update token on client side and go back to caller page
                 setCookie('access_token', newAccessToken, {
                     path: '/',
                     maxAge: 60 * 60,
                     sameSite: 'strict',
                 });
-            };
 
-            tryRefresh()
-            .then(() => { //success case: go back to caller page
                 if (props.isFromLogin === "true") { //caller was login page
-                    return router.replace('/login');
+                    router.replace('/login');
+                    return;
                 }
-                if (props.callbackURL === '') {
+                if (props.callbackURL === '') { //no caller, for example landed here deliberately
                     console.log("Refresh successful but no callback url");
                     throw new Error(clientSideErrorDefaultMessage);
                 }
-                return router.replace(props.callbackURL);
-            })
+                router.replace(props.callbackURL);
+            };
+
+            tryRefresh()
             .catch((err) => {
                 setIsLoading(false);
                 setError(err.message);

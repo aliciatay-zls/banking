@@ -20,7 +20,7 @@ import SnackbarAlert from "../../../../components/snackbar";
 import authServerSideProps from "../../../../src/authServerSideProps";
 import { getHomepagePath } from "../../../../src/authUtils";
 import handleFetchResource from "../../../../src/handleFetchResource";
-import { validateNumeric } from "../../../../src/validationUtils";
+import { validateFloat } from "../../../../src/validationUtils";
 
 export async function getServerSideProps(context) {
     const initProps = await authServerSideProps(context);
@@ -52,20 +52,21 @@ export async function getServerSideProps(context) {
 export default function CreateAccountPage(props) {
     const router = useRouter();
 
+    const buttonLinkAccounts = `http://localhost:3000/customers/${props.customerId}/account`;
+    const errorDefaultMessage = "Please try again later."
+
     const [selectedType, setSelectedType] = useState('');
-    const [inputAmount, setInputAmount] = useState(0);
+    const [inputAmount, setInputAmount] = useState(0.00);
     const [isAmountInvalid, setIsAmountInvalid] = useState(false);
-    const [error, setError] = useState('');
+    const [errorMsg, setErrorMsg] = useState(errorDefaultMessage);
     const [openErrorAlert, setOpenErrorAlert] = useState(false);
     const [openConfirmation, setOpenConfirmation] = useState(false);
     const [newAccountInfo, setNewAccountInfo] = useState('');
 
-    const buttonLinkAccounts = `http://localhost:3000/customers/${props.customerId}/account`;
-
     function checkInputAmount(rawAmt) {
-        const [isValid, amt] = validateNumeric(rawAmt);
-        if (!isValid || amt < 5000) {
-            setInputAmount(0);
+        const [isValid, amt] = validateFloat(rawAmt, 5000.00);
+        if (!isValid) {
+            setInputAmount(0.00);
             setIsAmountInvalid(true);
             return;
         }
@@ -76,11 +77,11 @@ export default function CreateAccountPage(props) {
 
     function handleGetConfirmation(event) {
         event.preventDefault();
-        setError('');
+        setErrorMsg(errorDefaultMessage);
 
         const isValid = event.target.checkValidity();
         if (!isValid || isAmountInvalid) {
-            setError("Please check that all fields are correctly filled.");
+            setErrorMsg("Please check that all fields are correctly filled.");
             setOpenErrorAlert(true);
         } else {
             setOpenConfirmation(true);
@@ -101,14 +102,18 @@ export default function CreateAccountPage(props) {
 
         if (responseData === '') {
             const possibleRedirect = finalProps?.redirect?.destination || '';
-            if (possibleRedirect === '') {
-                console.log("No response after sending new account request");
-                setError("Something went wrong on our end, please try again later.");
-                setOpenErrorAlert(true);
-            } else {
-                setError(finalProps.redirect.errorMessage);
+            const possibleErrInfo = finalProps?.redirect || '';
+            if (possibleRedirect !== '') {
+                setErrorMsg(finalProps.redirect.errorMessage);
                 setOpenErrorAlert(true);
                 setTimeout(() => router.replace(possibleRedirect), 10000);
+            } else if (possibleErrInfo !== '' && possibleErrInfo.isFormValidationError) {
+                setErrorMsg(possibleErrInfo.errorMessage);
+                setOpenErrorAlert(true);
+            } else {
+                console.log("No response after sending new account request");
+                setErrorMsg("Something went wrong on our end, please try again later.");
+                setOpenErrorAlert(true);
             }
             return;
         }
@@ -142,7 +147,7 @@ export default function CreateAccountPage(props) {
                             <Typography variant="h4" align="center" fontWeight="600" marginBottom={1}>
                                 Account Opening
                             </Typography>
-                            <Typography variant="subtitle1" align="center" gutterBottom style={{ color: 'blue', lineHeight: 1.2, marginBottom: 20,}}>
+                            <Typography variant="subtitle2" align="center" gutterBottom style={{ lineHeight: 1.2, marginBottom: 20,}}>
                                 Note: minimum initial amount to open an account is $5,000.
                             </Typography>
 
@@ -175,7 +180,6 @@ export default function CreateAccountPage(props) {
                                 <Grid item xs={12}>
                                     <TextField
                                         required
-                                        inputMode="numeric"
                                         id="input-account-amount"
                                         label="Initial Amount"
                                         fullWidth
@@ -235,7 +239,7 @@ export default function CreateAccountPage(props) {
                 handleClose={() => setOpenErrorAlert(false)}
                 isError={true}
                 title={"Failed to create account"}
-                msg={error}
+                msg={errorMsg}
             />
         </DefaultLayout>
     );

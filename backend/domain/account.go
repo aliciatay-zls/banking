@@ -1,9 +1,9 @@
 package domain
 
 import (
+	"github.com/udemy-go-1/banking-lib/clock"
 	"github.com/udemy-go-1/banking-lib/errs"
 	"github.com/udemy-go-1/banking/backend/dto"
-	"time"
 )
 
 //Business Domain
@@ -17,10 +17,10 @@ type Account struct { //business/domain object
 	Status      string  `db:"status"`
 }
 
-func NewAccount(customerId string, accountType string, amount float64) Account {
+func NewAccount(customerId string, accountType string, amount float64, c clock.Clock) Account {
 	return Account{
 		CustomerId:  customerId,
-		OpeningDate: time.Now().Format("2006-01-02 15:04:05"), //from time.RFC3339, modified based on banking.sql
+		OpeningDate: c.NowAsString(),
 		AccountType: accountType,
 		Amount:      amount,
 		Status:      "1", //default for newly-created account

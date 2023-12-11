@@ -5,6 +5,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
+	"github.com/udemy-go-1/banking-lib/clock"
 	"github.com/udemy-go-1/banking-lib/logger"
 	"github.com/udemy-go-1/banking/backend/domain"
 	"github.com/udemy-go-1/banking/backend/service"
@@ -39,10 +40,11 @@ func Start() {
 	router := mux.NewRouter()
 
 	dbClient := getDbClient()
+	clk := clock.RealClock{}
 	customerRepositoryDb := domain.NewCustomerRepositoryDb(dbClient)
 	accountRepositoryDb := domain.NewAccountRepositoryDb(dbClient)
 	ch := CustomerHandlers{service.NewCustomerService(customerRepositoryDb)}
-	ah := AccountHandler{service.NewAccountService(accountRepositoryDb)}
+	ah := AccountHandler{service.NewAccountService(accountRepositoryDb, clk)}
 
 	router.
 		HandleFunc("/customers", ch.customersHandler).

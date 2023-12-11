@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/udemy-go-1/banking-lib/clock"
 	"github.com/udemy-go-1/banking-lib/errs"
 	"github.com/udemy-go-1/banking-lib/logger"
 	"github.com/udemy-go-1/banking/backend/domain"
@@ -16,10 +17,11 @@ type AccountService interface { //service (primary port)
 
 type DefaultAccountService struct { //business/domain object
 	repo domain.AccountRepository //Business Domain has dependency on repo (repo is a field)
+	clk  clock.Clock
 }
 
-func NewAccountService(repo domain.AccountRepository) DefaultAccountService {
-	return DefaultAccountService{repo}
+func NewAccountService(repo domain.AccountRepository, clk clock.Clock) DefaultAccountService {
+	return DefaultAccountService{repo, clk}
 }
 
 func (s DefaultAccountService) GetAllAccounts(customerId string) ([]dto.AccountResponse, *errs.AppError) {
@@ -40,7 +42,7 @@ func (s DefaultAccountService) CreateNewAccount(request dto.NewAccountRequest) (
 		return nil, err
 	}
 
-	account := domain.NewAccount(request.CustomerId, *request.AccountType, *request.Amount)
+	account := domain.NewAccount(request.CustomerId, request.AccountType, request.Amount, s.clk)
 
 	newAccount, err := s.repo.Save(account)
 	if err != nil {
@@ -63,14 +65,14 @@ func (s DefaultAccountService) MakeTransaction(request dto.TransactionRequest) (
 		return nil, err
 	}
 
-	if *request.TransactionType == dto.TransactionTypeWithdrawal {
-		if !account.CanWithdraw(*request.Amount) {
+	if request.TransactionType == dto.TransactionTypeWithdrawal {
+		if !account.CanWithdraw(request.Amount) {
 			logger.Error("Amount to withdraw exceeds account balance")
 			return nil, errs.NewValidationError("Account balance insufficient to withdraw given amount")
 		}
 	}
 
-	transaction := domain.NewTransaction(request.AccountId, *request.Amount, *request.TransactionType)
+	transaction := domain.NewTransaction(request.AccountId, request.Amount, request.TransactionType, s.clk)
 
 	completedTransaction, err := s.repo.Transact(transaction)
 	if err != nil {

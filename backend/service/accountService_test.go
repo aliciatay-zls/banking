@@ -1,6 +1,8 @@
 package service
 
 import (
+	"github.com/asaskevich/govalidator"
+	"github.com/udemy-go-1/banking-lib/clock"
 	"github.com/udemy-go-1/banking-lib/errs"
 	"github.com/udemy-go-1/banking-lib/logger"
 	"github.com/udemy-go-1/banking/backend/domain"
@@ -15,6 +17,7 @@ const dummyCustomerId = "2"
 
 // Test common variables and inputs
 var mockAccountRepo *mocksDomain.MockAccountRepository
+var mockClock clock.Clock
 var accSvc DefaultAccountService
 
 var dummyAmount float64 = 6000
@@ -26,10 +29,15 @@ const dummyAccountId = "1977"
 const dummyTransactionId = "7791"
 const dummyBalance = 0
 
+func init() {
+	govalidator.SetFieldsRequiredByDefault(true)
+}
+
 func setupAccountServiceTest(t *testing.T) func() {
 	ctrl := gomock.NewController(t)
 	mockAccountRepo = mocksDomain.NewMockAccountRepository(ctrl)
-	accSvc = NewAccountService(mockAccountRepo)
+	mockClock = clock.StaticClock{}
+	accSvc = NewAccountService(mockAccountRepo, mockClock) //prevents flaky tests due to minor time differences
 
 	return func() {
 		mockAccountRepo = nil
@@ -42,8 +50,8 @@ func setupAccountServiceTest(t *testing.T) func() {
 func getDefaultDummyNewAccountRequest() dto.NewAccountRequest {
 	return dto.NewAccountRequest{
 		CustomerId:  dummyCustomerId,
-		AccountType: &dummyAccountType,
-		Amount:      &dummyAmount,
+		AccountType: dummyAccountType,
+		Amount:      dummyAmount,
 	}
 }
 
@@ -52,19 +60,31 @@ func getDefaultDummyNewAccountRequest() dto.NewAccountRequest {
 func getDefaultDummyTransactionRequest() dto.TransactionRequest {
 	return dto.TransactionRequest{
 		AccountId:       dummyAccountId,
-		Amount:          &dummyAmount,
-		TransactionType: &dummyTransactionType,
+		Amount:          dummyAmount,
+		TransactionType: dummyTransactionType,
 		CustomerId:      dummyCustomerId,
 	}
 }
 
+// getDefaultDummyAccount returns a domain.Account of saving type and amount 6000 belonging to the customer with id 2,
+// opened on 2 Jan 2006, before it was saved to the db.
+func getDefaultDummyAccount() domain.Account {
+	return domain.NewAccount(dummyCustomerId, dummyAccountType, dummyAmount, mockClock)
+}
+
+// getDefaultDummyTransaction returns a domain.Transaction of withdrawal type and amount 6000 made on the account
+// with number 1977, on 2 Jan 2006, before it was saved to the db.
+func getDefaultDummyTransaction() domain.Transaction {
+	return domain.NewTransaction(dummyAccountId, dummyAmount, dummyTransactionType, mockClock)
+}
+
 func TestDefaultAccountService_CreateNewAccount_returns_error_when_validatingNewAccountRequest_fails(t *testing.T) {
 	//Arrange
-	accSvc = NewAccountService(nil)
+	accSvc = NewAccountService(nil, mockClock)
 
 	dummyNewAccountRequest := getDefaultDummyNewAccountRequest()
 	var invalidAmount float64 = 0
-	dummyNewAccountRequest.Amount = &invalidAmount
+	dummyNewAccountRequest.Amount = invalidAmount
 
 	//Act
 	logger.MuteLogger()
@@ -82,12 +102,12 @@ func TestDefaultAccountService_CreateNewAccount_returns_error_when_repo_fails(t 
 	defer teardown()
 
 	dummyNewAccountRequest := getDefaultDummyNewAccountRequest()
-	dummyAccount := domain.NewAccount(dummyCustomerId, dummyAccountType, dummyAmount)
+	dummyAccount := getDefaultDummyAccount() //uses mock clock
 	dummyAppErr := errs.NewUnexpectedError("some error message")
 	mockAccountRepo.EXPECT().Save(dummyAccount).Return(nil, dummyAppErr)
 
 	//Act
-	_, err := accSvc.CreateNewAccount(dummyNewAccountRequest)
+	_, err := accSvc.CreateNewAccount(dummyNewAccountRequest) //uses mock clock
 
 	//Assert
 	if err == nil {
@@ -104,9 +124,9 @@ func TestDefaultAccountService_CreateNewAccount_returns_newAccountId_when_repo_s
 	defer teardown()
 
 	dummyNewAccountRequest := getDefaultDummyNewAccountRequest()
-	dummyAccount := domain.NewAccount(dummyCustomerId, dummyAccountType, dummyAmount)
+	dummyAccount := getDefaultDummyAccount()
 	dummyNewAccount := dummyAccount
-	dummyNewAccount.AccountId = dummyAccountId
+	dummyNewAccount.AccountId = dummyAccountId //after saving into db
 	mockAccountRepo.EXPECT().Save(dummyAccount).Return(&dummyNewAccount, nil)
 
 	//Act
@@ -124,11 +144,11 @@ func TestDefaultAccountService_CreateNewAccount_returns_newAccountId_when_repo_s
 
 func TestDefaultAccountService_MakeTransaction_returns_error_when_validatingTransactionRequest_fails(t *testing.T) {
 	//Arrange
-	accSvc = NewAccountService(nil)
+	accSvc = NewAccountService(nil, mockClock)
 
 	dummyTransactionRequest := getDefaultDummyTransactionRequest()
 	var invalidAmount float64 = -100
-	dummyTransactionRequest.Amount = &invalidAmount
+	dummyTransactionRequest.Amount = invalidAmount
 
 	//Act
 	logger.MuteLogger()
@@ -168,8 +188,9 @@ func TestDefaultAccountService_MakeTransaction_returns_error_when_cannotWithdraw
 
 	dummyTransactionRequest := getDefaultDummyTransactionRequest()
 	var insufficientBalance float64 = 10
-	dummyExistentAccount := domain.NewAccount(dummyCustomerId, dummyAccountType, insufficientBalance)
-	dummyExistentAccount.AccountId = dummyAccountId
+	dummyExistentAccount := getDefaultDummyAccount()
+	dummyExistentAccount.Amount = insufficientBalance
+	dummyExistentAccount.AccountId = dummyAccountId //after saving into db
 	mockAccountRepo.EXPECT().FindById(dummyTransactionRequest.AccountId).Return(&dummyExistentAccount, nil)
 
 	expectedErrMessage := "Account balance insufficient to withdraw given amount"
@@ -202,11 +223,11 @@ func TestDefaultAccountService_MakeTransaction_returns_error_when_repo_fails(t *
 	defer teardown()
 
 	dummyTransactionRequest := getDefaultDummyTransactionRequest()
-	dummyExistentAccount := domain.NewAccount(dummyCustomerId, dummyAccountType, dummyAmount)
+	dummyExistentAccount := getDefaultDummyAccount()
 	dummyExistentAccount.AccountId = dummyAccountId
 	mockAccountRepo.EXPECT().FindById(dummyTransactionRequest.AccountId).Return(&dummyExistentAccount, nil)
 
-	dummyTransaction := domain.NewTransaction(dummyAccountId, dummyAmount, dummyTransactionType)
+	dummyTransaction := getDefaultDummyTransaction()
 	dummyAppErr := errs.NewUnexpectedError("some error message")
 	mockAccountRepo.EXPECT().Transact(dummyTransaction).Return(nil, dummyAppErr)
 
@@ -228,11 +249,11 @@ func TestDefaultAccountService_MakeTransaction_returns_newTransactionDetails_whe
 	defer teardown()
 
 	dummyTransactionRequest := getDefaultDummyTransactionRequest()
-	dummyExistentAccount := domain.NewAccount(dummyCustomerId, dummyAccountType, dummyAmount)
+	dummyExistentAccount := getDefaultDummyAccount()
 	dummyExistentAccount.AccountId = dummyAccountId
 	mockAccountRepo.EXPECT().FindById(dummyTransactionRequest.AccountId).Return(&dummyExistentAccount, nil)
 
-	dummyTransaction := domain.NewTransaction(dummyAccountId, dummyAmount, dummyTransactionType)
+	dummyTransaction := getDefaultDummyTransaction()
 	dummyNewTransaction := dummyTransaction
 	dummyNewTransaction.TransactionId = dummyTransactionId
 	dummyNewTransaction.Balance = dummyBalance

@@ -1,6 +1,5 @@
 import { Fragment, useState } from "react";
 import isAscii from 'validator/lib/isAscii';
-import escape from 'validator/lib/escape';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
@@ -98,16 +97,15 @@ export default function RegistrationPage() {
 
         const request = {
             method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                full_name: escape(
-                    v.removeSpaces(fields.firstName).concat(" ", v.removeSpaces(fields.lastName))
-                ),
-                country: escape(fields.country),
-                zipcode: escape(fields.zipcode),
-                date_of_birth: fields.dob,
-                email: escape(fields.email),
-                username: escape(fields.username),
-                password: escape(fields.password),
+                "full_name": v.removeSpaces(fields.firstName).concat(" ", v.removeSpaces(fields.lastName)),
+                "country": fields.country,
+                "zipcode": fields.zipcode,
+                "date_of_birth": fields.dob,
+                "email": fields.email,
+                "username": fields.username,
+                "password": fields.password,
             }),
         };
 

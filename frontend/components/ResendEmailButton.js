@@ -65,7 +65,8 @@ export default function ResendEmailButton({requestType, identifier}) {
             }
             const request = {
                 method: "POST",
-                body: JSON.stringify({email: identifier})
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ "email": identifier })
             };
             response = await fetch("http://127.0.0.1:8181/auth/register/resend", request);
         } else {

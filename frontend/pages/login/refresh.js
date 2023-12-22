@@ -34,15 +34,21 @@ export default function TempRefreshPage(props) {
         if (!ignore) {
             const accessToken = cookies?.access_token || '';
             const refreshToken = cookies?.refresh_token || '';
-            if (accessToken === '' || !isJWT(accessToken) || refreshToken === '' || !isJWT(refreshToken)) {
-                console.log("No or invalid token");
+            if (accessToken === '' || refreshToken === '') {
+                console.log("No token");
+                router.replace('/login');
+                return;
+            }
+            if (!isJWT(accessToken)|| !isJWT(refreshToken)) {
+                console.log("Invalid token");
                 router.replace('/login');
                 return;
             }
 
             const newTokenRequest = {
                 method: "POST",
-                body: JSON.stringify({"access_token": accessToken, "refresh_token": refreshToken}),
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ "access_token": accessToken, "refresh_token": refreshToken }),
             };
 
             const tryRefresh = async () => {

@@ -25,7 +25,8 @@ export default async function getServerSideProps(context) {
     const checkLoggedInURL = "http://127.0.0.1:8181/auth/continue";
     const request = {
         method: "POST",
-        body: JSON.stringify({"access_token": accessToken, "refresh_token": refreshToken}),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ "access_token": accessToken, "refresh_token": refreshToken }),
     };
     const checkLoggedInResponse = await handleFetchResource(currentPath, checkLoggedInURL, request);
     if (!checkLoggedInResponse.props) {

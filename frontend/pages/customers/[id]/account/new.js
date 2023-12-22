@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import escape from 'validator/lib/escape';
 import Box from '@mui/material/Box';
 import Button from "@mui/material/Button";
 import Container from '@mui/material/Container';
@@ -52,6 +51,8 @@ export async function getServerSideProps(context) {
 export default function CreateAccountPage(props) {
     const router = useRouter();
 
+    const accountTypeSaving = "saving"
+    const accountTypeChecking = "checking"
     const buttonLinkAccounts = `http://localhost:3000/customers/${props.customerId}/account`;
     const errorDefaultMessage = "Please try again later."
 
@@ -62,6 +63,15 @@ export default function CreateAccountPage(props) {
     const [openErrorAlert, setOpenErrorAlert] = useState(false);
     const [openConfirmation, setOpenConfirmation] = useState(false);
     const [newAccountInfo, setNewAccountInfo] = useState('');
+
+    function handleSelect(e) {
+        if (e.target.value !== accountTypeSaving && e.target.value !== accountTypeChecking) {
+            setErrorMsg("Please check that the account type is correct.");
+            setOpenErrorAlert(true);
+            return;
+        }
+        setSelectedType(e.target.value);
+    }
 
     function checkInputAmount(rawAmt) {
         const [isValid, amt] = validateFloat(rawAmt, 5000.00);
@@ -93,8 +103,8 @@ export default function CreateAccountPage(props) {
 
         const request = {
             method: "POST",
-            headers: { "Authorization": "Bearer " + props.accessToken },
-            body: JSON.stringify({account_type: escape(selectedType), amount: inputAmount}),
+            headers: { "Authorization": "Bearer " + props.accessToken, "Content-Type": "application/json" },
+            body: JSON.stringify({ "account_type": selectedType, "amount": inputAmount }),
         };
 
         const finalProps = await handleFetchResource(props.currentPath, props.requestURL, request);
@@ -171,7 +181,7 @@ export default function CreateAccountPage(props) {
                                         fullWidth
                                         variant="standard"
                                         value={selectedType}
-                                        onChange={e => setSelectedType(e.target.value)}
+                                        onChange={handleSelect}
                                     >
                                         <MenuItem value={"saving"}>Saving</MenuItem>
                                         <MenuItem value={"checking"}>Checking</MenuItem>

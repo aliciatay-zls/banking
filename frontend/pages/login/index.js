@@ -27,7 +27,8 @@ export async function getServerSideProps(context) {
 
     const request = {
         method: "POST",
-        body: JSON.stringify({"access_token": accessToken, "refresh_token": refreshToken}),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ "access_token": accessToken, "refresh_token": refreshToken }),
     };
     let data = '';
 
@@ -113,7 +114,8 @@ export default function LoginPage() {
 
         const request = {
             method: "POST",
-            body: JSON.stringify({username: username, password: password}),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ "username": username, "password": password }),
         };
 
         try {

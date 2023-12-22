@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";
-import escape from 'validator/lib/escape';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -29,12 +28,15 @@ export async function getServerSideProps(context) {
 export default function TransactionPage(props) {
     const router = useRouter();
 
+    const transactionTypeWithdrawal = "withdrawal"
+    const transactionTypeDeposit = "deposit"
+
     const { setDataToDisplay } = useContext(DataToDisplayContext);
     const [selectedType, setSelectedType] = useState('');
     const [isTypeInvalid, setIsTypeInvalid] = useState(false);
     const [inputAmount, setInputAmount] = useState(0.00);
     const [isAmountInvalid, setIsAmountInvalid] = useState(false);
-    const [error, setError] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
     const [openErrorAlert, setOpenErrorAlert] = useState(false);
     const [openConfirmation, setOpenConfirmation] = useState(false);
 
@@ -43,6 +45,11 @@ export default function TransactionPage(props) {
     const requestURL = props.requestURL;
 
     function handleSelect(e) {
+        if (e.target.value !== transactionTypeWithdrawal && e.target.value !== transactionTypeDeposit) {
+            setErrorMsg("Please check that the transaction type is correct.");
+            setOpenErrorAlert(true);
+            return;
+        }
         setIsTypeInvalid(false);
         setSelectedType(e.target.value);
     }
@@ -61,7 +68,7 @@ export default function TransactionPage(props) {
 
     function handleGetConfirmation(event) {
         event.preventDefault();
-        setError('');
+        setErrorMsg('');
         setDataToDisplay({
             isLoggingOut: false,
             pageData: [],
@@ -74,7 +81,7 @@ export default function TransactionPage(props) {
 
         const isValid = event.target.checkValidity();
         if (!isValid || isAmountInvalid) {
-            setError("Please check that all fields are correctly filled.");
+            setErrorMsg("Please check that all fields are correctly filled.");
             setOpenErrorAlert(true);
         } else {
             setOpenConfirmation(true);
@@ -86,8 +93,8 @@ export default function TransactionPage(props) {
 
         const request = {
             method: "POST",
-            headers: { "Authorization": "Bearer " + accessToken },
-            body: JSON.stringify({transaction_type: escape(selectedType), amount: inputAmount}),
+            headers: { "Authorization": "Bearer " + accessToken, "Content-Type": "application/json" },
+            body: JSON.stringify({ "transaction_type": selectedType, "amount": inputAmount }),
         };
 
         const finalProps = await handleFetchResource(currentPath, requestURL, request);
@@ -97,15 +104,15 @@ export default function TransactionPage(props) {
             const possibleRedirect = finalProps?.redirect?.destination || '';
             const possibleErrInfo = finalProps?.redirect || '';
             if (possibleRedirect !== '') {
-                setError(possibleErrInfo.errorMessage);
+                setErrorMsg(possibleErrInfo.errorMessage);
                 setOpenErrorAlert(true);
                 setTimeout(() => router.replace(possibleRedirect), 10000);
             } else if (possibleErrInfo !== '' && possibleErrInfo.statusCode === 422) {
-                setError(possibleErrInfo.errorMessage);
+                setErrorMsg(possibleErrInfo.errorMessage);
                 setOpenErrorAlert(true);
             } else {
                 console.log("No response after sending transaction request");
-                setError("Something went wrong on our end, please try again later.");
+                setErrorMsg("Something went wrong on our end, please try again later.");
                 setOpenErrorAlert(true);
             }
             return;
@@ -147,7 +154,7 @@ export default function TransactionPage(props) {
                                             value="deposit"
                                             control={
                                                 <Button
-                                                    variant={selectedType === "deposit" ? "contained" : "outlined"}
+                                                    variant={selectedType === transactionTypeDeposit ? "contained" : "outlined"}
                                                     size="large"
                                                     style={{
                                                         minHeight: '45px',
@@ -169,7 +176,7 @@ export default function TransactionPage(props) {
                                             value="withdrawal"
                                             control={
                                                 <Button
-                                                    variant={selectedType === "withdrawal" ? "contained" : "outlined"}
+                                                    variant={selectedType === transactionTypeWithdrawal ? "contained" : "outlined"}
                                                     size="large"
                                                     style={{
                                                         maxHeight: '45px',
@@ -241,7 +248,7 @@ export default function TransactionPage(props) {
                 handleClose={() => setOpenErrorAlert(false)}
                 isError={true}
                 title={"Transaction failed"}
-                msg={error}
+                msg={errorMsg}
             />
         </DefaultLayout>
     );

@@ -68,7 +68,8 @@ export async function getServerSideProps(context) {
         //send request to complete the registration
         const request = {
             method: "POST",
-            body: JSON.stringify({"one_time_token": ott}),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ "one_time_token": ott }),
         };
         const finishResponse = await fetch("http://127.0.0.1:8181/auth/register/finish", request);
         const finishData = await finishResponse.json();

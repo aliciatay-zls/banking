@@ -13,7 +13,7 @@ export default async function getServerSideProps(context) {
 
     const request = {
         method: "GET",
-        headers: { "Authorization": "Bearer " + initProps.props.accessToken },
+        headers: { "Authorization": "Bearer " + initProps.props.accessToken, "Content-Type": "application/json" },
     };
 
     const finalProps = await handleFetchResource(initProps.props.currentPath, initProps.props.requestURL, request);

@@ -98,7 +98,7 @@ DROP TABLE IF EXISTS `users`;
 
 CREATE TABLE `users` (
   `username` varchar(20) NOT NULL,
-  `password` varchar(100) NOT NULL,
+  `password` varchar(64) NOT NULL,
   `role` varchar(20) NOT NULL,
   `customer_id` int(11) DEFAULT NULL,
   `created_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -110,10 +110,11 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
+/* all passwords are currently "abc123" (hashed) */
 INSERT INTO `users` VALUES 
-  ('admin','abc123','admin', NULL, '2020-08-09 10:27:22'),
-  ('2001','abc123','user', 2001, '2020-08-09 10:27:22'),
-  ('2000','abc123','user', 2000, '2020-08-09 10:27:22');
+  ('admin','$2a$10$OAN0NrrYwvvWfPwgCS6Dd.ftzc1QxV84pW8GL2QCa6K.P63aK4og6','admin', NULL, '2020-08-09 10:27:22'),
+  ('2001','$2a$10$f88KJdHGTPr8B4CNpcjtTuAH41XyosuZtRowuqzGutrHOOIJz.vti','user', 2001, '2020-08-09 10:27:22'),
+  ('2000','$2a$10$L165AfBDM93hKbXYxF9dg.jO/2.jgGViOF0ZbP7pIED6CvRtEdjk2','user', 2000, '2020-08-09 10:27:22');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 
 UNLOCK TABLES;
@@ -129,7 +130,7 @@ CREATE TABLE `registrations` (
   `zipcode` varchar(10) NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '0',
   `username` varchar(20) NOT NULL,
-  `password` varchar(100) NOT NULL,
+  `password` varchar(64) NOT NULL,
   `role` varchar(20) NOT NULL,
   `email_attempts` tinyint(1) NOT NULL DEFAULT '0',
   `created_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,

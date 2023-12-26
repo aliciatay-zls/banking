@@ -77,7 +77,7 @@ export function validateNewUsername(input) {
     return re.test(input);
 }
 
-//alphanumeric, at least 1 digit, 1 lowercase, 1 uppercase, 1 special char, min 12 chars and max 100 chars long
+//alphanumeric, at least 1 digit, 1 lowercase, 1 uppercase, 1 special char, min 12 chars and max 64 chars long
 export function validateNewPassword(input) {
-    return isStrongPassword(input, {minLength: 12}) && input.length <= 100;
+    return isStrongPassword(input, {minLength: 12}) && input.length <= 64;
 }

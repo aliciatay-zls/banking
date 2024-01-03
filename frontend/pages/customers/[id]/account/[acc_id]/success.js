@@ -22,8 +22,8 @@ export async function getServerSideProps(context) {
 
     const customerID = context.params?.id || '';
     const accountID = context.params?.acc_id || '';
-    const beforeURL = `http://localhost:3000/customers/${customerID}/account/${accountID}`;
-    const myAccountsURL = `http://localhost:3000/customers/${customerID}/account`;
+    const beforeURL = `https://localhost:3000/customers/${customerID}/account/${accountID}`;
+    const myAccountsURL = `https://localhost:3000/customers/${customerID}/account`;
 
     return {
         props: {

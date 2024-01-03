@@ -20,9 +20,9 @@ export default async function getServerSideProps(context) {
     }
 
     const currentPath = context.resolvedUrl;
-    const requestURL = "http://127.0.0.1:8080".concat(currentPath);
+    const requestURL = "https://127.0.0.1:8080".concat(currentPath);
 
-    const checkLoggedInURL = "http://127.0.0.1:8181/auth/continue";
+    const checkLoggedInURL = "https://127.0.0.1:8181/auth/continue";
     const request = {
         method: "POST",
         headers: { "Content-Type": "application/json" },

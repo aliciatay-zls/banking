@@ -62,7 +62,7 @@ func buildURL(token string, routeName string, routeVars map[string]string) strin
 	addr := os.Getenv("AUTH_SERVER_ADDRESS")
 	port := os.Getenv("AUTH_SERVER_PORT")
 	verifyURL := url.URL{
-		Scheme: "http",
+		Scheme: "https",
 		Host:   fmt.Sprintf("%s:%s", addr, port),
 		Path:   "auth/verify",
 	}

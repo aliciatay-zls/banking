@@ -1,5 +1,7 @@
 /.idea
 *.exe
 .iml
-/frontend/node_modules
+/backend/certificates/
+/frontend/node_modules/
 /frontend/.next/
+/frontend/certificates/

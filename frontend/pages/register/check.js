@@ -33,7 +33,7 @@ export async function getServerSideProps(context) {
 
     try {
         //send request to check token in url
-        const checkResponse = await fetch(`http://127.0.0.1:8181/auth${context.resolvedUrl}`);
+        const checkResponse = await fetch(`https://127.0.0.1:8181/auth${context.resolvedUrl}`);
         const checkData = await checkResponse.json();
 
         const responseMsg = checkData?.message || '';
@@ -71,7 +71,7 @@ export async function getServerSideProps(context) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ "one_time_token": ott }),
         };
-        const finishResponse = await fetch("http://127.0.0.1:8181/auth/register/finish", request);
+        const finishResponse = await fetch("https://127.0.0.1:8181/auth/register/finish", request);
         const finishData = await finishResponse.json();
 
         if (!finishResponse.ok) {

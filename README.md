@@ -34,17 +34,17 @@ https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang
    npm run dev
    ```
 
-5. Navigate to http://localhost:3000/login to view the app.
+5. Navigate to https://localhost:3000/login to view the app.
 
 6. Alternatively, [Postman](https://www.postman.com/) can be used to send requests to the backend APIs. Sample requests:
 
-| Method | Backend API Endpoint                               | Authorization Header (Bearer Token)      | Body                                                    | Result                                                                                                                                                             |
-|--------|----------------------------------------------------|------------------------------------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| GET    | http://localhost:8080/customers                    | (access token received after logging in) |                                                         | Will display details of customers with id 2000 to 2005                                                                                                             |
-| GET    | http://localhost:8080/customers/2000               | (access token received after logging in) |                                                         | Will display details of the customer with id 2000                                                                                                                  |
-| GET    | http://localhost:8080/customers/2000/account       | (access token received after logging in) |                                                         | Will display details of accounts belonging to customer with id 2000                                                                                                |
-| POST   | http://localhost:8080/customers/2000/account/new   | (access token received after logging in) | {"account_type": "saving", <br/>"amount": 7000}         | Will open a new bank account containing $7000 for the customer with id 2000, then display the new bank account id                                                  |
-| POST   | http://localhost:8080/customers/2000/account/95470 | (access token received after logging in) | {"transaction_type": "withdrawal", <br/>"amount": 1000} | Will make a withdrawal of $1000 for the customer with id 2000 for the account with id 95470, then display the updated account balance and completed transaction id |
+| Method | Backend API Endpoint                                | Authorization Header (Bearer Token)      | Body                                                    | Result                                                                                                                                                             |
+|--------|-----------------------------------------------------|------------------------------------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| GET    | https://localhost:8080/customers                    | (access token received after logging in) |                                                         | Will display details of customers with id 2000 to 2005                                                                                                             |
+| GET    | https://localhost:8080/customers/2000               | (access token received after logging in) |                                                         | Will display details of the customer with id 2000                                                                                                                  |
+| GET    | https://localhost:8080/customers/2000/account       | (access token received after logging in) |                                                         | Will display details of accounts belonging to customer with id 2000                                                                                                |
+| POST   | https://localhost:8080/customers/2000/account/new   | (access token received after logging in) | {"account_type": "saving", <br/>"amount": 7000}         | Will open a new bank account containing $7000 for the customer with id 2000, then display the new bank account id                                                  |
+| POST   | https://localhost:8080/customers/2000/account/95470 | (access token received after logging in) | {"transaction_type": "withdrawal", <br/>"amount": 1000} | Will make a withdrawal of $1000 for the customer with id 2000 for the account with id 95470, then display the updated account balance and completed transaction id |
 
 7. To check changes made to the app database, open another tab in terminal and start an interactive shell in 
 the container for querying the db:

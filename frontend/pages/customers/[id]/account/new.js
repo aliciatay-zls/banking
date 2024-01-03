@@ -51,10 +51,10 @@ export async function getServerSideProps(context) {
 export default function CreateAccountPage(props) {
     const router = useRouter();
 
-    const accountTypeSaving = "saving"
-    const accountTypeChecking = "checking"
-    const buttonLinkAccounts = `http://localhost:3000/customers/${props.customerId}/account`;
-    const errorDefaultMessage = "Please try again later."
+    const accountTypeSaving = "saving";
+    const accountTypeChecking = "checking";
+    const buttonLinkAccounts = `https://localhost:3000/customers/${props.customerId}/account`;
+    const errorDefaultMessage = "Please try again later.";
 
     const [selectedType, setSelectedType] = useState('');
     const [inputAmount, setInputAmount] = useState(0.00);
@@ -256,7 +256,7 @@ export default function CreateAccountPage(props) {
 }
 
 function ButtonLinkToAllCustomers() {
-    const buttonLinkAllCustomers = "http://localhost:3000/customers";
+    const buttonLinkAllCustomers = "https://localhost:3000/customers";
 
     return (
         <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-start' }}>

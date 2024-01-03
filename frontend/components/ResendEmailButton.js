@@ -55,7 +55,7 @@ export default function ResendEmailButton({requestType, identifier}) {
                 setOpenOutcomeAlert(true);
                 return;
             }
-            response = await fetch(`http://127.0.0.1:8181/auth/register/resend?ott=${encodeURIComponent(identifier)}`);
+            response = await fetch(`https://127.0.0.1:8181/auth/register/resend?ott=${encodeURIComponent(identifier)}`);
         } else if (requestType === "UsingEmail") {
             if (!validateEmail(identifier)) {
                 console.log("Email is not valid");
@@ -68,7 +68,7 @@ export default function ResendEmailButton({requestType, identifier}) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ "email": identifier })
             };
-            response = await fetch("http://127.0.0.1:8181/auth/register/resend", request);
+            response = await fetch("https://127.0.0.1:8181/auth/register/resend", request);
         } else {
             console.log("Error while resending confirmation link: Unknown request type");
             setIsError(true);

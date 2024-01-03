@@ -33,7 +33,7 @@ export async function getServerSideProps(context) {
     let data = '';
 
     try {
-        const response = await fetch("http://127.0.0.1:8181/auth/continue", request);
+        const response = await fetch("https://127.0.0.1:8181/auth/continue", request);
         if (response.headers.get("Content-Type") !== "application/json") {
             throw new Error("Response is not json");
         }
@@ -119,7 +119,7 @@ export default function LoginPage() {
         };
 
         try {
-            const response = await fetch("http://127.0.0.1:8181/auth/login", request);
+            const response = await fetch("https://127.0.0.1:8181/auth/login", request);
             const data = await response.json();
 
             const errorMessage = data?.message || '';

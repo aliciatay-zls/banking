@@ -110,7 +110,7 @@ export default function RegistrationPage() {
         };
 
         try {
-            const response = await fetch("http://127.0.0.1:8181/auth/register", request);
+            const response = await fetch("https://127.0.0.1:8181/auth/register", request);
             const data = await response.json();
 
             if (!response.ok) {

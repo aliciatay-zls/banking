@@ -72,7 +72,9 @@ func Start() {
 
 	address := os.Getenv("SERVER_ADDRESS")
 	port := os.Getenv("SERVER_PORT")
-	err := http.ListenAndServe(fmt.Sprintf("%s:%s", address, port), router)
+	certFile := "certificates/localhost.pem"
+	keyFile := "certificates/localhost-key.pem"
+	err := http.ListenAndServeTLS(fmt.Sprintf("%s:%s", address, port), certFile, keyFile, router)
 	if err != nil {
 		logger.Fatal(err.Error())
 	}

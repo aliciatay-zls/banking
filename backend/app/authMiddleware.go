@@ -44,7 +44,7 @@ func (m AuthMiddleware) AuthMiddlewareHandler(next http.Handler) http.Handler {
 }
 
 func enableCORS(w http.ResponseWriter) {
-	w.Header().Add("Access-Control-Allow-Origin", "http://localhost:3000") //frontend domain
-	w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS")   //OPTIONS: preflight request method
-	w.Header().Add("Access-Control-Allow-Headers", "*")
+	w.Header().Add("Access-Control-Allow-Origin", "https://localhost:3000") //frontend domain
+	w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS")    //OPTIONS: preflight request method
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type, Authorization")
 }

@@ -52,7 +52,7 @@ export default function TempRefreshPage(props) {
             };
 
             const tryRefresh = async () => {
-                const response = await fetch("http://127.0.0.1:8181/auth/refresh", newTokenRequest);
+                const response = await fetch("https://127.0.0.1:8181/auth/refresh", newTokenRequest);
                 const data = await response.json();
 
                 const newAccessToken = data?.new_access_token || '';

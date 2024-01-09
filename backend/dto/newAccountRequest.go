@@ -19,6 +19,8 @@ type NewAccountRequest struct {
 }
 
 func (r NewAccountRequest) Validate() *errs.AppError {
+	//enables this method to return on the first invalid field encountered with a specific message
+	//(govalidator custom error messages feature does not allow this, lumps all messages together)
 	errMsgByField := []struct {
 		Name string
 		Msg  string
@@ -32,9 +34,8 @@ func (r NewAccountRequest) Validate() *errs.AppError {
 	if err != nil || !isValid {
 		logger.Error("New account request is invalid: " + err.Error())
 		for _, v := range errMsgByField {
-			dueToField := govalidator.ErrorByField(err, v.Name)
-			if dueToField != "" {
-				return errs.NewValidationError(v.Msg)
+			if dueToField := govalidator.ErrorByField(err, v.Name); dueToField != "" { //replace govalidator auto-generated message
+				return errs.NewValidationError(v.Msg) //with custom error message
 			}
 		}
 	}

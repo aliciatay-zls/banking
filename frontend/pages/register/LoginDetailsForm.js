@@ -40,7 +40,7 @@ export default function LoginDetailsForm({handleChange, fields}) {
                         </Typography>
                         <Typography component="div" variant="caption" sx={{ml: -3}}>
                             <ul>
-                                <li>Minimum of 12 characters long</li>
+                                <li>12 to 64 characters long</li>
                                 <li>At least 1 digit</li>
                                 <li>At least 1 uppercase letter</li>
                                 <li>At least 1 lowercase letter</li>

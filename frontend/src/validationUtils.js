@@ -1,6 +1,7 @@
 import isDate from 'validator/lib/isDate';
 import isEmail from 'validator/lib/isEmail';
 import isFloat from "validator/lib/isFloat";
+import isISO31661Alpha2 from 'validator/lib/isISO31661Alpha2';
 import isPostalCode from 'validator/lib/isPostalCode';
 import isStrongPassword from 'validator/lib/isStrongPassword';
 import toFloat from 'validator/lib/toFloat';
@@ -45,6 +46,12 @@ export function capitalize(input) {
     return words.join(" ");
 }
 
+//does not contain numbers, max 100 chars long
+export function validateName(first, last) {
+    return !containsNumber(first) && !containsNumber(last)
+        && removeSpaces(first).concat(" ", removeSpaces(last)).length <= 100;
+}
+
 export function removeSpaces(input) {
     if (input.length === 0) {
         return input;
@@ -59,19 +66,19 @@ export function removeSpaces(input) {
     return result.join(" ");
 }
 
-export function validateName(first, last) {
-    return !containsNumber(first) && !containsNumber(last);
-}
-
 export function validateEmail(input) {
-    return isEmail(input, {allow_utf8_local_part: false}) && input.length <= 100;
+    return input.length <= 100 && isEmail(input, {allow_utf8_local_part: false});
 }
 
-export function validateZipcode(input) {
-    return isPostalCode(input, 'any') && input.length <= 10;
+export function validateCountry(countryCode) {
+    return isISO31661Alpha2(countryCode);
 }
 
-//starts with alphabet, only underscore allowed, min 6 chars and max 20 chars long
+export function validateZipcode(input, countryCode) {
+    return input.length <= 10 && isPostalCode(input, countryCode);
+}
+
+//starts with alphabet, only alphanumeric and underscore allowed, min 6 chars and max 20 chars long
 export function validateNewUsername(input) {
     const re = new RegExp("^[A-Za-z]\\w{5,19}$");
     return re.test(input);
@@ -79,5 +86,5 @@ export function validateNewUsername(input) {
 
 //alphanumeric, at least 1 digit, 1 lowercase, 1 uppercase, 1 special char, min 12 chars and max 64 chars long
 export function validateNewPassword(input) {
-    return isStrongPassword(input, {minLength: 12}) && input.length <= 64;
+    return input.length <= 64 && isStrongPassword(input, {minLength: 12});
 }

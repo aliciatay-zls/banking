@@ -9,10 +9,11 @@ import Stepper from '@mui/material/Stepper';
 
 import EmailConfirmation from "./EmailConfirmation";
 import LoginDetailsForm from "./LoginDetailsForm";
-import PersonalDetailsForm, { Countries } from "./PersonalDetailsForm";
+import PersonalDetailsForm from "./PersonalDetailsForm";
 import RegisterLayout from "../../components/RegisterLayout";
 import SnackbarAlert from "../../components/snackbar";
 import * as v from "../../src/validationUtils";
+import { removeSpaces } from "../../src/validationUtils";
 
 const steps = [
     'Personal Details',
@@ -37,7 +38,7 @@ export default function RegistrationPage() {
         lastName: "",
         email: "",
         dob: "",
-        country: "Singapore",
+        country: "SG",
         zipcode: "",
         username: "",
         password: "",
@@ -71,7 +72,7 @@ export default function RegistrationPage() {
         event.preventDefault();
         resetErrorAlert();
 
-        if (!isFieldsFilledAndEnglish(activeStep) || !validatePersonalDetails()) {
+        if (!isFieldsFilledAndAscii(activeStep) || !validatePersonalDetails()) {
             return;
         }
 
@@ -87,11 +88,11 @@ export default function RegistrationPage() {
         resetErrorAlert();
 
         //do all checks for previous form again
-        if (!isFieldsFilledAndEnglish(activeStep - 1) || !validatePersonalDetails()) {
+        if (!isFieldsFilledAndAscii(activeStep - 1) || !validatePersonalDetails()) {
             return;
         }
         //do checks for current form
-        if (!isFieldsFilledAndEnglish(activeStep) || !validateLoginDetails()) {
+        if (!isFieldsFilledAndAscii(activeStep) || !validateLoginDetails()) {
             return;
         }
 
@@ -99,13 +100,14 @@ export default function RegistrationPage() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                "full_name": v.removeSpaces(fields.firstName).concat(" ", v.removeSpaces(fields.lastName)),
-                "country": fields.country,
-                "zipcode": fields.zipcode,
-                "date_of_birth": fields.dob,
-                "email": fields.email,
-                "username": fields.username,
-                "password": fields.password,
+                "first_name": removeSpaces(fields.firstName),
+                "last_name": removeSpaces(fields.lastName),
+                "country": removeSpaces(fields.country),
+                "zipcode": removeSpaces(fields.zipcode),
+                "date_of_birth": removeSpaces(fields.dob),
+                "email": removeSpaces(fields.email),
+                "username": removeSpaces(fields.username),
+                "password": removeSpaces(fields.password),
             }),
         };
 
@@ -117,7 +119,7 @@ export default function RegistrationPage() {
                 const responseErrMsg = data?.message || '';
                 console.log("HTTP error during registration: "+ responseErrMsg);
 
-                if (response.status === 409) { //"Username is already taken"
+                if (response.status === 409 || response.status === 422 || response.status === 429) { //"Username is already taken", validation error or rate limiting exceeded
                     setErrorMsg(responseErrMsg);
                 } else if (alreadyRegisteredMessages.indexOf(responseErrMsg) !== -1) {
                     setErrorMsg("Already registered before.");
@@ -139,16 +141,16 @@ export default function RegistrationPage() {
         }
     }
 
-    function isFieldsFilledAndEnglish(step) {
+    function isFieldsFilledAndAscii(step) {
         const fieldNames = stepFieldNames[step];
         for (let i=0; i<fieldNames.length; i++) {
             const val = fields[fieldNames[i]];
-            if (val === "") {
+            if (val.length === 0 || removeSpaces(val).length === 0) {
                 openValidationErrorAlert("Please check that all fields are filled.");
                 return false;
             }
             if (!isAscii(val)) {
-                openValidationErrorAlert("Please ensure that all fields are in English.");
+                openValidationErrorAlert("Please ensure that none of the fields contain non-English characters.");
                 return false;
             }
         }
@@ -157,7 +159,7 @@ export default function RegistrationPage() {
 
     function validatePersonalDetails() {
         if (!v.validateName(fields.firstName, fields.lastName)) {
-            openValidationErrorAlert("Please check that the First Name and Last Name do not contain numbers.");
+            openValidationErrorAlert("Please check that the First and Last Names are correct.");
             return false;
         }
         if (!v.validateEmail(fields.email)) {
@@ -168,11 +170,11 @@ export default function RegistrationPage() {
             openValidationErrorAlert("Please check that the Date of Birth entered is correct.");
             return false;
         }
-        if (!Countries.includes(fields.country)) {
+        if (!v.validateCountry(fields.country)) {
             openValidationErrorAlert("Please check that the Country selected is correct.");
             return false;
         }
-        if (!v.validateZipcode(fields.zipcode)) {
+        if (!v.validateZipcode(fields.zipcode, fields.country)) {
             openValidationErrorAlert("Please check that the Postal/Zip Code entered is correct.");
             return false;
         }
@@ -182,19 +184,19 @@ export default function RegistrationPage() {
 
     function validateLoginDetails() {
         if (!v.validateNewUsername(fields.username)) {
-            openValidationErrorAlert("Please check that the Username meets the requirements");
+            openValidationErrorAlert("Please check that the Username meets the requirements.");
             return false;
         }
         if (!v.validateNewPassword(fields.password)) {
-            openValidationErrorAlert("Please check that the Password meets the requirements");
+            openValidationErrorAlert("Please check that the Password meets the requirements.");
             return false;
         }
         if (fields.password !== fields.confirmPassword) {
-            openValidationErrorAlert("Passwords do not match");
+            openValidationErrorAlert("Passwords do not match.");
             return false;
         }
         if (!fields.tcCheckbox) {
-            openValidationErrorAlert("Please review and accept the terms and conditions");
+            openValidationErrorAlert("Please review and accept the terms and conditions.");
             return false;
         }
 

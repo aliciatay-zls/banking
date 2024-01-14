@@ -123,7 +123,7 @@ export default function LoginPage() {
             const data = await response.json();
 
             const errorMessage = data?.message || '';
-            const isPendingConfirmation = data?.is_pending || '';
+            const isPendingConfirmation = data?.is_pending || false;
             const accessToken = data?.access_token || '';
             const refreshToken = data?.refresh_token || '';
 
@@ -141,6 +141,7 @@ export default function LoginPage() {
                 setCookie('temporary_token', accessToken, {
                     path: '/',
                     maxAge: 60 * 60, //1 hour
+                    secure: true,
                     sameSite: 'strict',
                 });
                 return router.replace('/register/pending');
@@ -153,11 +154,13 @@ export default function LoginPage() {
             setCookie('access_token', accessToken, {
                 path: '/', //want cookie to be accessible on all pages
                 maxAge: 60 * 60, //1 hour
+                secure: true, //transmit via HTTPS
                 sameSite: 'strict',
             });
             setCookie('refresh_token', refreshToken, {
                 path: '/',
                 maxAge: 60 * 60,
+                secure: true,
                 sameSite: 'strict',
             });
 

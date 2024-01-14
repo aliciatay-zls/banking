@@ -10,7 +10,7 @@ services:
     container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: codecamp
-      TZ: Asia/Kolkata
+      TZ: Asia/Singapore
 
 volumes:
   mysqldata:

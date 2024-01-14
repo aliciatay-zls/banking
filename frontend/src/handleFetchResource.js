@@ -64,9 +64,9 @@ export default async function handleFetchResource(currentPath, requestURL, reque
                         errorMessage: errorMessage,
                     }
                 };
-            } else {
-                throw new Error("HTTP error in handler: " + errorMessage);
             }
+
+            throw new Error("HTTP error in handler: " + errorMessage);
         }
 
     } catch (err) {

@@ -13,7 +13,7 @@ export async function getServerSideProps(context) {
     const cookies = parse(rawCookies);
     const tempToken = cookies?.temporary_token || '';
 
-    if (isLoggedIn || tempToken === '') {
+    if (isLoggedIn || tempToken === '') { //landed by accident or no token received
         return {
             redirect: {
                 destination: `/login?errorMessage=${encodeURIComponent("Please login.")}`,

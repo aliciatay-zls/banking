@@ -79,10 +79,12 @@ export function DefaultAppBar({clientInfo}) {
 
             removeCookie('access_token', {
                 path: '/',
+                secure: true,
                 sameSite: 'strict',
             });
             removeCookie('refresh_token', {
                 path: '/',
+                secure: true,
                 sameSite: 'strict',
             });
             setDataToDisplay({

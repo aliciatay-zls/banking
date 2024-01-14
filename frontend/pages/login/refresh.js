@@ -67,10 +67,12 @@ export default function TempRefreshPage(props) {
                     } else if (errorMessage === "expired or invalid refresh token") {
                         removeCookie('access_token', {
                             path: '/',
+                            secure: true,
                             sameSite: 'strict',
                         });
                         removeCookie('refresh_token', {
                             path: '/',
+                            secure: true,
                             sameSite: 'strict',
                         });
                         setTimeout(() => router.replace('/login'), 5000);
@@ -91,6 +93,7 @@ export default function TempRefreshPage(props) {
                 setCookie('access_token', newAccessToken, {
                     path: '/',
                     maxAge: 60 * 60,
+                    secure: true,
                     sameSite: 'strict',
                 });
 

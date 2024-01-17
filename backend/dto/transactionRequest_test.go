@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"github.com/asaskevich/govalidator"
+	"github.com/udemy-go-1/banking-lib/formValidator"
 	"github.com/udemy-go-1/banking-lib/logger"
 	"net/http"
 	"testing"
@@ -13,7 +13,7 @@ const dummyAccountId = "1977"
 const dummyAmount float64 = 1000.00
 
 func init() {
-	govalidator.SetFieldsRequiredByDefault(true)
+	formValidator.Create()
 	logger.MuteLogger()
 }
 
@@ -28,66 +28,67 @@ func getDefaultValidTransactionRequest() TransactionRequest {
 	}
 }
 
-func TestTransactionRequest_Validate_returns_nil_when_amount_valid_and_transactionType_valid(t *testing.T) {
+func TestTransactionRequest_Validate_returns_nil_when_amount_valid(t *testing.T) {
 	//Arrange
-	request := getDefaultValidTransactionRequest()
-
-	//Act
-	err := request.Validate()
-
-	//Assert
-	if err != nil {
-		t.Error("expected no error but got error while testing valid values: " + err.Message)
-	}
-}
-
-func TestTransactionRequest_Validate_returns_nil_when_amount_at_boundaries(t *testing.T) {
-	//Arrange
-	req1 := getDefaultValidTransactionRequest()
-	req1.Amount = 0
-	req2 := getDefaultValidTransactionRequest()
-	req2.Amount = 99999999.99
 	tests := []struct {
-		name    string
-		request TransactionRequest
+		name   string
+		amount float64
 	}{
-		{"lower boundary", req1},
-		{"upper boundary", req2},
+		{"zero", 0},
+		{"in range", dummyAmount},
+		{"lower boundary", TransactionMinAmountAllowed},
+		{"upper boundary", TransactionMaxAmountAllowed},
 	}
+	request := getDefaultValidTransactionRequest()
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			request.Amount = tc.amount
+
 			//Act
-			err := tc.request.Validate()
+			err := request.Validate()
 
 			//Assert
 			if err != nil {
-				t.Errorf("expected no error but got error while testing transaction amount %v: %s",
-					tc.request.Amount, err.Message)
+				t.Errorf("expected no error but got error while testing valid transaction amount %v: %s",
+					request.Amount, err.Message)
 			}
 		})
 	}
 }
 
-func TestTransactionRequest_Validate_returns_error_when_amount_negative(t *testing.T) {
+func TestTransactionRequest_Validate_returns_error_when_amount_invalid(t *testing.T) {
 	//Arrange
+	tests := []struct {
+		name   string
+		amount float64
+	}{
+		{"below lower boundary", -1},
+		{"above upper boundary", 10000.10},
+	}
 	request := getDefaultValidTransactionRequest()
-	request.Amount = -100
-	expectedErrMessage := "Transaction amount cannot be less than $0"
+
+	expectedErrMessage := "Please check that the transaction amount is valid."
 	expectedCode := http.StatusUnprocessableEntity
 
-	//Act
-	actualErr := request.Validate()
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			request.Amount = tc.amount
 
-	//Assert
-	if actualErr == nil {
-		t.Fatal("expected error but got none while testing transaction amount")
-	}
-	if actualErr.Message != expectedErrMessage {
-		t.Errorf("expected message: \"%s\", actual message: \"%s\"", expectedErrMessage, actualErr.Message)
-	}
-	if actualErr.Code != expectedCode {
-		t.Errorf("expected status code: \"%d\", actual status code: \"%d\"", expectedCode, actualErr.Code)
+			//Act
+			actualErr := request.Validate()
+
+			//Assert
+			if actualErr == nil {
+				t.Fatal("expected error but got none while testing transaction amount")
+			}
+			if actualErr.Message != expectedErrMessage {
+				t.Errorf("expected message: \"%s\", actual message: \"%s\"", expectedErrMessage, actualErr.Message)
+			}
+			if actualErr.Code != expectedCode {
+				t.Errorf("expected status code: \"%d\", actual status code: \"%d\"", expectedCode, actualErr.Code)
+			}
+		})
 	}
 }
 
@@ -104,7 +105,7 @@ func TestTransactionRequest_Validate_returns_error_when_transactionType_invalid_
 		{"type is empty", req2},
 	}
 
-	expectedErrMessage := "Transaction type should be withdrawal or deposit"
+	expectedErrMessage := "Transaction type should be withdrawal or deposit."
 	expectedCode := http.StatusUnprocessableEntity
 
 	for _, tc := range tests {

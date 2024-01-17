@@ -60,6 +60,7 @@ export default async function handleFetchResource(currentPath, requestURL, reque
             } else if (response.status === 400 || response.status === 422) { //for forms
                 return {
                     redirect: { //wrap around in case unintended pages receive this code
+                        statusCode: response.status,
                         isFormValidationError: true,
                         errorMessage: errorMessage,
                     }

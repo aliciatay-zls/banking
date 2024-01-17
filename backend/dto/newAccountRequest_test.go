@@ -1,14 +1,14 @@
 package dto
 
 import (
-	"github.com/asaskevich/govalidator"
+	"github.com/udemy-go-1/banking-lib/formValidator"
 	"github.com/udemy-go-1/banking-lib/logger"
 	"net/http"
 	"testing"
 )
 
 func init() {
-	govalidator.SetFieldsRequiredByDefault(true)
+	formValidator.Create()
 	logger.MuteLogger()
 }
 
@@ -22,46 +22,58 @@ func getDefaultValidNewAccountRequest() NewAccountRequest {
 	}
 }
 
-func TestNewAccountRequest_Validate_returns_nil_when_all_valid_and_filled(t *testing.T) {
+func TestNewAccountRequest_Validate_returns_nil_when_amount_valid(t *testing.T) {
 	//Arrange
-	request := getDefaultValidNewAccountRequest()
+	tests := []struct {
+		name   string
+		amount float64
+	}{
+		{"lower boundary", NewAccountMinAmountAllowed},
+		{"upper boundary", 99999999},
+	}
 
-	//Act
-	err := request.Validate()
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			request := getDefaultValidNewAccountRequest()
+			request.Amount = tc.amount
 
-	//Assert
-	if err != nil {
-		t.Error("expected no error but got error while testing valid values: " + err.Message)
+			//Act
+			err := request.Validate()
+
+			//Assert
+			if err != nil {
+				t.Errorf("expected no error but got error while testing valid new account amount %v: %s",
+					request.Amount, err.Message)
+			}
+		})
 	}
 }
 
-func TestNewAccountRequest_Validate_returns_error_when_amount_invalid_or_empty(t *testing.T) {
+func TestNewAccountRequest_Validate_returns_error_when_amount_invalid(t *testing.T) {
 	//Arrange
-	req1 := getDefaultValidNewAccountRequest()
-	req1.Amount = 4999.99
-	req2 := getDefaultValidNewAccountRequest()
-	req2.Amount = 0
-	req3 := NewAccountRequest{CustomerId: "2000", AccountType: AccountTypeSaving}
 	tests := []struct {
-		name    string
-		request NewAccountRequest
+		name       string
+		invalidAmt float64
 	}{
-		{"lower boundary", req1},
-		{"amount is zero", req2},
-		{"amount is empty", req3},
+		{"below lower boundary", 4999.99},
+		{"above upper boundary", 100000000.00},
+		{"zero", 0},
 	}
+	request := getDefaultValidNewAccountRequest()
 
-	expectedErrMessage := "To open an account you must deposit at least $5000"
+	expectedErrMessage := "Please check that the initial amount is valid."
 	expectedCode := http.StatusUnprocessableEntity
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			request.Amount = tc.invalidAmt
+
 			//Act
-			actualErr := tc.request.Validate()
+			actualErr := request.Validate()
 
 			//Assert
 			if actualErr == nil {
-				t.Fatal("expected error but got none while testing new account amount")
+				t.Fatal("expected error but got none while testing invalid new account amount")
 			}
 			if actualErr.Message != expectedErrMessage {
 				t.Errorf("expected message: \"%s\", actual message: \"%s\"", expectedErrMessage, actualErr.Message)
@@ -73,20 +85,40 @@ func TestNewAccountRequest_Validate_returns_error_when_amount_invalid_or_empty(t
 	}
 }
 
-func TestNewAccountRequest_Validate_returns_error_when_accountType_invalid_or_empty(t *testing.T) {
+func TestNewAccountRequest_Validate_returns_error_when_accountType_invalid(t *testing.T) {
 	//Arrange
-	req1 := getDefaultValidNewAccountRequest()
-	req1.AccountType = "some account type"
-	req2 := NewAccountRequest{CustomerId: dummyCustomerId, Amount: NewAccountMinAmountAllowed}
+	request := getDefaultValidNewAccountRequest()
+	request.AccountType = "some account type"
+
+	expectedErrMessage := "Account type should be saving or checking."
+	expectedCode := http.StatusUnprocessableEntity
+
+	//Act
+	actualErr := request.Validate()
+
+	//Assert
+	if actualErr == nil {
+		t.Fatal("expected error but got none while testing invalid new account type")
+	}
+	if actualErr.Message != expectedErrMessage {
+		t.Errorf("expected message: \"%s\", actual message: \"%s\"", expectedErrMessage, actualErr.Message)
+	}
+	if actualErr.Code != expectedCode {
+		t.Errorf("expected status code: \"%d\", actual status code: \"%d\"", expectedCode, actualErr.Code)
+	}
+}
+
+func TestNewAccountRequest_Validate_returns_error_when_field_empty(t *testing.T) {
+	//Arrange
 	tests := []struct {
-		name    string
-		request NewAccountRequest
+		name               string
+		request            NewAccountRequest
+		expectedErrMessage string
 	}{
-		{"type invalid", req1},
-		{"type empty", req2},
+		{"amount empty", NewAccountRequest{CustomerId: "2000", AccountType: AccountTypeSaving}, "Please check that the initial amount is valid."},
+		{"type empty", NewAccountRequest{CustomerId: dummyCustomerId, Amount: NewAccountMinAmountAllowed}, "Account type should be saving or checking."},
 	}
 
-	expectedErrMessage := "Account type should be saving or checking"
 	expectedCode := http.StatusUnprocessableEntity
 
 	for _, tc := range tests {
@@ -96,10 +128,10 @@ func TestNewAccountRequest_Validate_returns_error_when_accountType_invalid_or_em
 
 			//Assert
 			if actualErr == nil {
-				t.Fatal("expected error but got none while testing new account type")
+				t.Fatal("expected error but got none while testing empty fields in new account")
 			}
-			if actualErr.Message != expectedErrMessage {
-				t.Errorf("expected message: \"%s\", actual message: \"%s\"", expectedErrMessage, actualErr.Message)
+			if actualErr.Message != tc.expectedErrMessage {
+				t.Errorf("expected message: \"%s\", actual message: \"%s\"", tc.expectedErrMessage, actualErr.Message)
 			}
 			if actualErr.Code != expectedCode {
 				t.Errorf("expected status code: \"%d\", actual status code: \"%d\"", expectedCode, actualErr.Code)

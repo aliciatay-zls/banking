@@ -34,7 +34,12 @@ func (h AccountHandler) newAccountHandler(w http.ResponseWriter, r *http.Request
 
 	if err := json.NewDecoder(r.Body).Decode(&newAccountRequest); err != nil {
 		logger.Error("Error while decoding json body of new account request: " + err.Error())
-		writeJsonResponse(w, http.StatusBadRequest, errs.NewMessageObject("Please check the fields filled or try again later."))
+		writeJsonResponse(w, http.StatusBadRequest, errs.NewMessageObject("Please check that all fields are correctly filled."))
+		return
+	}
+
+	if appErr := newAccountRequest.Validate(); appErr != nil {
+		writeJsonResponse(w, appErr.Code, appErr.AsMessage())
 		return
 	}
 
@@ -56,7 +61,12 @@ func (h AccountHandler) transactionHandler(w http.ResponseWriter, r *http.Reques
 
 	if err := json.NewDecoder(r.Body).Decode(&transactionRequest); err != nil { // (*)
 		logger.Error("Error while decoding json body of transaction request: " + err.Error())
-		writeJsonResponse(w, http.StatusBadRequest, errs.NewMessageObject("Please check the fields filled or try again later."))
+		writeJsonResponse(w, http.StatusBadRequest, errs.NewMessageObject("Please check that all fields are correctly filled."))
+		return
+	}
+
+	if appErr := transactionRequest.Validate(); appErr != nil {
+		writeJsonResponse(w, appErr.Code, appErr.AsMessage())
 		return
 	}
 

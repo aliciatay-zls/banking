@@ -38,10 +38,6 @@ func (s DefaultAccountService) GetAllAccounts(customerId string) ([]dto.AccountR
 }
 
 func (s DefaultAccountService) CreateNewAccount(request dto.NewAccountRequest) (*dto.NewAccountResponse, *errs.AppError) { //Business Domain implements service
-	if err := request.Validate(); err != nil {
-		return nil, err
-	}
-
 	account := domain.NewAccount(request.CustomerId, request.AccountType, request.Amount, s.clk)
 
 	newAccount, err := s.repo.Save(account)
@@ -56,10 +52,6 @@ func (s DefaultAccountService) CreateNewAccount(request dto.NewAccountRequest) (
 // and whether the current account balance allows for the request to be fulfilled. If so, it passes the request down
 // to the server side as an Account object and passes the returned Account DTO back up to the REST handler.
 func (s DefaultAccountService) MakeTransaction(request dto.TransactionRequest) (*dto.TransactionResponse, *errs.AppError) { //Business Domain implements service
-	if err := request.Validate(); err != nil {
-		return nil, err
-	}
-
 	account, err := s.repo.FindById(request.AccountId)
 	if err != nil {
 		return nil, err

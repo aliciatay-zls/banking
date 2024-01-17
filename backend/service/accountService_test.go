@@ -1,9 +1,9 @@
 package service
 
 import (
-	"github.com/asaskevich/govalidator"
 	"github.com/udemy-go-1/banking-lib/clock"
 	"github.com/udemy-go-1/banking-lib/errs"
+	"github.com/udemy-go-1/banking-lib/formValidator"
 	"github.com/udemy-go-1/banking-lib/logger"
 	"github.com/udemy-go-1/banking/backend/domain"
 	"github.com/udemy-go-1/banking/backend/dto"
@@ -30,7 +30,7 @@ const dummyTransactionId = "7791"
 const dummyBalance = 0
 
 func init() {
-	govalidator.SetFieldsRequiredByDefault(true)
+	formValidator.Create()
 }
 
 func setupAccountServiceTest(t *testing.T) func() {
@@ -78,24 +78,6 @@ func getDefaultDummyTransaction() domain.Transaction {
 	return domain.NewTransaction(dummyAccountId, dummyAmount, dummyTransactionType, mockClock)
 }
 
-func TestDefaultAccountService_CreateNewAccount_returns_error_when_validatingNewAccountRequest_fails(t *testing.T) {
-	//Arrange
-	accSvc = NewAccountService(nil, mockClock)
-
-	dummyNewAccountRequest := getDefaultDummyNewAccountRequest()
-	var invalidAmount float64 = 0
-	dummyNewAccountRequest.Amount = invalidAmount
-
-	//Act
-	logger.MuteLogger()
-	_, err := accSvc.CreateNewAccount(dummyNewAccountRequest)
-
-	//Assert
-	if err == nil {
-		t.Error("Expected error but got none while testing error during validation")
-	}
-}
-
 func TestDefaultAccountService_CreateNewAccount_returns_error_when_repo_fails(t *testing.T) {
 	//Arrange
 	teardown := setupAccountServiceTest(t)
@@ -139,24 +121,6 @@ func TestDefaultAccountService_CreateNewAccount_returns_newAccountId_when_repo_s
 	if newAccountResponse.AccountId != dummyNewAccount.AccountId {
 		t.Errorf("Expected new account id returned to be %s but got %s",
 			dummyNewAccount.AccountId, newAccountResponse.AccountId)
-	}
-}
-
-func TestDefaultAccountService_MakeTransaction_returns_error_when_validatingTransactionRequest_fails(t *testing.T) {
-	//Arrange
-	accSvc = NewAccountService(nil, mockClock)
-
-	dummyTransactionRequest := getDefaultDummyTransactionRequest()
-	var invalidAmount float64 = -100
-	dummyTransactionRequest.Amount = invalidAmount
-
-	//Act
-	logger.MuteLogger()
-	_, err := accSvc.MakeTransaction(dummyTransactionRequest)
-
-	//Assert
-	if err == nil {
-		t.Error("Expected error but got none while testing error during validation")
 	}
 }
 

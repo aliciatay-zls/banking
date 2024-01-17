@@ -2,9 +2,9 @@ package app
 
 import (
 	"bytes"
-	"github.com/asaskevich/govalidator"
 	"github.com/gorilla/mux"
 	"github.com/udemy-go-1/banking-lib/errs"
+	"github.com/udemy-go-1/banking-lib/formValidator"
 	"github.com/udemy-go-1/banking-lib/logger"
 	"github.com/udemy-go-1/banking/backend/dto"
 	"github.com/udemy-go-1/banking/backend/mocks/service"
@@ -42,7 +42,7 @@ const dummyTransactionId = "7791"
 const dummyBalance float64 = 12000
 
 func init() {
-	govalidator.SetFieldsRequiredByDefault(true)
+	formValidator.Create()
 }
 
 func setupAccountHandlerTest(t *testing.T, path string, payload string) func() {

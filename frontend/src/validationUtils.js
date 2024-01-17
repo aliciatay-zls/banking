@@ -6,8 +6,8 @@ import isPostalCode from 'validator/lib/isPostalCode';
 import isStrongPassword from 'validator/lib/isStrongPassword';
 import toFloat from 'validator/lib/toFloat';
 
-export function validateFloat(input, min) {
-    if (!isFloat(input, {min: min, max: 99999999.99})) {
+export function validateFloat(input, min, max) {
+    if (!isFloat(input, {min: min, max: max})) {
         return [false, 0.00];
     }
 

@@ -46,7 +46,7 @@ export default function TransactionPage(props) {
 
     function handleSelect(e) {
         if (e.target.value !== transactionTypeWithdrawal && e.target.value !== transactionTypeDeposit) {
-            setErrorMsg("Please check that the transaction type is correct.");
+            setErrorMsg("Transaction type should be withdrawal or saving.");
             setOpenErrorAlert(true);
             return;
         }
@@ -55,7 +55,7 @@ export default function TransactionPage(props) {
     }
 
     function checkInputAmount(rawAmt) {
-        const [isValid, amt] = validateFloat(rawAmt, 0.00);
+        const [isValid, amt] = validateFloat(rawAmt, 0.00, 10000.00);
         if (!isValid) {
             setInputAmount(0.00);
             setIsAmountInvalid(true);
@@ -107,7 +107,7 @@ export default function TransactionPage(props) {
                 setErrorMsg(possibleErrInfo.errorMessage);
                 setOpenErrorAlert(true);
                 setTimeout(() => router.replace(possibleRedirect), 10000);
-            } else if (possibleErrInfo !== '' && possibleErrInfo.statusCode === 422) {
+            } else if (possibleErrInfo !== '' && (possibleErrInfo.statusCode === 400 || possibleErrInfo.statusCode === 422)) {
                 setErrorMsg(possibleErrInfo.errorMessage);
                 setOpenErrorAlert(true);
             } else {
@@ -207,7 +207,7 @@ export default function TransactionPage(props) {
                                 id="input-transaction-amount"
                                 label="Amount"
                                 variant="standard"
-                                size="small"
+                                size="large"
                                 InputProps={{
                                     startAdornment: (
                                         <InputAdornment position="start">
@@ -216,7 +216,7 @@ export default function TransactionPage(props) {
                                     ),
                                 }}
                                 error={isAmountInvalid}
-                                helperText={isAmountInvalid ? "Please enter a valid amount." : ""}
+                                helperText={isAmountInvalid ? "Please enter a valid amount." : "Transaction limit: $10,000"}
                                 onChange={e => checkInputAmount(e.target.value)}
                             />
                         </Grid>

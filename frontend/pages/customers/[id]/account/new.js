@@ -66,7 +66,7 @@ export default function CreateAccountPage(props) {
 
     function handleSelect(e) {
         if (e.target.value !== accountTypeSaving && e.target.value !== accountTypeChecking) {
-            setErrorMsg("Please check that the account type is correct.");
+            setErrorMsg("Account type should be saving or checking.");
             setOpenErrorAlert(true);
             return;
         }
@@ -74,7 +74,7 @@ export default function CreateAccountPage(props) {
     }
 
     function checkInputAmount(rawAmt) {
-        const [isValid, amt] = validateFloat(rawAmt, 5000.00);
+        const [isValid, amt] = validateFloat(rawAmt, 5000.00, 99999999.99);
         if (!isValid) {
             setInputAmount(0.00);
             setIsAmountInvalid(true);

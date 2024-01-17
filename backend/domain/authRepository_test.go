@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -64,10 +65,16 @@ func startDummyAuthServer(dummyVerifyAPIHandler func(http.ResponseWriter, *http.
 
 	address := os.Getenv(envVarAuthServerAddr)
 	port := os.Getenv(envVarAuthServerPort)
+	cert, loadErr := tls.LoadX509KeyPair("../certificates/localhost.pem", "../certificates/localhost-key.pem")
+	if loadErr != nil {
+		log.Fatal("Error when loading cert and private key: " + loadErr.Error())
+	}
+	config := &tls.Config{Certificates: []tls.Certificate{cert}}
 
 	dummyAuthServer := http.Server{
-		Addr:    fmt.Sprintf("%s:%s", address, port),
-		Handler: router,
+		Addr:      fmt.Sprintf("%s:%s", address, port),
+		Handler:   router,
+		TLSConfig: config,
 	}
 
 	channelWaitForShutDown = make(chan int) //sender
@@ -83,7 +90,7 @@ func startDummyAuthServer(dummyVerifyAPIHandler func(http.ResponseWriter, *http.
 	}()
 
 	go func() {
-		if err := dummyAuthServer.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
+		if err := dummyAuthServer.ListenAndServeTLS("", ""); !errors.Is(err, http.ErrServerClosed) {
 			log.Fatal("Error while serving: " + err.Error())
 		}
 	}()
@@ -211,7 +218,7 @@ func TestDefaultAuthRepository_IsAuthorized_returns_nil_when_authServer_responds
 
 	//Assert
 	if actualErr != nil {
-		t.Error("Expected no error but got error while testing successful case" + actualErr.Message)
+		t.Error("Expected no error but got error while testing successful case: " + actualErr.Message)
 	}
 
 	//Cleanup

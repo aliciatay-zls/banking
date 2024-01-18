@@ -4,6 +4,7 @@ import (
 	"github.com/udemy-go-1/banking-lib/formValidator"
 	"github.com/udemy-go-1/banking-lib/logger"
 	"net/http"
+	"strings"
 	"testing"
 )
 
@@ -28,6 +29,7 @@ func TestNewAccountRequest_Validate_returns_nil_when_amount_valid(t *testing.T) 
 		name   string
 		amount float64
 	}{
+		{"in range", 6000.50},
 		{"lower boundary", NewAccountMinAmountAllowed},
 		{"upper boundary", 99999999},
 	}
@@ -117,6 +119,7 @@ func TestNewAccountRequest_Validate_returns_error_when_field_empty(t *testing.T)
 	}{
 		{"amount empty", NewAccountRequest{CustomerId: "2000", AccountType: AccountTypeSaving}, "Please check that the initial amount is valid."},
 		{"type empty", NewAccountRequest{CustomerId: dummyCustomerId, Amount: NewAccountMinAmountAllowed}, "Account type should be saving or checking."},
+		{"customer id empty", NewAccountRequest{Amount: NewAccountMinAmountAllowed, AccountType: AccountTypeSaving}, "Customer ID must be present and a number."},
 	}
 
 	expectedCode := http.StatusUnprocessableEntity
@@ -137,5 +140,43 @@ func TestNewAccountRequest_Validate_returns_error_when_field_empty(t *testing.T)
 				t.Errorf("expected status code: \"%d\", actual status code: \"%d\"", expectedCode, actualErr.Code)
 			}
 		})
+	}
+}
+
+func TestNewAccountRequest_Validate_returns_first_error_when_field_multiple_errors(t *testing.T) {
+	//Arrange
+	request := NewAccountRequest{
+		CustomerId:  "aaaaaaaaaaaa",      //12 'a's and not a number so max tag and number tag both violated
+		AccountType: "some account type", //oneof tag violated
+		Amount:      -1.0,                //gte tag violated
+	}
+
+	expectedErrMessage := "Customer ID must be present and a number."
+	expectedCode := http.StatusUnprocessableEntity
+
+	logs := logger.ReplaceWithTestLogger()
+	expectedLogMessageParts := []string{"New account request is invalid", "max"}
+
+	//Act
+	actualErr := request.Validate()
+
+	//Assert
+	if actualErr == nil {
+		t.Fatal("expected error but got none while testing empty fields in new account")
+	}
+	if actualErr.Message != expectedErrMessage {
+		t.Errorf("expected message: \"%s\", actual message: \"%s\"", expectedErrMessage, actualErr.Message)
+	}
+	if actualErr.Code != expectedCode {
+		t.Errorf("expected status code: \"%d\", actual status code: \"%d\"", expectedCode, actualErr.Code)
+	}
+	if logs.Len() != 1 {
+		t.Fatalf("Expected 1 message to be logged but got %d logs", logs.Len())
+	}
+	actualLogMessage := logs.All()[0].Message
+	for _, v := range expectedLogMessageParts {
+		if !strings.Contains(actualLogMessage, v) {
+			t.Errorf("Expected log message to contain \"%s\" but it did not", v)
+		}
 	}
 }

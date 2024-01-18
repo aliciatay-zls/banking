@@ -12,8 +12,8 @@ import LoginDetailsForm from "./LoginDetailsForm";
 import PersonalDetailsForm from "./PersonalDetailsForm";
 import RegisterLayout from "../../components/RegisterLayout";
 import SnackbarAlert from "../../components/snackbar";
+import * as f from "../../src/formatUtils";
 import * as v from "../../src/validationUtils";
-import { removeSpaces } from "../../src/validationUtils";
 
 const steps = [
     'Personal Details',
@@ -58,7 +58,7 @@ export default function RegistrationPage() {
         if (name === "tcCheckbox") {
             newValue = event.target.checked;
         } else if (name === "firstName" || name === "lastName") {
-            newValue = v.capitalize(value);
+            newValue = f.capitalize(value);
         }
 
         setFields({
@@ -100,14 +100,14 @@ export default function RegistrationPage() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                "first_name": removeSpaces(fields.firstName),
-                "last_name": removeSpaces(fields.lastName),
-                "country": removeSpaces(fields.country),
-                "zipcode": removeSpaces(fields.zipcode),
-                "date_of_birth": removeSpaces(fields.dob),
-                "email": removeSpaces(fields.email),
-                "username": removeSpaces(fields.username),
-                "password": removeSpaces(fields.password),
+                "first_name": f.removeSpaces(fields.firstName),
+                "last_name": f.removeSpaces(fields.lastName),
+                "country": f.removeSpaces(fields.country),
+                "zipcode": f.removeSpaces(fields.zipcode),
+                "date_of_birth": f.removeSpaces(fields.dob),
+                "email": f.removeSpaces(fields.email),
+                "username": f.removeSpaces(fields.username),
+                "password": f.removeSpaces(fields.password),
             }),
         };
 
@@ -145,7 +145,7 @@ export default function RegistrationPage() {
         const fieldNames = stepFieldNames[step];
         for (let i=0; i<fieldNames.length; i++) {
             const val = fields[fieldNames[i]];
-            if (val.length === 0 || removeSpaces(val).length === 0) {
+            if (val.length === 0 || f.removeSpaces(val).length === 0) {
                 openValidationErrorAlert("Please check that all fields are filled.");
                 return false;
             }

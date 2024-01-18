@@ -9,6 +9,7 @@ import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import { DataGrid } from '@mui/x-data-grid';
 
 import DefaultLayout from "../../components/defaultLayout";
+import { getReadableDate } from "../../src/formatUtils";
 import serverSideProps from "../../src/serverSideProps";
 
 export async function getServerSideProps(context) {
@@ -42,14 +43,14 @@ const columns = [
     {
         field: 'id',
         headerName: 'ID',
-        flex: 0.5,
-        minWidth: 90,
+        flex: 0.1,
+        minWidth: 60,
         editable: false,
     },
     {
         field: 'fullName',
         headerName: 'Full Name',
-        flex: 1,
+        flex: 1.1,
         minWidth: 150,
         editable: false,
         renderCell: (params) =>
@@ -68,17 +69,18 @@ const columns = [
     {
         field: 'dob',
         headerName: 'DOB',
-        flex: 0.5,
-        minWidth: 100,
+        flex: 0.8,
+        minWidth: 150,
         editable: false,
         type: 'date',
         valueGetter: ({value}) => value && new Date(value),
+        renderCell: ({value}) => value && getReadableDate(value),
     },
     {
         field: 'email',
         headerName: 'Email',
-        flex: 1,
-        minWidth: 300,
+        flex: 1.1,
+        minWidth: 150,
         editable: false,
     },
     {
@@ -98,8 +100,8 @@ const columns = [
     {
         field: 'status',
         headerName: 'Status',
-        flex: 0.5,
-        minWidth: 110,
+        flex: 0.1,
+        minWidth: 90,
         editable: false,
         renderCell: ({value}) =>
             <span>
@@ -111,7 +113,7 @@ const columns = [
     {
         field: 'actions',
         headerName: 'Actions',
-        flex: 0.5,
+        flex: 0.3,
         minWidth: 110,
         type: 'actions',
         getActions: ({row}) => [

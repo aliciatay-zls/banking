@@ -64,7 +64,6 @@ export default function PersonalDetailsForm({handleChange, fields}) {
                         name="dob"
                         autoComplete="off"
                         pattern="\d{4}-\d{2}-\d{2}"
-                        min="1923-01-01"
                         value={fields.dob}
                         onChange={e => handleChange(e)}
                     >

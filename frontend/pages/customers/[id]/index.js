@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 import DefaultLayout from "../../../components/defaultLayout";
+import { getReadableDate } from "../../../src/formatUtils";
 import serverSideProps from "../../../src/serverSideProps";
 
 export async function getServerSideProps(context) {
@@ -69,7 +70,7 @@ export default function CustomerHomePage(props) {
                     <TextField
                         id="profile-dob"
                         label="DATE OF BIRTH"
-                        defaultValue={props.responseData["date_of_birth"]}
+                        defaultValue={getReadableDate(props.responseData["date_of_birth"])}
                         InputProps={textFieldProps.input}
                         InputLabelProps={textFieldProps.label}
                         variant="standard"

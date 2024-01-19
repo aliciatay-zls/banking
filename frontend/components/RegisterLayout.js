@@ -2,8 +2,8 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from "@mui/material/Typography";
 
-import { BaseAppBar } from "./appbar";
-import BankFooter from "./footer";
+import { BaseAppBar } from "./Appbar";
+import BankFooter from "./Footer";
 import BankHead from "./Head";
 
 export default function RegisterLayout({ isForm = true, tabTitle, headerTitle, children }) {

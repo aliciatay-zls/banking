@@ -11,7 +11,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 import { DataToDisplayContext } from "../../../../_app";
-import DefaultLayout from "../../../../../components/defaultLayout";
+import DefaultLayout from "../../../../../components/DefaultLayout";
 import authServerSideProps from "../../../../../src/authServerSideProps"
 
 export async function getServerSideProps(context) {

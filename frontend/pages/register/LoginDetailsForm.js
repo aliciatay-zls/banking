@@ -60,6 +60,7 @@ export default function LoginDetailsForm({handleChange, fields}) {
                     fullWidth
                     size="small"
                     autoFocus
+                    inputProps={{ maxLength: 20 }}
                     value={fields.username}
                     onChange={e => handleChange(e)}
                 />

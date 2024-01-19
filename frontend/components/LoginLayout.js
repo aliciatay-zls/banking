@@ -3,8 +3,8 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Typography from "@mui/material/Typography";
 
-import { BaseAppBar } from "./appbar";
-import BankFooter from "./footer";
+import { BaseAppBar } from "./Appbar";
+import BankFooter from "./Footer";
 import BankHead from "./Head";
 
 export default function LoginLayout({ children }) {

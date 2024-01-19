@@ -10,9 +10,9 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 import { DataToDisplayContext } from "../_app";
-import LoginLayout from "../../components/loginLayout";
+import LoginLayout from "../../components/LoginLayout";
 import PasswordField from "../../components/PasswordField";
-import SnackbarAlert from "../../components/snackbar";
+import SnackbarAlert from "../../components/SnackbarAlert";
 import * as utils from "../../src/authUtils";
 
 export async function getServerSideProps(context) {
@@ -189,6 +189,7 @@ export default function LoginPage() {
                     fullWidth
                     size="small"
                     autoFocus
+                    inputProps={{ maxLength: 20 }}
                     value={username}
                     onChange={(u) => setUsername(u.target.value)}
                 />

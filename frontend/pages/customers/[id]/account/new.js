@@ -13,9 +13,9 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
-import ConfirmationDialog from "../../../../components/dialog";
-import DefaultLayout from "../../../../components/defaultLayout";
-import SnackbarAlert from "../../../../components/snackbar";
+import ConfirmationDialog from "../../../../components/Dialog";
+import DefaultLayout from "../../../../components/DefaultLayout";
+import SnackbarAlert from "../../../../components/SnackbarAlert";
 import authServerSideProps from "../../../../src/authServerSideProps";
 import { getHomepagePath } from "../../../../src/authUtils";
 import handleFetchResource from "../../../../src/handleFetchResource";
@@ -194,6 +194,7 @@ export default function CreateAccountPage(props) {
                                         label="Initial Amount"
                                         fullWidth
                                         variant="standard"
+                                        inputProps={{ maxLength: 13 }}
                                         error={isAmountInvalid}
                                         helperText={isAmountInvalid ? "Please enter a valid amount." : ""}
                                         onChange={e => checkInputAmount(e.target.value)}

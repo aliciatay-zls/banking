@@ -3,7 +3,7 @@ import { Fragment, useEffect, useState } from "react";
 import isJWT from 'validator/lib/isJWT';
 import Button from "@mui/material/Button";
 
-import SnackbarAlert from "./snackbar";
+import SnackbarAlert from "./SnackbarAlert";
 import { validateEmail } from "../src/validationUtils";
 
 const defaultErrorMessage = {

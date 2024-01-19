@@ -3,8 +3,6 @@ import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import isJWT from "validator/lib/isJWT";
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -18,6 +16,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Logout from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 
+import SnackbarAlert from "../components/SnackbarAlert";
 import { DataToDisplayContext } from "../pages/_app";
 import { getHomepagePath } from "../src/authUtils";
 
@@ -27,11 +26,13 @@ export function BaseAppBar({homepagePath = "/login", innerChildren, outerChildre
             <Box sx={{ flexGrow: 1 }}>
                 <AppBar position="static" style={{ background: '#85011e' }}>
                     <Toolbar>
-                        <Link href={homepagePath}>
-                            <Button>
-                                <img src="/logo.png" alt="app logo" height="60"/>
-                            </Button>
-                        </Link>
+                        <Tooltip title="Home">
+                            <Link href={homepagePath}>
+                                <Button>
+                                    <img src="/logo.png" alt="app logo" height="60"/>
+                                </Button>
+                            </Link>
+                        </Tooltip>
 
                         {innerChildren}
                     </Toolbar>
@@ -162,17 +163,28 @@ export function DefaultAppBar({clientInfo}) {
                 }
             />
 
-            { openErrorAlert &&
-                <Alert
-                    onClose={() => {
-                        setOpenErrorAlert(false);
-                    }}
-                    severity="error"
-                >
-                    <AlertTitle>Logout failed</AlertTitle>
-                    Please try again later or <Link href={"/login"}>login again.</Link>
-                </Alert>
-            }
+            <SnackbarAlert
+                openSnackbarAlert={openErrorAlert}
+                handleClose={() => setOpenErrorAlert(false)}
+                duration={null}
+                isError={true}
+                title="Logout failed"
+                msg={<span>Please try again later or <Button sx={buttonAsLinkStyle} onClick={() => {
+                    setOpenErrorAlert(false);
+                    router.replace('/login');
+                }}>login again.</Button></span>}
+            />
         </div>
     );
 }
+
+const buttonAsLinkStyle = {
+    p: 0,
+    mb: 0.5,
+    fontWeight: 'normal',
+    textTransform: 'none',
+    textDecoration: 'underline',
+    '&:hover': {
+        textDecoration: 'underline',
+    },
+};

@@ -3,7 +3,7 @@ import AlertTitle from "@mui/material/AlertTitle";
 import MuiAlert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
 
-export default function SnackbarAlert({openSnackbarAlert, handleClose, isError, title, msg}) {
+export default function SnackbarAlert({openSnackbarAlert, handleClose, duration = 5000, isError, title, msg}) {
     const CustomAlert = forwardRef(function CustomAlert(props, ref) {
         return <MuiAlert elevation={6} ref={ref} variant="standard" {...props} />;
     });
@@ -11,8 +11,9 @@ export default function SnackbarAlert({openSnackbarAlert, handleClose, isError, 
     return (
         <Snackbar
             open={openSnackbarAlert}
-            autoHideDuration={5000}
             onClose={handleClose}
+            autoHideDuration={duration}
+            disableWindowBlurListener
         >
             <CustomAlert
                 severity={isError ? "error" : "success"}

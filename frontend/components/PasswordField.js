@@ -42,6 +42,7 @@ export default function PasswordField({id, name = "password", label = "Password"
                         </IconButton>
                     </InputAdornment>
                 }
+                inputProps={{ maxLength: 64 }}
                 value={val}
                 onChange={e => handler(e)}
             />

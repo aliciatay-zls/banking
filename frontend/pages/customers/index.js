@@ -8,7 +8,7 @@ import CircleIcon from '@mui/icons-material/Circle';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import { DataGrid } from '@mui/x-data-grid';
 
-import DefaultLayout from "../../components/defaultLayout";
+import DefaultLayout from "../../components/DefaultLayout";
 import { getReadableDate } from "../../src/formatUtils";
 import serverSideProps from "../../src/serverSideProps";
 

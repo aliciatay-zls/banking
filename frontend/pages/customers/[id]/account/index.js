@@ -8,7 +8,7 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
-import DefaultLayout from "../../../../components/defaultLayout";
+import DefaultLayout from "../../../../components/DefaultLayout";
 import serverSideProps from "../../../../src/serverSideProps";
 
 export async function getServerSideProps(context) {

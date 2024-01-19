@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Typography from "@mui/material/Typography";
 
-import DefaultLayout from "../components/defaultLayout";
+import DefaultLayout from "../components/DefaultLayout";
 
 export default function Custom500() {
     return (

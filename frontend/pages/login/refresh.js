@@ -8,7 +8,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import ErrorIcon from '@mui/icons-material/Error';
 
-import DefaultLayout from "../../components/defaultLayout";
+import DefaultLayout from "../../components/DefaultLayout";
 
 export function getServerSideProps(context) {
     return {

@@ -14,9 +14,9 @@ import TextField from '@mui/material/TextField';
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 
 import { DataToDisplayContext } from "../../../../_app";
-import ConfirmationDialog from "../../../../../components/dialog";
-import DefaultLayout from "../../../../../components/defaultLayout";
-import SnackbarAlert from "../../../../../components/snackbar";
+import ConfirmationDialog from "../../../../../components/Dialog";
+import DefaultLayout from "../../../../../components/DefaultLayout";
+import SnackbarAlert from "../../../../../components/SnackbarAlert";
 import authServerSideProps from "../../../../../src/authServerSideProps";
 import handleFetchResource from "../../../../../src/handleFetchResource";
 import { validateFloat } from "../../../../../src/validationUtils";
@@ -215,6 +215,7 @@ export default function TransactionPage(props) {
                                         </InputAdornment>
                                     ),
                                 }}
+                                inputProps={{ maxLength: 13 }}
                                 error={isAmountInvalid}
                                 helperText={isAmountInvalid ? "Please enter a valid amount." : "Transaction limit: $10,000"}
                                 onChange={e => checkInputAmount(e.target.value)}

@@ -11,7 +11,7 @@ import EmailConfirmation from "./EmailConfirmation";
 import LoginDetailsForm from "./LoginDetailsForm";
 import PersonalDetailsForm from "./PersonalDetailsForm";
 import RegisterLayout from "../../components/RegisterLayout";
-import SnackbarAlert from "../../components/snackbar";
+import SnackbarAlert from "../../components/SnackbarAlert";
 import * as f from "../../src/formatUtils";
 import * as v from "../../src/validationUtils";
 
@@ -24,11 +24,6 @@ const stepFieldNames = {
     0: ['firstName', 'lastName', 'email', 'dob', 'country', 'zipcode'],
     1: ['username', 'password'],
 };
-const alreadyRegisteredMessages = [
-    "Email is already used",
-    "Email is already registered for an account and already confirmed",
-    "Email is already registered for an account but not confirmed",
-];
 const errorDefaultMessage = "Registration failed";
 
 export default function RegistrationPage() {
@@ -119,10 +114,8 @@ export default function RegistrationPage() {
                 const responseErrMsg = data?.message || '';
                 console.log("HTTP error during registration: "+ responseErrMsg);
 
-                if (response.status === 409 || response.status === 422 || response.status === 429) { //"Username is already taken", validation error or rate limiting exceeded
+                if (response.status === 409 || response.status === 422 || response.status === 429) { //Email or username already taken, validation error, rate limiting exceeded
                     setErrorMsg(responseErrMsg);
-                } else if (alreadyRegisteredMessages.indexOf(responseErrMsg) !== -1) {
-                    setErrorMsg("Already registered before.");
                 } else {
                     setErrorMsg("Please try again later.");
                 }

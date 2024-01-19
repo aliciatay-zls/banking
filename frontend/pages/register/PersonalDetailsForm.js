@@ -23,6 +23,7 @@ export default function PersonalDetailsForm({handleChange, fields}) {
                     fullWidth
                     size="small"
                     autoFocus
+                    inputProps={{ maxLength: 100 }}
                     value={fields.firstName}
                     onChange={e => handleChange(e)}
                 />
@@ -37,6 +38,7 @@ export default function PersonalDetailsForm({handleChange, fields}) {
                     autoCapitalize="words"
                     fullWidth
                     size="small"
+                    inputProps={{ maxLength: 100 }}
                     value={fields.lastName}
                     onChange={e => handleChange(e)}
                 />
@@ -50,6 +52,7 @@ export default function PersonalDetailsForm({handleChange, fields}) {
                     autoComplete="email"
                     fullWidth
                     size="small"
+                    inputProps={{ maxLength: 100 }}
                     value={fields.email}
                     onChange={e => handleChange(e)}
                 />
@@ -98,6 +101,7 @@ export default function PersonalDetailsForm({handleChange, fields}) {
                     autoComplete="off"
                     fullWidth
                     size="small"
+                    inputProps={{ maxLength: 10 }}
                     value={fields.zipcode}
                     onChange={e => handleChange(e)}
                 />

@@ -4,7 +4,7 @@ import TextField from '@mui/material/TextField';
 import Typography from "@mui/material/Typography";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
-import DefaultLayout from "../../../components/defaultLayout";
+import DefaultLayout from "../../../components/DefaultLayout";
 import { getReadableDate } from "../../../src/formatUtils";
 import serverSideProps from "../../../src/serverSideProps";
 

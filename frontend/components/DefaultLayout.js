@@ -1,8 +1,8 @@
 import Alert from '@mui/material/Alert';
 import Typography from '@mui/material/Typography';
 
-import { DefaultAppBar } from "./appbar";
-import BankFooter from "./footer";
+import { DefaultAppBar } from "./Appbar";
+import BankFooter from "./Footer";
 import BankHead from "./Head";
 
 export default function DefaultLayout({ clientInfo, isPossibleTOB = true, tabTitle, headerTitle, children }) {

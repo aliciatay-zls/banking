@@ -215,7 +215,7 @@ export default function TransactionPage(props) {
                                         </InputAdornment>
                                     ),
                                 }}
-                                inputProps={{ maxLength: 13 }}
+                                inputProps={{ maxLength: 8 }}
                                 error={isAmountInvalid}
                                 helperText={isAmountInvalid ? "Please enter a valid amount." : "Transaction limit: $10,000"}
                                 onChange={e => checkInputAmount(e.target.value)}

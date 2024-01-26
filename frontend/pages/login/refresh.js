@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import isJWT from "validator/lib/isJWT";
 import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -36,11 +35,6 @@ export default function TempRefreshPage(props) {
             const refreshToken = cookies?.refresh_token || '';
             if (accessToken === '' || refreshToken === '') {
                 console.log("No token");
-                router.replace('/login');
-                return;
-            }
-            if (!isJWT(accessToken)|| !isJWT(refreshToken)) {
-                console.log("Invalid token");
                 router.replace('/login');
                 return;
             }
@@ -83,7 +77,7 @@ export default function TempRefreshPage(props) {
                     }
                 }
 
-                if (newAccessToken === '' || !isJWT(newAccessToken)) {
+                if (newAccessToken === '') {
                     console.log("No token in response, cannot continue");
                     setTimeout(() => router.replace('/500'), 5000);
                     throw new Error(serverSideErrorDefaultMessage);

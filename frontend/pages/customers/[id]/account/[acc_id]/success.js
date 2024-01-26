@@ -55,7 +55,7 @@ export default function TransactionSuccessPage(props) {
     }
 
     const transactionID = pageData[0]?.transaction_id || '';
-    const newBalance = pageData[0]?.new_balance || '';
+    const newBalance = pageData[0]?.new_balance || 0;
     const transactionDate = pageData[0]?.transaction_date || '';
     const transactionType = pageData[1] || '';
     const headerTitle = transactionType !== '' ? `Your ${transactionType} was successful.` : '';

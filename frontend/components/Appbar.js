@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
 import { useCookies } from 'react-cookie';
-import isJWT from "validator/lib/isJWT";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -61,9 +60,6 @@ export function DefaultAppBar({clientInfo}) {
         event.preventDefault();
 
         try {
-            if (!isJWT(refreshToken)) {
-                throw new Error("Refresh token is not a valid JWT");
-            }
             const request = {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

@@ -2,7 +2,6 @@ import Link from "next/link";
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { useCookies} from "react-cookie";
-import isJWT from "validator/lib/isJWT";
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
@@ -31,6 +30,7 @@ export async function getServerSideProps(context) {
         body: JSON.stringify({ "access_token": accessToken, "refresh_token": refreshToken }),
     };
     let data = '';
+    // console.log("access token: " + accessToken); //ok, is a 5-part token
 
     try {
         const response = await fetch("https://127.0.0.1:8181/auth/continue", request);
@@ -132,8 +132,8 @@ export default function LoginPage() {
                 throw new Error("HTTP error during login: " + errorMessage);
             }
 
-            if (accessToken === '' || !isJWT(accessToken)) {
-                throw new Error("No or invalid access token in response, cannot continue");
+            if (accessToken === '') {
+                throw new Error("No access token in response, cannot continue");
             }
 
             //200 ok but cannot log in yet
@@ -148,8 +148,8 @@ export default function LoginPage() {
             }
 
             //200 ok and logged in, store tokens on client side as cookies
-            if (refreshToken === '' || !isJWT(refreshToken)) {
-                throw new Error("No or invalid refresh token in response, cannot continue");
+            if (refreshToken === '') {
+                throw new Error("No refresh token in response, cannot continue");
             }
             setCookie('access_token', accessToken, {
                 path: '/', //want cookie to be accessible on all pages

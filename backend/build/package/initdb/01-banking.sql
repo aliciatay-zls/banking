@@ -142,9 +142,8 @@ CREATE TABLE `registrations` (
 DROP TABLE IF EXISTS `refresh_token_store`;
 
 CREATE TABLE `refresh_token_store` (
-    `refresh_token` varchar(300) NOT NULL,
-    created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (`refresh_token`)
+    `refresh_token` text NOT NULL,
+    created_on timestamp DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Fragment } from "react";
-import isJWT from 'validator/lib/isJWT';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Typography from "@mui/material/Typography";
@@ -24,7 +23,7 @@ export async function getServerSideProps(context) {
     }
 
     const ott = context.query.ott || '';
-    if (ott === '' || !isJWT(ott)) {
+    if (ott === '') {
         console.log("Redirecting to 404 page");
         return {
             notFound: true,
@@ -41,7 +40,7 @@ export async function getServerSideProps(context) {
         if (!checkResponse.ok) {
             console.log("HTTP error while checking registration")
 
-            if (responseMsg === "Expired OTT") {
+            if (responseMsg === "expired OTT") {
                 console.log(responseMsg);
                 return {
                     props: {
@@ -78,7 +77,7 @@ export async function getServerSideProps(context) {
             console.log("HTTP error while finishing registration");
             const errorMessage = finishData.message || '';
 
-            if (errorMessage === "Expired OTT") {
+            if (errorMessage === "expired OTT") {
                 console.log(errorMessage);
                 return {
                     props: {

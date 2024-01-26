@@ -1,5 +1,4 @@
 import { parse } from "cookie";
-import isJWT from "validator/lib/isJWT";
 
 export function getHomepagePath(data) {
     const clientRole = data?.role || '';
@@ -24,7 +23,7 @@ export function checkIsLoggedIn(context) {
     const accessToken = cookies?.access_token || '';
     const refreshToken = cookies?.refresh_token || '';
 
-    if (accessToken !== '' && isJWT(accessToken) && refreshToken !== '' && isJWT(refreshToken)) {
+    if (accessToken !== '' && refreshToken !== '') {
         return [true, accessToken, refreshToken];
     }
     return [false, '', '']

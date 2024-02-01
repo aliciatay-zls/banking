@@ -1,4 +1,4 @@
-import { checkIsLoggedIn } from "./authUtils";
+import * as utils from "./authUtils";
 import handleFetchResource from "./handleFetchResource";
 
 /**
@@ -8,7 +8,7 @@ import handleFetchResource from "./handleFetchResource";
  * @param context The getServerSideProps context parameter that is passed from the getServerSideProps call above.
  */
 export default async function getServerSideProps(context) {
-    const [isLoggedIn, accessToken, refreshToken] = checkIsLoggedIn(context);
+    const [isLoggedIn, accessToken, refreshToken] = utils.checkIsLoggedIn(context);
 
     if (!isLoggedIn) {
         return {
@@ -29,15 +29,26 @@ export default async function getServerSideProps(context) {
         body: JSON.stringify({ "access_token": accessToken, "refresh_token": refreshToken }),
     };
     const checkLoggedInResponse = await handleFetchResource(currentPath, checkLoggedInURL, request);
-    if (!checkLoggedInResponse.props) {
+    if (!checkLoggedInResponse?.props) {
         return checkLoggedInResponse;
+    }
+
+    const homepage = checkLoggedInResponse?.props?.responseData?.homepage || '';
+    if (!utils.checkHomepage(homepage)) {
+        console.log("Homepage path is invalid");
+        return {
+            redirect: {
+                destination: '/500',
+                permanent: true,
+            }
+        };
     }
 
     return {
         props: {
             accessToken: accessToken,
             refreshToken: refreshToken,
-            clientInfo: checkLoggedInResponse.props.responseData,
+            homepage: homepage,
             currentPath: currentPath,
             requestURL: requestURL,
         },

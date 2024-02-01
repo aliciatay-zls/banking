@@ -43,6 +43,7 @@ export default function TransactionPage(props) {
     const accessToken = props.accessToken;
     const currentPath = props.currentPath;
     const requestURL = props.requestURL;
+    const homepage = props.homepage;
 
     function handleSelect(e) {
         if (e.target.value !== transactionTypeWithdrawal && e.target.value !== transactionTypeDeposit) {
@@ -129,7 +130,7 @@ export default function TransactionPage(props) {
 
     return (
         <DefaultLayout
-            clientInfo={props.clientInfo}
+            homepage={homepage}
             tabTitle={"New Transaction"}
             headerTitle={"What would you like to do today?"}
         >

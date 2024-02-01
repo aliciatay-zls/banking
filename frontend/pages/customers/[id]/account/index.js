@@ -18,7 +18,7 @@ export async function getServerSideProps(context) {
 export default function AccountsPage(props) {
     return (
         <DefaultLayout
-            clientInfo={props.clientInfo}
+            homepage={props.homepage}
             tabTitle={"My Accounts"}
             headerTitle={"My Accounts"}
         >

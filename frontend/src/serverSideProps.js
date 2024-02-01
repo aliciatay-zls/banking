@@ -23,7 +23,7 @@ export default async function getServerSideProps(context) {
 
     return {
         props: {
-            clientInfo: initProps.props.clientInfo,
+            homepage: initProps.props.homepage,
             responseData: finalProps.props.responseData,
             currentPath: finalProps.props.currentPath,
         }

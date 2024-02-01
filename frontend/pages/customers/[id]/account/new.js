@@ -17,7 +17,7 @@ import ConfirmationDialog from "../../../../components/Dialog";
 import DefaultLayout from "../../../../components/DefaultLayout";
 import SnackbarAlert from "../../../../components/SnackbarAlert";
 import authServerSideProps from "../../../../src/authServerSideProps";
-import { getHomepagePath } from "../../../../src/authUtils";
+import { getRole } from "../../../../src/authUtils";
 import handleFetchResource from "../../../../src/handleFetchResource";
 import { validateFloat } from "../../../../src/validationUtils";
 
@@ -27,11 +27,11 @@ export async function getServerSideProps(context) {
         return initProps;
     }
 
-    const clientRole = initProps.props.clientInfo?.role || '';
-    if (clientRole !== 'admin') {
+    //non-admin cannot access this page
+    if (getRole(initProps.props.homepage) !== 'admin') {
         return {
             redirect: {
-                destination: getHomepagePath(initProps.props.clientInfo) || '/login',
+                destination: initProps.props.homepage,
                 permanent: false,
             }
         }
@@ -41,7 +41,7 @@ export async function getServerSideProps(context) {
         props: {
             customerId: context.params.id,
             accessToken: initProps.props.accessToken,
-            clientInfo: initProps.props.clientInfo,
+            homepage: initProps.props.homepage,
             currentPath: initProps.props.currentPath,
             requestURL: initProps.props.requestURL,
         }
@@ -133,7 +133,7 @@ export default function CreateAccountPage(props) {
 
     return (
         <DefaultLayout
-            clientInfo={props.clientInfo}
+            homepage={props.homepage}
             tabTitle={"Account Opening"}
         >
             <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>

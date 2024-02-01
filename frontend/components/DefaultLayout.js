@@ -4,15 +4,16 @@ import Typography from '@mui/material/Typography';
 import { DefaultAppBar } from "./Appbar";
 import BankFooter from "./Footer";
 import BankHead from "./Head";
+import {getRole} from "../src/authUtils";
 
-export default function DefaultLayout({ clientInfo, isPossibleTOB = true, tabTitle, headerTitle, children }) {
-    const isTOB = isPossibleTOB && ((clientInfo?.role || '') === 'admin');
+export default function DefaultLayout({ homepage, isPossibleTOB = true, tabTitle, headerTitle, children }) {
+    const isTOB = isPossibleTOB && (getRole(homepage) === 'admin');
 
     return (
         <div>
             <BankHead title={tabTitle}/>
 
-            <DefaultAppBar clientInfo={clientInfo}/>
+            <DefaultAppBar homepage={homepage}/>
 
             { isTOB &&
                 <Alert severity="info" sx={{fontSize: "inherit"}}>

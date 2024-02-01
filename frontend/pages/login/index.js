@@ -30,7 +30,6 @@ export async function getServerSideProps(context) {
         body: JSON.stringify({ "access_token": accessToken, "refresh_token": refreshToken }),
     };
     let data = '';
-    // console.log("access token: " + accessToken); //ok, is a 5-part token
 
     try {
         const response = await fetch("https://127.0.0.1:8181/auth/continue", request);
@@ -41,12 +40,13 @@ export async function getServerSideProps(context) {
         data = await response.json();
 
         const errorMessage = data?.message || '';
+        const homepage = data?.homepage || '';
 
         //already logged in, redirect to respective homepage
         if (response.ok) {
             return {
                 redirect: {
-                    destination: utils.getHomepagePath(data),
+                    destination: homepage,
                     permanent: true,
                 }
             };
@@ -126,6 +126,7 @@ export default function LoginPage() {
             const isPendingConfirmation = data?.is_pending || false;
             const accessToken = data?.access_token || '';
             const refreshToken = data?.refresh_token || '';
+            const homepage = data?.homepage || '';
 
             //login unsuccessful
             if (!response.ok) {
@@ -148,8 +149,8 @@ export default function LoginPage() {
             }
 
             //200 ok and logged in, store tokens on client side as cookies
-            if (refreshToken === '') {
-                throw new Error("No refresh token in response, cannot continue");
+            if (refreshToken === '' || homepage === '') {
+                throw new Error("No refresh token or homepage in response, cannot continue");
             }
             setCookie('access_token', accessToken, {
                 path: '/', //want cookie to be accessible on all pages
@@ -164,7 +165,7 @@ export default function LoginPage() {
                 sameSite: 'strict',
             });
 
-            return router.replace(utils.getHomepagePath(data));
+            return router.replace(homepage);
 
         } catch (err) {
             setIsError(true);

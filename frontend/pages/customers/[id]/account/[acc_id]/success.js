@@ -27,7 +27,7 @@ export async function getServerSideProps(context) {
 
     return {
         props: {
-            clientInfo: initProps.props.clientInfo,
+            homepage: initProps.props.homepage,
             accountID: accountID,
             beforeURL: beforeURL,
             myAccountsURL: myAccountsURL,
@@ -62,7 +62,7 @@ export default function TransactionSuccessPage(props) {
 
     return (
         <DefaultLayout
-            clientInfo={props.clientInfo}
+            homepage={props.homepage}
             tabTitle={"Success"}
         >
             { transactionID !== '' && newBalance !== '' &&

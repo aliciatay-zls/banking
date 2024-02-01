@@ -1,19 +1,20 @@
 import { parse } from "cookie";
 
-export function getHomepagePath(data) {
-    const clientRole = data?.role || '';
-    const customerId = data?.cid || '';
+const homeAllCustomers = '/customers';
+const homeRegexp = new RegExp("^\/customers\/[0-9]+$"); //e.g. /customers/2000
 
-    //redirect to diff pages based on role
-    if (clientRole === 'admin') {
-        return '/customers';
-    } else if (clientRole === 'user' && customerId !== '') {
-        return `/customers/${customerId}`;
+export function checkHomepage(path) {
+    return path === homeAllCustomers || homeRegexp.test(path);
+}
+
+export function getRole(homepage) {
+    if (homepage === homeAllCustomers) {
+        return 'admin';
+    } else if (homeRegexp.test(homepage)) {
+        return 'user';
     } else {
-        console.log("Unknown role or no cid in response");
-        return "/login";
+        return '';
     }
-
 }
 
 export function checkIsLoggedIn(context) {

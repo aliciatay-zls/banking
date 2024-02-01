@@ -17,7 +17,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 
 import SnackbarAlert from "../components/SnackbarAlert";
 import { DataToDisplayContext } from "../pages/_app";
-import { getHomepagePath } from "../src/authUtils";
+import { getRole } from "../src/authUtils";
 
 export function BaseAppBar({homepagePath = "/login", innerChildren, outerChildren}) {
     return (
@@ -43,11 +43,8 @@ export function BaseAppBar({homepagePath = "/login", innerChildren, outerChildre
     );
 }
 
-export function DefaultAppBar({clientInfo}) {
+export function DefaultAppBar({homepage}) {
     const router = useRouter();
-    const homepagePath = getHomepagePath(clientInfo) || "/login"; //default
-    const clientRole = clientInfo?.role || '';
-    const clientCustomerId = clientInfo?.cid || '';
 
     const [anchorEl, setAnchorEl] = useState(null);
     const openMenu = Boolean(anchorEl);
@@ -106,17 +103,17 @@ export function DefaultAppBar({clientInfo}) {
     }
 
     function handleNavigateHomepage() {
-        router.replace(`/customers/${clientCustomerId}`);
+        router.replace(homepage);
     }
 
     function handleNavigateAccount() {
-        router.replace(`/customers/${clientCustomerId}/account`);
+        router.replace(`${homepage}/account`);
     }
 
     return (
         <div>
             <BaseAppBar
-                homepagePath={homepagePath}
+                homepagePath={homepage}
                 innerChildren={
                     <Tooltip title="Menu">
                         <IconButton
@@ -142,7 +139,7 @@ export function DefaultAppBar({clientInfo}) {
                             'aria-labelledby': 'basic-button',
                         }}
                     >
-                        { clientRole === 'user' &&
+                        { getRole(homepage) === 'user' &&
                             <div>
                                 <MenuItem onClick={handleNavigateHomepage}>My Profile</MenuItem>
                                 <MenuItem onClick={handleNavigateAccount}>My Accounts</MenuItem>

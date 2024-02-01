@@ -29,7 +29,7 @@ const textFieldProps = {
 export default function CustomerHomePage(props) {
     return (
         <DefaultLayout
-            clientInfo={props.clientInfo}
+            homepage={props.homepage}
             tabTitle={"Home"}
         >
             <Box

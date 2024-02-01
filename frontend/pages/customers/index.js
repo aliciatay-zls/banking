@@ -33,7 +33,7 @@ export async function getServerSideProps(context) {
 
     return {
         props: {
-            clientInfo: finalProps.props.clientInfo,
+            homepage: finalProps.props.homepage,
             customerRows: customerRows,
         }
     };
@@ -142,7 +142,7 @@ const columns = [
 export default function CustomersPage(props) {
     return (
         <DefaultLayout
-            clientInfo={props.clientInfo}
+            homepage={props.homepage}
             isPossibleTOB={false}
             tabTitle={"Home"}
             headerTitle={"All Customers"}

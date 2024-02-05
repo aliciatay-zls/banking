@@ -32,6 +32,7 @@ export default function TransactionPage(props) {
     const transactionTypeDeposit = "deposit"
 
     const { setDataToDisplay } = useContext(DataToDisplayContext);
+    const [isLoading, setIsLoading] = useState(false);
     const [selectedType, setSelectedType] = useState('');
     const [isTypeInvalid, setIsTypeInvalid] = useState(false);
     const [inputAmount, setInputAmount] = useState(0.00);
@@ -90,6 +91,7 @@ export default function TransactionPage(props) {
     }
 
     async function handleMakeTransaction() {
+        setIsLoading(true);
         setOpenConfirmation(false);
 
         const request = {
@@ -116,6 +118,7 @@ export default function TransactionPage(props) {
                 setErrorMsg("Something went wrong on our end, please try again later.");
                 setOpenErrorAlert(true);
             }
+            setIsLoading(false);
             return;
         }
 
@@ -230,8 +233,8 @@ export default function TransactionPage(props) {
                             </Link>
                         </Grid>
                         <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                            <Button type="submit" variant="contained" sx={{maxHeight: '40px'}}>
-                                Submit
+                            <Button type="submit" variant="contained" sx={{maxHeight: '40px'}} disabled={isLoading}>
+                                {isLoading ? 'Loading...' : 'Submit'}
                             </Button>
                         </Grid>
                     </Grid>

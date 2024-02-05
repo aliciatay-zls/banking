@@ -195,7 +195,7 @@ export default function LoginPage() {
                     onChange={(u) => setUsername(u.target.value)}
                 />
                 <PasswordField id={"login-password"} val={password} handler={handleSetPassword} />
-                <Button type="submit" fullWidth variant="contained bank-theme" sx={{ mt: 2, mb: 2 }}>
+                <Button type="submit" fullWidth variant="contained bank-theme" sx={{ mt: 2, mb: 2 }} disabled={isLoading}>
                     {isLoading ? 'Loading...' : 'Login'}
                 </Button>
                 <Grid item align="right">

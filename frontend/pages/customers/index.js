@@ -57,7 +57,7 @@ const columns = [
             <span>
                 <Link href={`/customers/${params.row.id}`}>
                     <Tooltip title="View profile">
-                        <IconButton size="small">
+                        <IconButton size="small" touchRippleRef={null}>
                             <AccountCircleIcon/>
                         </IconButton>
                     </Tooltip>
@@ -116,20 +116,20 @@ const columns = [
         flex: 0.3,
         minWidth: 110,
         type: 'actions',
-        getActions: ({row}) => [
-            <span>
+        renderCell: ({row}) => [
+            <span key="customers-table-transact-button">
                 <Link href={`/customers/${row.id}/account`}>
                     <Tooltip title="Transact on behalf">
-                        <IconButton size="small">
+                        <IconButton size="small" touchRippleRef={null}>
                             <CurrencyExchangeIcon />
                         </IconButton>
                     </Tooltip>
                 </Link>
             </span>,
-            <span>
+            <span key="customers-table-new-account-button">
                 <Link href={`/customers/${row.id}/account/new`}>
                     <Tooltip title="Create new account">
-                        <IconButton size="small">
+                        <IconButton size="small" touchRippleRef={null}>
                             <AddCardIcon/>
                         </IconButton>
                     </Tooltip>
@@ -142,6 +142,7 @@ const columns = [
 export default function CustomersPage(props) {
     return (
         <DefaultLayout
+            isLoading={false}
             homepage={props.homepage}
             isPossibleTOB={false}
             tabTitle={"Home"}

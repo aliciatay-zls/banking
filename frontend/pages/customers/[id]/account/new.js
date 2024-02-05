@@ -56,6 +56,7 @@ export default function CreateAccountPage(props) {
     const buttonLinkAccounts = `https://localhost:3000/customers/${props.customerId}/account`;
     const errorDefaultMessage = "Please try again later.";
 
+    const [isLoading, setIsLoading] = useState(false);
     const [selectedType, setSelectedType] = useState('');
     const [inputAmount, setInputAmount] = useState(0.00);
     const [isAmountInvalid, setIsAmountInvalid] = useState(false);
@@ -99,6 +100,7 @@ export default function CreateAccountPage(props) {
     }
 
     async function handleNewAccount() {
+        setIsLoading(true);
         setOpenConfirmation(false);
 
         const request = {
@@ -125,9 +127,11 @@ export default function CreateAccountPage(props) {
                 setErrorMsg("Something went wrong on our end, please try again later.");
                 setOpenErrorAlert(true);
             }
+            setIsLoading(false);
             return;
         }
 
+        setIsLoading(false);
         setNewAccountInfo(responseData);
     }
 
@@ -176,15 +180,21 @@ export default function CreateAccountPage(props) {
                                     <TextField
                                         required
                                         select
-                                        id="select-account-type"
                                         label="Account Type"
+                                        InputLabelProps={{
+                                            htmlFor: 'select-account-type'
+                                        }}
+                                        inputProps={{
+                                            id: 'select-account-type'
+                                        }}
                                         fullWidth
                                         variant="standard"
+                                        autoComplete="off"
                                         value={selectedType}
                                         onChange={handleSelect}
                                     >
-                                        <MenuItem value={"saving"}>Saving</MenuItem>
-                                        <MenuItem value={"checking"}>Checking</MenuItem>
+                                        <MenuItem key={"option-saving"} value={"saving"}>Saving</MenuItem>
+                                        <MenuItem key={"option-checking"} value={"checking"}>Checking</MenuItem>
                                     </TextField>
                                 </Grid>
                                 <Grid item xs={12}>
@@ -203,8 +213,8 @@ export default function CreateAccountPage(props) {
                                 <Grid item xs={12} />
                                 <ButtonLinkToAllCustomers />
                                 <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                    <Button type="submit" variant="contained" sx={{maxHeight: '40px'}}>
-                                        Submit
+                                    <Button type="submit" variant="contained" sx={{maxHeight: '40px'}} disabled={isLoading}>
+                                        {isLoading ? 'Loading...' : 'Submit'}
                                     </Button>
                                 </Grid>
                             </Grid>

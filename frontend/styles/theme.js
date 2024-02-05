@@ -22,6 +22,9 @@ let BankTheme = createTheme({
     },
     components: {
         MuiButton: {
+            styleOverrides: {
+
+            },
             variants: [
                 {
                     props: { variant: 'no-caps' },
@@ -41,6 +44,10 @@ let BankTheme = createTheme({
                             backgroundColor: '#9D1A38FF',
                             borderColor: '#85011e',
                             boxShadow: 'none',
+                        },
+                        '&.Mui-disabled': {
+                            color: '#FFFFFF',
+                            backgroundColor: '#B0BEC5',
                         },
                     },
                 },

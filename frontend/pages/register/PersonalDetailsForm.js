@@ -75,21 +75,22 @@ export default function PersonalDetailsForm({handleChange, fields}) {
             </Grid>
             <Grid item xs={12} sm={6}>
                 <FormControl fullWidth>
-                    <InputLabel htmlFor="register-country">Country</InputLabel>
-                        <Select
-                            required
-                            id="register-country"
-                            name="country"
-                            label="Country"
-                            autoComplete="off"
-                            size="small"
-                            value={fields.country}
-                            onChange={e => handleChange(e)}
-                        >
-                            {Object.keys(Countries).sort().map((k) => (
-                                <MenuItem key={Countries[k]} value={Countries[k]}>{k}</MenuItem>
-                            ))}
-                        </Select>
+                    <InputLabel id="register-country">Country</InputLabel>
+                    <Select
+                        required
+                        labelId="register-country"
+                        id="select-register-country"
+                        name="country"
+                        label="Country"
+                        autoComplete="off"
+                        size="small"
+                        value={fields.country}
+                        onChange={e => handleChange(e)}
+                    >
+                        {Object.keys(Countries).sort().map((k) => (
+                            <MenuItem key={Countries[k]} value={Countries[k]}>{k}</MenuItem>
+                        ))}
+                    </Select>
                 </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>

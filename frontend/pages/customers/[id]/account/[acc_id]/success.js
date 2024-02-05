@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
+import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
@@ -37,22 +39,19 @@ export async function getServerSideProps(context) {
 
 export default function TransactionSuccessPage(props) {
     const router = useRouter();
+
+    const [isLoading, setIsLoading] = useState(true);
     const { dataToDisplay } = useContext(DataToDisplayContext);
     const pageData = dataToDisplay?.pageData || [];
-    const [shouldRedirectBack, setShouldRedirectBack] = useState(false);
 
     useEffect(() => {
-        if (shouldRedirectBack) {
+        if (pageData.length < 2 && !dataToDisplay.isLoggingOut) {
             console.log("Missing information on transaction result. Redirecting back to transaction page.");
             router.replace(props.beforeURL);
+        } else {
+            setIsLoading(false);
         }
-    }, [shouldRedirectBack]);
-
-    if (pageData.length < 2 && !dataToDisplay.isLoggingOut) {
-        if (!shouldRedirectBack) {
-            setShouldRedirectBack(true);
-        }
-    }
+    }, []);
 
     const transactionID = pageData[0]?.transaction_id || '';
     const newBalance = pageData[0]?.new_balance || 0;
@@ -65,8 +64,19 @@ export default function TransactionSuccessPage(props) {
             homepage={props.homepage}
             tabTitle={"Success"}
         >
-            { transactionID !== '' && newBalance !== '' &&
-                <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
+            <Container component="main" maxWidth="sm" sx={{ mb: 5, mt: 5 }}>
+                { transactionID === '' || newBalance === '' &&
+                    <Box height="300px" align="center">
+                        <Backdrop
+                            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                            open={isLoading}
+                        >
+                            <CircularProgress color="inherit" />
+                        </Backdrop>
+                    </Box>
+                }
+
+                { transactionID !== '' && newBalance !== '' &&
                     <Paper
                         variant="outlined"
                         sx={{
@@ -116,8 +126,8 @@ export default function TransactionSuccessPage(props) {
                             </Grid>
                         </Box>
                     </Paper>
-                </Container>
-            }
+                }
+            </Container>
         </DefaultLayout>
     );
 }

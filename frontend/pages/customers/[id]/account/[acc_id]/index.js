@@ -160,13 +160,7 @@ export default function TransactionPage(props) {
                                                 <Button
                                                     variant={selectedType === transactionTypeDeposit ? "contained" : "outlined"}
                                                     size="large"
-                                                    style={{
-                                                        minHeight: '45px',
-                                                        lineHeight: 1.2,
-                                                        textTransform: 'none',
-                                                        borderColor: isTypeInvalid ? '#d32f2f' : '',
-                                                        color: isTypeInvalid ? '#d32f2f' : '',
-                                                    }}
+                                                    style={getOptionButtonStyle(isTypeInvalid)}
                                                     onClick={handleSelect}
                                                 >
                                                     Make a deposit
@@ -182,13 +176,7 @@ export default function TransactionPage(props) {
                                                 <Button
                                                     variant={selectedType === transactionTypeWithdrawal ? "contained" : "outlined"}
                                                     size="large"
-                                                    style={{
-                                                        maxHeight: '45px',
-                                                        lineHeight: 1.2,
-                                                        textTransform: 'none',
-                                                        borderColor: isTypeInvalid ? '#d32f2f' : '',
-                                                        color: isTypeInvalid ? '#d32f2f' : '',
-                                                    }}
+                                                    style={getOptionButtonStyle(isTypeInvalid)}
                                                     onClick={handleSelect}
                                                 >
                                                     Make a withdrawal
@@ -257,4 +245,18 @@ export default function TransactionPage(props) {
             />
         </DefaultLayout>
     );
+}
+
+function getOptionButtonStyle(isTypeInvalid) {
+    return isTypeInvalid ? {
+        minHeight: '45px',
+        lineHeight: 1.2,
+        textTransform: 'none',
+        borderColor: '#d32f2f',
+        color: '#d32f2f',
+    } : {
+        minHeight: '45px',
+        lineHeight: 1.2,
+        textTransform: 'none'
+    };
 }

@@ -26,7 +26,6 @@ export default async function handleFetchResource(currentPath, requestURL, reque
                     return {
                         redirect: {
                             destination: `/login/refresh?callbackURL=${encodeURIComponent(currentPath)}`,
-                            permanent: true,
                             errorMessage: "Refreshing session...",
                         },
                     };
@@ -36,7 +35,6 @@ export default async function handleFetchResource(currentPath, requestURL, reque
                     return {
                         redirect: {
                             destination: `/login?errorMessage=${encodeURIComponent(errorMessage)}`,
-                            permanent: false,
                             errorMessage: "Session expired or invalid, please login again. Redirecting...",
                         },
                     };
@@ -46,7 +44,6 @@ export default async function handleFetchResource(currentPath, requestURL, reque
                 return {
                     redirect: {
                         destination: `/login?errorMessage=${encodeURIComponent(errorMessage)}`,
-                        permanent: false,
                         errorMessage: `You do not have permission to access this page. 
                             If you think this is a mistake, kindly contact us at our hotline below.\n
                             Redirecting you to Home or login...`,
@@ -75,7 +72,6 @@ export default async function handleFetchResource(currentPath, requestURL, reque
         return {
             redirect: {
                 destination: '/500',
-                permanent: false,
             }
         };
     }

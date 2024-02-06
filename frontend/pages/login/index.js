@@ -47,7 +47,6 @@ export async function getServerSideProps(context) {
             return {
                 redirect: {
                     destination: homepage,
-                    permanent: true,
                 }
             };
         }
@@ -57,7 +56,6 @@ export async function getServerSideProps(context) {
             return {
                 redirect: {
                     destination: `/login/refresh?isFromLogin=${encodeURIComponent(true)}`,
-                    permanent: true,
                 },
             };
         }
@@ -74,7 +72,6 @@ export async function getServerSideProps(context) {
         return {
             redirect: {
                 destination: '/500',
-                permanent: false,
             }
         };
     }
@@ -103,6 +100,11 @@ export default function LoginPage() {
             setOpenSnackbar(true);
         }
     }, [router.query.errorMessage]); //run after initial render and each time value of this query param changes
+
+    function clearFields() {
+        setUsername('');
+        setPassword('');
+    }
 
     function handleSetPassword(event) {
         setPassword(event.target.value);
@@ -168,6 +170,7 @@ export default function LoginPage() {
             return router.replace(homepage);
 
         } catch (err) {
+            clearFields();
             setIsError(true);
             setSnackbarMsg(err.message);
             setOpenSnackbar(true);

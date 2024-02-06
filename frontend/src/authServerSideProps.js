@@ -14,7 +14,6 @@ export default async function getServerSideProps(context) {
         return {
             redirect: {
                 destination: `/login?errorMessage=${encodeURIComponent("Please login.")}`,
-                permanent: false,
             }
         };
     }
@@ -39,7 +38,6 @@ export default async function getServerSideProps(context) {
         return {
             redirect: {
                 destination: '/500',
-                permanent: true,
             }
         };
     }

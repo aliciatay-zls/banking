@@ -65,8 +65,8 @@ export default function TransactionSuccessPage(props) {
             tabTitle={"Success"}
         >
             <Container component="main" maxWidth="sm" sx={{ mb: 5, mt: 5 }}>
-                { transactionID === '' || newBalance === '' &&
-                    <Box height="300px" align="center">
+                { transactionID === '' || transactionDate === '' &&
+                    <Box height="100vh" align="center">
                         <Backdrop
                             sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                             open={isLoading}
@@ -76,7 +76,7 @@ export default function TransactionSuccessPage(props) {
                     </Box>
                 }
 
-                { transactionID !== '' && newBalance !== '' &&
+                { transactionID !== '' && transactionDate !== '' &&
                     <Paper
                         variant="outlined"
                         sx={{

@@ -32,7 +32,6 @@ export async function getServerSideProps(context) {
         return {
             redirect: {
                 destination: initProps.props.homepage,
-                permanent: false,
             }
         }
     }

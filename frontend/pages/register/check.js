@@ -37,7 +37,7 @@ export async function getServerSideProps(context) {
         const responseMsg = checkData?.message || '';
 
         if (!checkResponse.ok) {
-            console.log("HTTP error while checking registration")
+            console.log("HTTP error while checking registration: " + responseMsg);
 
             if (responseMsg === "expired OTT") {
                 console.log(responseMsg);

@@ -29,6 +29,64 @@ export default function ResendEmailButton({requestType, identifier}) {
         }
     }, [isDisabled]);
 
+    async function handleResend() {
+        await resetStates();
+
+        if (requestType === "" || identifier === "") {
+            showError("Error while resending confirmation link: Props are empty", {});
+            return;
+        }
+
+        let response, responseErrorMsg;
+        try {
+            if (requestType === "UsingToken") {
+                response = await fetch(`https://127.0.0.1:8181/auth/register/resend?ott=${encodeURIComponent(identifier)}`);
+            } else if (requestType === "UsingEmail") {
+                if (!validateEmail(identifier)) {
+                    showError("Email is not valid", defaultErrorMessage);
+                    return;
+                }
+                const request = {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ "email": identifier })
+                };
+                response = await fetch("https://127.0.0.1:8181/auth/register/resend", request);
+            } else {
+                showError("Error while resending confirmation link: Unknown request type", defaultErrorMessage);
+                return;
+            }
+
+            const data = await response.json();
+            if (!response.ok) {
+                responseErrorMsg = data.message || '';
+
+                if (response.status === 422) {
+                    if (responseErrorMsg === "Already confirmed") {
+                        showSuccess({title: responseErrorMsg, msg: "Redirecting you to login now..."});
+                        setTimeout(() => router.replace('/login'), 5000);
+                    } else if (responseErrorMsg === "Maximum daily attempts reached") {
+                        showError('', {title: responseErrorMsg, msg: "Please try logging in tomorrow, or contact us if the issue persists."})
+                        setIsDisabled(true);
+                        setIsDisabledForever(true);
+                    } else if (responseErrorMsg === "Too many attempts") {
+                        showError('', {title: responseErrorMsg, msg: "Please try again after 1 minute."});
+                        setIsDisabled(true);
+                    }
+                    return;
+                }
+
+                //if error is not 422, show response received or default error message
+                showError('', responseErrorMsg !== '' ? {title: responseErrorMsg, msg: ''} : defaultErrorMessage);
+            } else {
+                showSuccess(defaultSuccessMessage);
+            }
+        } catch (err) { //any unexpected errors (exceptions) e.g. fetch TypeError
+            console.log(err);
+            showError('', defaultErrorMessage);
+        }
+    }
+
     function resetStates() {
         setOpenOutcomeAlert(false);
         setIsError(false);
@@ -36,64 +94,15 @@ export default function ResendEmailButton({requestType, identifier}) {
         setSuccessMsg(defaultSuccessMessage);
     }
 
-    async function handleResend() {
-        await resetStates();
+    function showError(specificLogMsg, errorMessage) {
+        console.log((specificLogMsg !== '' ? specificLogMsg : "HTTP error while resending confirmation link: " + errorMessage.title));
+        setIsError(true);
+        setErrorMsg(errorMessage);
+        setOpenOutcomeAlert(true);
+    }
 
-        if (requestType === "" || identifier === "") {
-            console.log("Error while resending confirmation link: Props are empty");
-            setIsError(true);
-            setOpenOutcomeAlert(true);
-            return;
-        }
-
-        let response;
-        if (requestType === "UsingToken") {
-            response = await fetch(`https://127.0.0.1:8181/auth/register/resend?ott=${encodeURIComponent(identifier)}`);
-        } else if (requestType === "UsingEmail") {
-            if (!validateEmail(identifier)) {
-                console.log("Email is not valid");
-                setIsError(true);
-                setOpenOutcomeAlert(true);
-                return;
-            }
-            const request = {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ "email": identifier })
-            };
-            response = await fetch("https://127.0.0.1:8181/auth/register/resend", request);
-        } else {
-            console.log("Error while resending confirmation link: Unknown request type");
-            setIsError(true);
-            setOpenOutcomeAlert(true);
-            return;
-        }
-
-        const data = await response.json();
-        if (!response.ok) {
-            const responseErrorMsg = data.message || '';
-            console.log("HTTP error while resending confirmation link: " + responseErrorMsg);
-
-            if (response.status === 422) {
-                if (responseErrorMsg === "Already confirmed") {
-                    setSuccessMsg({title: responseErrorMsg, msg: "Redirecting you to login now..."})
-                    setOpenOutcomeAlert(true);
-                    setTimeout(() => router.replace('/login'), 5000);
-                    return;
-                } else if (responseErrorMsg === "Maximum daily attempts reached") {
-                    setErrorMsg({title: responseErrorMsg, msg: "Please try logging in tomorrow, or contact us if the issue persists."});
-                    setIsDisabled(true);
-                    setIsDisabledForever(true);
-                } else if (responseErrorMsg === "Too many attempts") {
-                    setErrorMsg({title: responseErrorMsg, msg: "Please try again after 1 minute."});
-                    setIsDisabled(true);
-                }
-            }
-            setIsError(true);
-            setOpenOutcomeAlert(true);
-            return;
-        }
-
+    function showSuccess(successMessage) {
+        setSuccessMsg(successMessage);
         setOpenOutcomeAlert(true);
     }
 

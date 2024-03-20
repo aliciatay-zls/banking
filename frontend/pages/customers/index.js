@@ -105,7 +105,7 @@ const columns = [
         editable: false,
         renderCell: ({value}) =>
             <span>
-                <CircleIcon color={value === 'active' ? "success" : "error"} sx={{height: 10}}/>
+                <CircleIcon className="icon--inline" color={value === 'active' ? "success" : "error"}/>
                 {value}
             </span>
         ,
@@ -146,9 +146,9 @@ export default function CustomersPage(props) {
             homepage={props.homepage}
             isPossibleTOB={false}
             tabTitle={"Home"}
-            headerTitle={"All Customers"}
+            headerTitle={"Customers"}
         >
-            <Box sx={{ height: 400, width: '90%', margin: 'auto', marginBottom: 5}}>
+            <Box className="grid">
                 <DataGrid
                     rows={props.customerRows}
                     columns={columns}

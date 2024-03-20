@@ -22,30 +22,12 @@ export default function AccountsPage(props) {
             tabTitle={"My Accounts"}
             headerTitle={"My Accounts"}
         >
-            <Box
-                component="main"
-                sx={{
-                    backgroundColor: (theme) =>
-                        theme.palette.mode === 'light'
-                            ? theme.palette.grey[100]
-                            : theme.palette.grey[900],
-                    flexGrow: 1,
-                    height: '100vh',
-                    overflow: 'auto',
-                }}
-            >
-                <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Box className="accounts__box" component="main">
+                <Container className="container" maxWidth="lg">
                     <Grid container spacing={3}>
                         {props.responseData && props.responseData.map( (acc) => (
                                 <Grid item key={acc["account_id"]} xs={12} md={4} lg={3}>
-                                    <Paper
-                                        sx={{
-                                            p: 2,
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            height: 200,
-                                        }}
-                                    >
+                                    <Paper className="accounts--individual">
                                         <BankAccount acc={acc} currentPath={props.currentPath}/>
                                     </Paper>
                                 </Grid>
@@ -74,10 +56,10 @@ function BankAccount({acc, currentPath}) {
             <Typography color="text.secondary">
                 {formattedAccountDate}&nbsp;&nbsp;{accountId}
             </Typography>
-            <Typography component="p" variant="h6" sx={{ flex: 1 }}>
+            <Typography className="accounts--individual-amount" component="p" variant="h6">
                 ${accountAmount}
             </Typography>
-            <div>
+            <div className="text--center">
                 <Link href={currentPath.concat("/", accountId)}>
                     <Button variant="no-caps" endIcon={<ArrowForwardIosIcon/>}>
                         Make a transaction

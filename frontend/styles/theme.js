@@ -21,10 +21,14 @@ let BankTheme = createTheme({
         fontWeightRegular: 400, // This sets the default font weight
     },
     components: {
-        MuiButton: {
+        MuiAlert: {
             styleOverrides: {
-
+                icon: {
+                    marginRight: '6px',
+                }
             },
+        },
+        MuiButton: {
             variants: [
                 {
                     props: { variant: 'no-caps' },

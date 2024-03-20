@@ -188,29 +188,36 @@ export default function LoginPage() {
         console.log(err);
         clearFields();
         setIsError(true);
-        setSnackbarContent({title: err.message, msg: 'Please try again later'});
+        setSnackbarContent({title: err.message, msg: 'Please try again later.'});
         setOpenSnackbar(true);
     }
 
     return (
         <LoginLayout>
-            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+            <Box className="form" component="form" onSubmit={handleSubmit}>
                 <TextField
                     required
                     id="login-username"
                     name="username"
+                    className="login__field"
                     label="Username"
                     autoComplete="name"
+                    autoFocus
+                    variant="standard"
                     margin="normal"
                     fullWidth
                     size="small"
-                    autoFocus
                     inputProps={{ maxLength: 20 }}
+                    InputProps={{
+                        style: {
+                            paddingTop: '8px',
+                        },
+                    }}
                     value={username}
                     onChange={(u) => setUsername(u.target.value)}
                 />
                 <PasswordField id={"login-password"} val={password} handler={handleSetPassword} />
-                <Button type="submit" fullWidth variant="contained bank-theme" sx={{ mt: 2, mb: 2 }} disabled={isLoading}>
+                <Button className="button" type="submit" fullWidth variant="contained bank-theme" disabled={isLoading}>
                     {isLoading ? 'Loading...' : 'Login'}
                 </Button>
                 <Grid item align="right">

@@ -6,17 +6,17 @@ import BankFooter from "./Footer";
 import BankHead from "./Head";
 import {getRole} from "../src/authUtils";
 
-export default function DefaultLayout({ homepage, isPossibleTOB = true, tabTitle, headerTitle, children }) {
+export default function DefaultLayout({ cspHeader, homepage, isPossibleTOB = true, tabTitle, headerTitle, children }) {
     const isTOB = isPossibleTOB && (getRole(homepage) === 'admin');
 
     return (
         <div>
-            <BankHead title={tabTitle}/>
+            <BankHead title={tabTitle} cspHeader={cspHeader}/>
 
             <DefaultAppBar homepage={homepage}/>
 
             { isTOB &&
-                <Alert severity="info" sx={{fontSize: "inherit"}}>
+                <Alert severity="info">
                     <Typography variant="body1">
                         You are acting on behalf of this customer.
                     </Typography>

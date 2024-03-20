@@ -1,14 +1,16 @@
 import { useState } from "react";
 import FormControl from "@mui/material/FormControl";
 import IconButton from "@mui/material/IconButton";
+import Input from "@mui/material/Input";
 import InputAdornment from "@mui/material/InputAdornment";
 import InputLabel from "@mui/material/InputLabel";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
-export default function PasswordField({id, name = "password", label = "Password", val, handler}) {
+export default function PasswordField({isLoginPage = true, id, name = "password", label = "Password", val, handler}) {
     const [showPassword, setShowPassword] = useState(false);
+    const InputComponent = isLoginPage ? Input : OutlinedInput;
 
     function handleClickShowPassword() {
         setShowPassword(!showPassword);
@@ -21,18 +23,18 @@ export default function PasswordField({id, name = "password", label = "Password"
     return (
         <FormControl
             required
-            variant="outlined"
+            className={isLoginPage ? "login__field" : "register__field"}
             fullWidth
             size="small"
         >
-            <InputLabel htmlFor={id}>{label}</InputLabel>
-            <OutlinedInput
+            <InputLabel id={id.concat("__label")} htmlFor={id}>{label}</InputLabel>
+            <InputComponent
                 type={showPassword ? 'text' : 'password'}
                 id={id}
                 name={name}
                 label={label}
                 endAdornment={
-                    <InputAdornment position="end">
+                    <InputAdornment id={id.concat("__adornment")} position="end">
                         <IconButton
                             onClick={handleClickShowPassword}
                             onMouseDown={handleMouseDownPassword}

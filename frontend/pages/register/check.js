@@ -111,18 +111,18 @@ function getHeaderTitle(isExpired, isOtherError) {
     if (isExpired || isOtherError) {
         return (
             <Fragment>
-                <ErrorIcon color="error" sx={{fontSize: '40px', mb: -3}} />
+                <ErrorIcon className="icon--standalone" color="error" />
                 <p>{isExpired ? "This link has expired." : "Something went wrong."}</p>
             </Fragment>
         );
     }
     return (
         <Fragment>
-            <CheckCircleIcon color="success" sx={{fontSize: '40px', mb: -3}} />
+            <CheckCircleIcon className="icon--standalone" color="success" />
             <p>Email successfully confirmed.</p>
             <Typography component="div" variant="h4" align="right">
                 <Link href={'/login'}>
-                    <Button type="button" variant="no-caps" size="small" endIcon={<ArrowForwardIosIcon/>} sx={{mt: -3}}>
+                    <Button className="button--confirmed" type="button" variant="no-caps" size="small" endIcon={<ArrowForwardIosIcon/>}>
                         Login again
                     </Button>
                 </Link>

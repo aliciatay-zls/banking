@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
@@ -22,13 +23,13 @@ import { getRole } from "../src/authUtils";
 export function BaseAppBar({homepagePath = "/login", innerChildren, outerChildren}) {
     return (
         <div>
-            <Box sx={{ flexGrow: 1 }}>
-                <AppBar position="static" style={{ background: '#85011e' }}>
+            <Box className="appbar__box">
+                <AppBar className="appbar--bgd" position="static">
                     <Toolbar>
                         <Tooltip title="Home">
                             <Link href={homepagePath}>
                                 <Button>
-                                    <img src="/logo.png" alt="app logo" height="60"/>
+                                    <Image src="/logo.png" alt="app logo" priority={true} height="60" width="200"/>
                                 </Button>
                             </Link>
                         </Tooltip>
@@ -120,13 +121,12 @@ export function DefaultAppBar({homepage}) {
                 innerChildren={
                     <Tooltip title="Menu">
                         <IconButton
+                            className="appbar__menu-button"
                             onClick={handleOpenMenu}
                             size="large"
                             edge="end"
-                            style={{marginLeft: "auto"}}
                             color="inherit"
                             aria-label="menu"
-                            sx={{ mr: 2 }}
                         >
                             <MenuIcon />
                         </IconButton>
@@ -165,7 +165,7 @@ export function DefaultAppBar({homepage}) {
                 duration={null}
                 isError={true}
                 title="Logout failed"
-                msg={<span>Please try again later or <Button sx={buttonAsLinkStyle} onClick={() => {
+                msg={<span>Please try again later or <Button className="button--link" onClick={() => {
                     setOpenErrorAlert(false);
                     router.replace('/login');
                 }}>login again.</Button></span>}
@@ -173,14 +173,3 @@ export function DefaultAppBar({homepage}) {
         </div>
     );
 }
-
-const buttonAsLinkStyle = {
-    p: 0,
-    mb: 0.5,
-    fontWeight: 'normal',
-    textTransform: 'none',
-    textDecoration: 'underline',
-    '&:hover': {
-        textDecoration: 'underline',
-    },
-};

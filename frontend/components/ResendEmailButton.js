@@ -109,8 +109,8 @@ export default function ResendEmailButton({requestType, identifier}) {
     return (
         <Fragment>
             <Button
+                className="button--resend"
                 variant={isDisabled ? "contained" : "contained bank-theme"}
-                sx={{ mt: 3, mb: 2, textTransform: 'none' }}
                 onClick={handleResend}
                 disabled={isDisabled}
             >

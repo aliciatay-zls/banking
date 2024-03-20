@@ -13,7 +13,7 @@ export default function Custom500() {
                 <Typography variant="h2" align="center">
                     500 Server Error
                 </Typography>
-                <Box sx={{mt: 3, display: 'flex', justifyContent: 'center', flexWrap: 'wrap'}}>
+                <Box className="page-500__box">
                     <Typography variant="body1">
                         We apologise, something went wrong on our end.
                         <br/>

@@ -64,33 +64,24 @@ export default function TransactionSuccessPage(props) {
             homepage={props.homepage}
             tabTitle={"Success"}
         >
-            <Container component="main" maxWidth="sm" sx={{ mb: 5, mt: 5 }}>
+            <Container className="container" component="main" maxWidth="sm">
+                <Backdrop className="backdrop" open={isLoading}>
+                    <CircularProgress color="inherit" />
+                </Backdrop>
                 { transactionID === '' || transactionDate === '' &&
                     <Box height="100vh" align="center">
-                        <Backdrop
-                            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                            open={isLoading}
-                        >
+                        <Backdrop className="backdrop" open={isLoading}>
                             <CircularProgress color="inherit" />
                         </Backdrop>
                     </Box>
                 }
 
                 { transactionID !== '' && transactionDate !== '' &&
-                    <Paper
-                        variant="outlined"
-                        sx={{
-                            my: { xs: 2, md: 2 },
-                            p: { xs: 2, md: 5 },
-                            minHeight: "400px",
-                            alignContent: "center",
-                            display: "grid",
-                        }}
-                    >
+                    <Paper className="open-account__paper" variant="outlined">
                         <Box name="transaction-success-page" align="center">
                             <Grid container spacing={3}>
                                 <Grid item xs={12}>
-                                    <Typography variant="h5" style={{color: 'green', marginTop: 20}}>
+                                    <Typography className="icon--success" variant="h5">
                                         <CheckCircleIcon fontSize="small"/> {headerTitle}
                                     </Typography>
                                 </Grid>
@@ -109,14 +100,14 @@ export default function TransactionSuccessPage(props) {
                                 </Grid>
                                 <Grid item xs={12} />
                                 <Grid item xs={12} />
-                                <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+                                <Grid className="button--grid left" item xs={12}>
                                     <Link href={props.beforeURL}>
                                         <Button type="button" variant="no-caps" size="small" startIcon={<ArrowBackIosIcon/>}>
                                             Make another transaction for this account
                                         </Button>
                                     </Link>
                                 </Grid>
-                                <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+                                <Grid className="button--grid left" item xs={12}>
                                     <Link href={props.myAccountsURL}>
                                         <Button type="button" variant="no-caps" size="small" startIcon={<ArrowBackIosIcon/>}>
                                             Go back to my accounts

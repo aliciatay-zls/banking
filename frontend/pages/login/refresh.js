@@ -121,15 +121,12 @@ export default function TempRefreshPage(props) {
             tabTitle="Home"
         >
             <Box height="100vh" align="center">
-                <Backdrop
-                    sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                    open={isLoading}
-                >
+                <Backdrop className="backdrop" open={isLoading}>
                     <CircularProgress color="inherit" />
                 </Backdrop>
 
                 { error &&
-                    <Typography variant="h5" style={{color: '#d32f2f'}}>
+                    <Typography className="`error" variant="h5">
                         <ErrorIcon fontSize="inherit"/> {error}
                     </Typography>
                 }

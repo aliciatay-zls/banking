@@ -5,6 +5,9 @@ export default function BankHead({ title }) {
         <Head>
             <title>{`BANK - ${title}`}</title>
             <link rel="icon" href="/favicon.ico" />
+            <noscript>
+                <meta httpEquiv="refresh" content="0;url=/nojs" />
+            </noscript>
         </Head>
     );
 }

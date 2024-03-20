@@ -139,17 +139,8 @@ export default function CreateAccountPage(props) {
             homepage={props.homepage}
             tabTitle={"Account Opening"}
         >
-            <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
-                <Paper
-                    variant="outlined"
-                    sx={{
-                       my: { xs: 2, md: 2 },
-                       p: { xs: 2, md: 5 },
-                       minHeight: "400px",
-                       alignContent: "center",
-                       display: "grid",
-                    }}
-                >
+            <Container className="container" component="main" maxWidth="sm">
+                <Paper className="open-account__paper">
                     { !newAccountInfo ? (
                         <Box
                             component="form"
@@ -160,7 +151,7 @@ export default function CreateAccountPage(props) {
                             <Typography variant="h4" align="center" fontWeight="600" marginBottom={1}>
                                 Account Opening
                             </Typography>
-                            <Typography variant="subtitle2" align="center" gutterBottom style={{ lineHeight: 1.2, marginBottom: 20,}}>
+                            <Typography className="typography--notice" variant="subtitle2" align="center" gutterBottom>
                                 Note: minimum initial amount to open an account is $5,000.
                             </Typography>
 
@@ -211,8 +202,8 @@ export default function CreateAccountPage(props) {
                                 </Grid>
                                 <Grid item xs={12} />
                                 <ButtonLinkToAllCustomers />
-                                <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                    <Button type="submit" variant="contained" sx={{maxHeight: '40px'}} disabled={isLoading}>
+                                <Grid className="button--grid right" item xs={6}>
+                                    <Button className="button--submit" type="submit" variant="contained" disabled={isLoading}>
                                         {isLoading ? 'Loading...' : 'Submit'}
                                     </Button>
                                 </Grid>
@@ -221,7 +212,7 @@ export default function CreateAccountPage(props) {
                     ) : (
                         <Grid container spacing={3} name="create-account-success-info">
                             <Grid item xs={12}>
-                                <Typography variant="h5" align="center" style={{color: 'green', marginTop: 20}}>
+                                <Typography className="icon--success" variant="h5" align="center">
                                     <CheckCircleIcon fontSize="small"/> Success.
                                 </Typography>
                             </Grid>
@@ -235,7 +226,7 @@ export default function CreateAccountPage(props) {
                             </Grid>
                             <Grid item xs={12} />
                             <ButtonLinkToAllCustomers />
-                            <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <Grid className="button--grid right" item xs={6} >
                                 <Link href={buttonLinkAccounts}>
                                     <Button type="button" variant="no-caps" size="small" endIcon={<ArrowForwardIosIcon/>}>
                                         Go to accounts for this customer
@@ -269,7 +260,7 @@ function ButtonLinkToAllCustomers() {
     const buttonLinkAllCustomers = "https://localhost:3000/customers";
 
     return (
-        <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+        <Grid className="button--grid left" item xs={6}>
             <Link href={buttonLinkAllCustomers}>
                 <Button type="button" variant="no-caps" size="small" startIcon={<ArrowBackIosIcon/>}>
                     Back to customers

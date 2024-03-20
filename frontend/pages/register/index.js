@@ -213,7 +213,7 @@ export default function RegistrationPage() {
             tabTitle="Register"
             headerTitle="Registration"
         >
-            <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 3 }}>
+            <Stepper className="register__stepper" activeStep={activeStep}>
                 {steps.map((label) => (
                     <Step key={label}>
                         <StepLabel>{label}</StepLabel>
@@ -221,13 +221,13 @@ export default function RegistrationPage() {
                 ))}
             </Stepper>
 
-            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+            <Box className="form" component="form" onSubmit={handleSubmit}>
                 <Grid container spacing={3}>
                     {activeStep === 0 &&
                         <Fragment>
                             <PersonalDetailsForm handleChange={handleChange} fields={fields} />
 
-                            <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <Grid className="button--grid right" item xs={12}>
                                 <NavButton text={"Next"} handler={handleNext}/>
                             </Grid>
                         </Fragment>
@@ -236,10 +236,10 @@ export default function RegistrationPage() {
                         <Fragment>
                             <LoginDetailsForm handleChange={handleChange} fields={fields} />
 
-                            <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+                            <Grid className="button--grid left" item xs={6}>
                                 <NavButton text={"Back"} handler={handleBack}/>
                             </Grid>
-                            <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <Grid className="button--grid right" item xs={6}>
                                 <SubmitButton />
                             </Grid>
                         </Fragment>
@@ -264,8 +264,8 @@ export default function RegistrationPage() {
 export function NavButton({text, handler}) {
     return(
         <Button
+            className="button"
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
             onClick={handler}
         >
             {text}
@@ -276,9 +276,9 @@ export function NavButton({text, handler}) {
 export function SubmitButton() {
     return(
         <Button
-            type="submit"
+            className="button"
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            type="submit"
         >
             Finish
         </Button>

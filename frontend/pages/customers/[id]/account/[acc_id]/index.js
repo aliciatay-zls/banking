@@ -137,7 +137,7 @@ export default function TransactionPage(props) {
             tabTitle={"New Transaction"}
             headerTitle={"What would you like to do today?"}
         >
-            <Container component="main" maxWidth="sm" sx={{ mb: 5, mt: 5 }}>
+            <Container className="container" component="main" maxWidth="sm">
                 <Box
                     component="form"
                     name="transaction-form"
@@ -149,18 +149,15 @@ export default function TransactionPage(props) {
                     <Grid container spacing={5}>
                         <Grid item xs={12}>
                             <FormControl required>
-                                <RadioGroup
-                                    id="select-transaction-type"
-                                    sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}
-                                >
+                                <RadioGroup id="select-transaction-type">
                                     <Grid item xs={6}>
                                         <FormControlLabel
                                             value="deposit"
                                             control={
                                                 <Button
+                                                    className={isTypeInvalid ? "button--option error" : "button--option"}
                                                     variant={selectedType === transactionTypeDeposit ? "contained" : "outlined"}
                                                     size="large"
-                                                    style={getOptionButtonStyle(isTypeInvalid)}
                                                     onClick={handleSelect}
                                                 >
                                                     Make a deposit
@@ -174,9 +171,9 @@ export default function TransactionPage(props) {
                                             value="withdrawal"
                                             control={
                                                 <Button
+                                                    className={isTypeInvalid ? "button--option error" : "button--option"}
                                                     variant={selectedType === transactionTypeWithdrawal ? "contained" : "outlined"}
                                                     size="large"
-                                                    style={getOptionButtonStyle(isTypeInvalid)}
                                                     onClick={handleSelect}
                                                 >
                                                     Make a withdrawal
@@ -188,7 +185,7 @@ export default function TransactionPage(props) {
                                 </RadioGroup>
                             </FormControl>
                             { isTypeInvalid &&
-                                <FormHelperText error sx={{textAlign: 'center'}}>
+                                <FormHelperText className="text--center" error>
                                     Please select an option.
                                 </FormHelperText>
                             }
@@ -213,15 +210,15 @@ export default function TransactionPage(props) {
                                 onChange={e => checkInputAmount(e.target.value)}
                             />
                         </Grid>
-                        <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+                        <Grid className="button--grid left" item xs={6}>
                             <Link href={`/customers/${router.query.id}/account`}>
                                 <Button type="button" variant="no-caps" size="small" startIcon={<ArrowBackIosIcon/>}>
                                     Go back to my accounts
                                 </Button>
                             </Link>
                         </Grid>
-                        <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                            <Button type="submit" variant="contained" sx={{maxHeight: '40px'}} disabled={isLoading}>
+                        <Grid className="button--grid right" item xs={6}>
+                            <Button className="button--submit" type="submit" variant="contained" disabled={isLoading}>
                                 {isLoading ? 'Loading...' : 'Submit'}
                             </Button>
                         </Grid>
@@ -245,18 +242,4 @@ export default function TransactionPage(props) {
             />
         </DefaultLayout>
     );
-}
-
-function getOptionButtonStyle(isTypeInvalid) {
-    return isTypeInvalid ? {
-        minHeight: '45px',
-        lineHeight: 1.2,
-        textTransform: 'none',
-        borderColor: '#d32f2f',
-        color: '#d32f2f',
-    } : {
-        minHeight: '45px',
-        lineHeight: 1.2,
-        textTransform: 'none'
-    };
 }

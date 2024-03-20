@@ -14,34 +14,12 @@ export default function LoginLayout({ children }) {
 
             <BaseAppBar/>
 
-            <Grid container component="main" sx={{ height: '100vh', maxHeight: '600px' }}>
-                <Grid
-                    item
-                    xs={false}
-                    sm={4}
-                    md={7}
-                    sx={{
-                        backgroundImage: 'url(login_bgd.jpg)',
-                        backgroundRepeat: 'no-repeat',
-                        backgroundColor: (t) =>
-                            t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        opacity: 0.9,
-                    }}
-                />
+            <Grid className="login__container" container component="main">
+                <Grid className="login__decoration" item xs={false} sm={4} md={7}/>
                 <Grid item xs={12} sm={8} md={5} component={Paper} elevation={0} square>
-                    <Box
-                        sx={{
-                            my: 8,
-                            mx: 4,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Typography variant="h3" align="center" marginTop={5} marginBottom={3}>
-                            Welcome back
+                    <Box className="login__box">
+                        <Typography className="text--bold" variant="h2" align="center" marginTop={5}>
+                            Welcome Back
                         </Typography>
                         {children}
                     </Box>

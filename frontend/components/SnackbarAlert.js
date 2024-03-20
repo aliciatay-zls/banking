@@ -16,8 +16,8 @@ export default function SnackbarAlert({openSnackbarAlert, handleClose, duration 
             disableWindowBlurListener
         >
             <CustomAlert
+                className="alert"
                 severity={isError ? "error" : "success"}
-                sx={{ width: '100%', textAlign: 'left' }}
                 onClose={handleClose}
             >
                 <AlertTitle>{title}</AlertTitle>

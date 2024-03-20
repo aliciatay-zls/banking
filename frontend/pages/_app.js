@@ -5,6 +5,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 
 import BankTheme from '../styles/theme';
+import '../styles/styles.css';
 
 export const DataToDisplayContext = createContext(null);
 
@@ -18,9 +19,6 @@ export default function MyApp({ Component, pageProps }) {
         <CookiesProvider>
             <DataToDisplayContext.Provider value={{dataToDisplay: dataToDisplay, setDataToDisplay: setDataToDisplay}}>
                 <ThemeProvider theme={BankTheme}>
-                    <noscript>
-                        <p className="message-error">This site requires JavaScript to work. Please enable it to continue.</p>
-                    </noscript>
                     <Fragment>
                         <CssBaseline />
                         <Component {...pageProps} />

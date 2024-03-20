@@ -32,31 +32,12 @@ export default function CustomerHomePage(props) {
             homepage={props.homepage}
             tabTitle={"Home"}
         >
-            <Box
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    flexWrap: 'wrap',
-                    '& > :not(style)': {
-                        m: 1,
-                        height: 128,
-                        width: 400,
-                    },
-                    marginBottom: 3,
-                }}
-            >
-                <Paper
-                    sx={{
-                        my: { xs: 2, md: 2 },
-                        p: { xs: 3, md: 5 },
-                        minHeight: "500px",
-                        display: "grid",
-                    }}
-                >
+            <Box className="profile__box">
+                <Paper className="profile__paper">
                     <Typography variant="h4" align="center" fontWeight="600">
                         Profile
                         <br/>
-                        <AccountCircleIcon sx={{fontSize: '60px', color: 'grey'}}/>
+                        <AccountCircleIcon className="profile__icon"/>
                     </Typography>
 
                     <TextField

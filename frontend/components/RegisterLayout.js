@@ -14,16 +14,7 @@ export default function RegisterLayout({ isForm = true, tabTitle, headerTitle, c
             <BaseAppBar />
 
             <Container component="main" maxWidth={isForm ? "xs" : ""}>
-                <Box
-                    sx={{
-                        marginTop: 5,
-                        marginBottom: 5,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        minHeight: "500px",
-                    }}
-                >
+                <Box className="register__box">
                     <Typography component="div" variant="h4" align="center">
                         {headerTitle}
                     </Typography>

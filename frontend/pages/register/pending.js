@@ -35,13 +35,15 @@ export default function PendingConfirmationPage(props) {
             tabTitle="Pending Confirmation"
             headerTitle="Your registration is almost complete."
         >
-            <Grid item xs={12} align="center" sx={{mt: 5}}>
+            <Grid className="pending__grid--spaced" item xs={12} align="center">
                 <Typography component="p" variant="body1">
                     Please check your email for the confirmation link.
                 </Typography>
                 <Typography component="p" variant="body1">
                     If you did not receive it, click the button below.
                 </Typography>
+            </Grid>
+            <Grid item xs={12} align="center">
                 <ResendEmailButton requestType={"UsingToken"} identifier={props.tempToken} />
             </Grid>
         </RegisterLayout>

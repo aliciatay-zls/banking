@@ -1,0 +1,298 @@
+/* || GENERAL STYLES */
+
+@media (min-width: 960px) { /* md */
+    padding: 40px;
+}
+
+/* || UTILITIES */
+
+.error {
+    color: #d32f2f !important;
+}
+
+.text--bold {
+    font-size: 30px;
+    font-weight: 450;
+}
+
+.text--center {
+    text-align: center;
+}
+
+/* || SITEWIDE */
+
+.alert {
+    width: 100%;
+    text-align: left;
+}
+
+.backdrop {
+    color: #fff;
+    z-index: 1301; /* drawer has z-index of 1300 in MUI */
+}
+
+.button {
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+.button--confirmed {
+    margin-top: -1rem;
+}
+
+.button--grid {
+    display: flex;
+}
+
+.button--grid.left {
+    justify-content: flex-start;
+}
+
+.button--grid.right {
+    justify-content: flex-end;
+}
+
+.button--link {
+    padding: 0;
+    margin-bottom: 4px;
+    font-weight: normal;
+    text-transform: none;
+    text-decoration: underline;
+}
+
+.button--link &:hover {
+    text-decoration: underline;
+}
+
+.button--option {
+    min-height: 45px;
+    line-height: 1.2;
+    text-transform: none;
+}
+
+.button--option.error {
+    border-color: #d32f2f;
+}
+
+.button--resend {
+    margin-top: 2px;
+    margin-bottom: 2px;
+    text-transform: none;
+}
+
+.button--submit {
+    max-height: 40px;
+}
+
+.container {
+    margin-bottom: 40px;
+    margin-top: 40px;
+    min-height: 400px;
+}
+
+.divider {
+    margin: 20px;
+}
+
+.footer {
+    background: #e7e7e7;
+    padding: 24px 16px 24px 16px;
+    margin-top: auto;
+}
+
+.form {
+    margin-top: 8px;
+}
+
+.grid {
+    height: 400px;
+    width: 90%;
+    margin: auto auto 5rem; /* only bottom has spacing after */
+}
+
+.icon--inline {
+    height: 10px;
+}
+
+.icon--padding {
+    padding: 8px 16px 6px 12px;
+}
+
+.icon--standalone {
+    font-size: 40px;
+    margin-bottom: -1rem;
+}
+
+.icon--success {
+    color: green;
+}
+
+.typography--notice {
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+
+.typography--notice-content {
+    margin-left: -20px;
+}
+
+.typography--notice-title {
+    margin-bottom: -10px;
+}
+
+/* || REGISTER PAGE */
+
+.register__box {
+    margin-top: 4rem;
+    margin-bottom: 4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 500px;
+}
+
+.register__stepper {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* || LOGIN PAGE */
+
+.login__box {
+    margin: 6rem 4rem 4rem 4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login__container {
+    height: 100vh;
+    max-height: 600px;
+}
+
+.login__decoration {
+    background: #e7e7e7 url('../public/login_bgd.jpg') no-repeat center;
+    background-size: cover;
+    opacity: 0.9;
+}
+
+.login__field {
+    margin-bottom: 30px;
+}
+
+#login-password__adornment {
+    padding-bottom: 10px;
+    padding-right: 8px;
+}
+
+#login-password__label {
+    margin-left: -13px;
+}
+
+/* || MY PROFILE PAGE */
+
+.profile__box {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+
+.profile__box > :not(style) { /* all direct children of the Box that are not of type style */
+    margin: 8px;
+    height: 128px;
+    width: 400px;
+}
+
+.profile__icon {
+    font-size: 60px;
+    color: grey;
+}
+
+.profile__paper {
+    margin-top: 16px;
+    margin-bottom: 16px;
+    padding: 24px;
+    min-height: 500px;
+    display: grid;
+}
+
+/* || MY BANK ACCOUNTS PAGE */
+
+.accounts__box {
+    background: #f2f2f2;
+    flex-grow: 1;
+    height: 100vh;
+    overflow: auto;
+}
+
+.accounts--individual {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    height: 200px;
+}
+
+.accounts--individual-amount {
+    flex: 1;
+}
+
+/* || TRANSACTION PAGE */
+
+#select-transaction-type {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+/* || OPEN BANK ACCOUNT PAGE */
+
+.open-account__paper {
+    margin-top: 16px;
+    margin-bottom: 16px;
+    padding: 40px;
+    min-height: 400px;
+    align-content: center;
+    display: grid;
+}
+
+/* || TEMPORARY PAGES */
+
+.nojs__p {
+    margin-left: 8px;
+}
+
+.page-500__box {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.pending__grid--spaced {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/* || ALERT COMPONENT */
+
+.alert--notice {
+    justify-content: center;
+    background-color: #e7e7e7;
+    margin-left: 25px;
+}
+
+/* || APPBAR COMPONENT */
+
+.appbar--bgd {
+    background: #85011e;
+}
+
+.appbar__box {
+    flex-grow: 1;
+}
+
+.appbar__menu-button {
+    margin-left: auto;
+    margin-right: 2px;
+}

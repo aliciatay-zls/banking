@@ -12,26 +12,14 @@ import YouTubeIcon from "@mui/icons-material/YouTube";
 
 export default function BankFooter() {
     return (
-        <Box
-            component="footer"
-            sx={{
-                py: 3,
-                px: 2,
-                mt: 'auto',
-                width: '100%',
-                backgroundColor: (theme) =>
-                    theme.palette.mode === 'light'
-                        ? theme.palette.grey[200]
-                        : theme.palette.grey[800],
-            }}
-        >
+        <Box className="footer" component="footer">
             <Grid container justifyContent="space-evenly" alignItems="top">
                 <CustomerSupportGridColumn/>
                 <HelpfulLinksGridColumn/>
                 <SocialsGridColumn/>
             </Grid>
 
-            <Divider style={{margin: 20}}/>
+            <Divider className="divider"/>
             <ProjectSubFooter/>
         </Box>
     );

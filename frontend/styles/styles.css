@@ -263,6 +263,10 @@
 }
 
 .page-500__box {
+    margin: 40px 20px;
+}
+
+.page-500__message {
     margin-top: 20px;
     display: flex;
     justify-content: center;

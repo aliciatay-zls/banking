@@ -11,7 +11,7 @@ export default function middleware(request) {
 
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set('x-nonce', nonce);
-    requestHeaders.set('Content-Security-Policy', cspHeader .replace(/\s{2,}/g, ' ').trim());
+    requestHeaders.set('Content-Security-Policy', cspHeader.replace(/\s{2,}/g, ' ').trim());
 
     return NextResponse.next({
         request: {

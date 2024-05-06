@@ -1,4 +1,4 @@
-# Go Banking Web App - Resource Server
+# Go Banking Web App - Database, Backend Resource and Frontend Servers
 https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang/
 
 ## Setup
@@ -8,43 +8,45 @@ https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang
 
 2. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
-3. Configure environment variables in `run.ps1` or `run.sh`, such as `DB_USER` and `DB_PASSWORD`
+3. Configure environment variables.
+   * Development: in `run.ps1` or `run.sh` if not using the dummy values
+   * Production: create a `.env` file with the same keys at the root of the project directory
 
 4. Install or upgrade current version of Node.js and npm using the [Node.js installer](https://nodejs.org/en/download)
 
-## Running the app
-1. To start the db, first start the Docker app. Then in terminal:
+## Running the app (Development)
+1. Change the `isModeProd` flag in `backend/main.go` to `false` to enter development mode.
+
+2. Start the Docker app.
+
+3. To start the database, backend resource and frontend servers:
    ```
-   cd backend/build/package
-   docker-compose up
+   cd backend
+   make -j3 dev
    ```
-
-2. To start the backend resource server, open another tab in terminal, `cd backend` and run one of the following:
-   * `./run.ps1` if using Powershell (e.g. Intellij terminal)
-   * `./run.sh`
-
-   An info-level log with the message "Starting the app..." will be printed to console on success.
-<br/><br/>
-
-3. To start the backend authentication server, see other repo: https://github.com/udemy-go-1/banking-auth
-
-4. To start the frontend development server, open another tab in terminal:
-    ```
-   cd frontend
-   npm run dev
+   In separate terminal, view logs for all three in real-time without them interleaving:
    ```
+    tail -f backend/db.log backend/backend.log frontend/frontend.log
+   ```
+   On success, logs printed:
+   * Database: will end with "ready for connections."
+   * Backend resource server: will be an info-level log with the message "Starting the app..."
+   * Frontend server: will end with "Ready in xx.xx s"
+<br/>
+
+4. To start the backend authentication server, see other repo: https://github.com/udemy-go-1/banking-auth
 
 5. Navigate to https://localhost:3000/login to view the app.
 
 6. Alternatively, [Postman](https://www.postman.com/) can be used to send requests to the backend APIs. Sample requests:
 
-| Method | Backend API Endpoint                                | Authorization Header (Bearer Token)      | Body                                                    | Result                                                                                                                                                             |
-|--------|-----------------------------------------------------|------------------------------------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| GET    | https://localhost:8080/customers                    | (access token received after logging in) |                                                         | Will display details of customers with id 2000 to 2005                                                                                                             |
-| GET    | https://localhost:8080/customers/2000               | (access token received after logging in) |                                                         | Will display details of the customer with id 2000                                                                                                                  |
-| GET    | https://localhost:8080/customers/2000/account       | (access token received after logging in) |                                                         | Will display details of accounts belonging to customer with id 2000                                                                                                |
-| POST   | https://localhost:8080/customers/2000/account/new   | (access token received after logging in) | {"account_type": "saving", <br/>"amount": 7000}         | Will open a new bank account containing $7000 for the customer with id 2000, then display the new bank account id                                                  |
-| POST   | https://localhost:8080/customers/2000/account/95470 | (access token received after logging in) | {"transaction_type": "withdrawal", <br/>"amount": 1000} | Will make a withdrawal of $1000 for the customer with id 2000 for the account with id 95470, then display the updated account balance and completed transaction id |
+    | Method | Backend API Endpoint                                | Authorization Header (Bearer Token)      | Body                                                    | Result                                                                                                                                                             |
+    |--------|-----------------------------------------------------|------------------------------------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+    | GET    | https://localhost:8080/customers                    | (access token received after logging in) |                                                         | Will display details of customers with id 2000 to 2005                                                                                                             |
+    | GET    | https://localhost:8080/customers/2000               | (access token received after logging in) |                                                         | Will display details of the customer with id 2000                                                                                                                  |
+    | GET    | https://localhost:8080/customers/2000/account       | (access token received after logging in) |                                                         | Will display details of bank accounts belonging to customer with id 2000                                                                                           |
+    | POST   | https://localhost:8080/customers/2000/account/new   | (access token received after logging in) | {"account_type": "saving", <br/>"amount": 7000}         | Will open a new bank account containing $7000 for the customer with id 2000, then display the new bank account id                                                  |
+    | POST   | https://localhost:8080/customers/2000/account/95470 | (access token received after logging in) | {"transaction_type": "withdrawal", <br/>"amount": 1000} | Will make a withdrawal of $1000 for the customer with id 2000 for the account with id 95470, then display the updated account balance and completed transaction id |
 
 7. To check changes made to the app database, open another tab in terminal and start an interactive shell in 
 the container for querying the db:
@@ -56,6 +58,12 @@ the container for querying the db:
    mysql> use banking;
    mysql> show tables;
    mysql> select * from accounts;
+   ```
+
+8. Run all unit tests each time changes have been made:
+   ```
+   cd backend
+   go test -v ./...
    ```
 
 ## Udemy Course

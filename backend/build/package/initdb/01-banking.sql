@@ -22,6 +22,7 @@
 --
 -- Table structure for table `accounts`
 --
+DROP DATABASE IF EXISTS `banking`;
 CREATE DATABASE banking;
 USE banking;
 
@@ -142,8 +143,9 @@ CREATE TABLE `registrations` (
 DROP TABLE IF EXISTS `refresh_token_store`;
 
 CREATE TABLE `refresh_token_store` (
-    `refresh_token` text NOT NULL,
-    created_on timestamp DEFAULT CURRENT_TIMESTAMP
+  `refresh_token` char(64) NOT NULL,
+  created_on timestamp DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`refresh_token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

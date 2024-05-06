@@ -5,6 +5,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
+	"github.com/joho/godotenv"
 	"github.com/udemy-go-1/banking-lib/clock"
 	"github.com/udemy-go-1/banking-lib/logger"
 	"github.com/udemy-go-1/banking/backend/domain"
@@ -14,7 +15,13 @@ import (
 	"time"
 )
 
-func checkEnvVars() {
+func checkEnvVars(isModeProd bool) {
+	if isModeProd {
+		if err := godotenv.Load("../.env"); err != nil {
+			logger.Fatal("Error loading .env file")
+		}
+	}
+
 	envVars := []string{
 		"SERVER_ADDRESS",
 		"SERVER_PORT",
@@ -22,11 +29,10 @@ func checkEnvVars() {
 		"AUTH_SERVER_PORT",
 		"DB_USER",
 		"DB_PASSWORD",
-		"DB_ADDRESS",
+		"DB_HOST",
 		"DB_PORT",
 		"DB_NAME",
 	}
-
 	for _, key := range envVars {
 		if os.Getenv(key) == "" {
 			logger.Fatal(fmt.Sprintf("Environment variable %s was not defined", key))
@@ -34,8 +40,8 @@ func checkEnvVars() {
 	}
 }
 
-func Start() {
-	checkEnvVars()
+func Start(isModeProd bool) {
+	checkEnvVars(isModeProd)
 
 	router := mux.NewRouter()
 
@@ -70,6 +76,7 @@ func Start() {
 	amw := AuthMiddleware{domain.NewDefaultAuthRepository()}
 	router.Use(amw.AuthMiddlewareHandler)
 
+	//TODO: change once deploy to Vercel
 	address := os.Getenv("SERVER_ADDRESS")
 	port := os.Getenv("SERVER_PORT")
 	certFile := "certificates/localhost.pem"
@@ -83,14 +90,14 @@ func Start() {
 func getDbClient() *sqlx.DB {
 	dbUser := os.Getenv("DB_USER")
 	dbPassword := os.Getenv("DB_PASSWORD")
-	dbAddress := os.Getenv("DB_ADDRESS")
+	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
 	dbName := os.Getenv("DB_NAME")
 
-	dataSource := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbAddress, dbPort, dbName)
+	dataSource := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbHost, dbPort, dbName)
 	db, err := sqlx.Open("mysql", dataSource)
 	if err != nil {
-		panic(err)
+		logger.Fatal("Error while opening connection to database: " + err.Error())
 	}
 	db.SetConnMaxLifetime(time.Minute * 3)
 	db.SetMaxOpenConns(10)

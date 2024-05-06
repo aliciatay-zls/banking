@@ -1,7 +1,18 @@
+# intellij files
 /.idea
-*.exe
-.iml
-/backend/certificates/
-/frontend/node_modules/
+*.iml
+
+# next.js files
 /frontend/.next/
+
+# npm
+/frontend/node_modules/
+
+# credentials
+/backend/certificates/
 /frontend/certificates/
+.env
+
+# byproducts generated
+*.exe
+*.log

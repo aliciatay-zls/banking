@@ -5,7 +5,7 @@ $env:AUTH_SERVER_ADDRESS = "localhost"
 $env:AUTH_SERVER_PORT = "8181"
 $env:DB_USER = "root"
 $env:DB_PASSWORD = "codecamp"
-$env:DB_ADDRESS = "localhost"
+$env:DB_HOST = "localhost"
 $env:DB_PORT = "3306"
 $env:DB_NAME = "banking"
 

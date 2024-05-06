@@ -6,7 +6,7 @@ export AUTH_SERVER_ADDRESS="localhost"
 export AUTH_SERVER_PORT="8181"
 export DB_USER="root"
 export DB_PASSWORD="codecamp"
-export DB_ADDRESS="localhost"
+export DB_HOST="localhost"
 export DB_PORT="3306"
 export DB_NAME="banking"
 

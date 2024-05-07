@@ -17,7 +17,7 @@ import (
 
 func checkEnvVars(isModeProd bool) {
 	if isModeProd {
-		if err := godotenv.Load("../.env"); err != nil {
+		if err := godotenv.Load(".env"); err != nil {
 			logger.Fatal("Error loading .env file")
 		}
 	}

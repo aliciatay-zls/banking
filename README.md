@@ -9,8 +9,8 @@ https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang
 2. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
 3. Configure environment variables.
-   * Development: in `run.ps1` or `run.sh` if not using the dummy values
-   * Production: create a `.env` file with the same keys at the root of the project directory
+   * Development: set values in `run.ps1` or `run.sh` if not using the dummy values
+   * Production: create a `backend/.env` file with the same keys as the above scripts
 
 4. Install or upgrade current version of Node.js and npm using the [Node.js installer](https://nodejs.org/en/download)
 
@@ -40,13 +40,12 @@ https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang
    * Database: will end with "ready for connections."
    * Backend resource server: will be an info-level log with the message "Starting the app..."
    * Frontend server: will end with "Ready in xx.xx s"
-<br/>
 
 5. To start the backend authentication server, see other repo: https://github.com/udemy-go-1/banking-auth
 
 6. Navigate to https://localhost:3000/login to view the app.
 
-7. Alternatively, [Postman](https://www.postman.com/) can be used to send requests to the backend APIs. Sample requests:
+7. Alternatively, [Postman](https://www.postman.com/) can be used to send requests to the backend resource server APIs. Sample requests:
 
     | Method | Backend API Endpoint                                | Authorization Header (Bearer Token)      | Body                                                    | Result                                                                                                                                                             |
     |--------|-----------------------------------------------------|------------------------------------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -68,10 +67,15 @@ the container for querying the db:
    mysql> select * from accounts;
    ```
 
-9. Run all unit tests each time changes have been made:
+9. Run all unit tests each time changes have been made to the backend:
    ```
    cd backend
    go test -v ./...
+   ```
+   
+10. Update all packages in the backend to the latest version periodically:
+   ```
+   go get -u all
    ```
 
 ## Udemy Course

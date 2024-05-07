@@ -1,10 +1,10 @@
 ### PRODUCTION ###
 
-ifeq ($(wildcard ./.env),)
-	$(error No dot env file in project root)
+ifeq ($(wildcard ./backend/.env),)
+	$(error No dot env file in backend folder)
 endif
 
-include .env
+include backend/.env
 
 # Connect to hosted db (opens a SQL shell)
 connect:

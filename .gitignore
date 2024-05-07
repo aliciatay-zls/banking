@@ -9,7 +9,7 @@
 /frontend/node_modules/
 
 # environment variables
-.env
+backend/.env
 
 # development mode
 /backend/certificates/

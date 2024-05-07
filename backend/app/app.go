@@ -76,14 +76,21 @@ func Start(isModeProd bool) {
 	amw := AuthMiddleware{domain.NewDefaultAuthRepository()}
 	router.Use(amw.AuthMiddlewareHandler)
 
-	//TODO: change once deploy to Vercel
 	address := os.Getenv("SERVER_ADDRESS")
 	port := os.Getenv("SERVER_PORT")
-	certFile := "certificates/localhost.pem"
-	keyFile := "certificates/localhost-key.pem"
-	err := http.ListenAndServeTLS(fmt.Sprintf("%s:%s", address, port), certFile, keyFile, router)
-	if err != nil {
-		logger.Fatal(err.Error())
+
+	if isModeProd { //Render provides TLS certs, HTTP requests will be redirected to HTTPS
+		err := http.ListenAndServe(fmt.Sprintf("%s:%s", address, port), router)
+		if err != nil {
+			logger.Fatal(err.Error())
+		}
+	} else {
+		certFile := "certificates/localhost.pem"
+		keyFile := "certificates/localhost-key.pem"
+		err := http.ListenAndServeTLS(fmt.Sprintf("%s:%s", address, port), certFile, keyFile, router)
+		if err != nil {
+			logger.Fatal(err.Error())
+		}
 	}
 }
 

@@ -15,11 +15,19 @@ https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang
 4. Install or upgrade current version of Node.js and npm using the [Node.js installer](https://nodejs.org/en/download)
 
 ## Running the app (Development)
-1. Change the `isModeProd` flag in `backend/main.go` to `false` to enter development mode.
+1. If running for the first time, copy the self-signed certificates generated when starting the frontend server to 
+   `backend/certificates`:
+   ```
+   cd frontend
+   npm run dev
+   cp -r certificates/ ../backend
+   ```
 
-2. Start the Docker app.
+2. Change the `isModeProd` flag in `backend/main.go` to `false` to enter development mode.
 
-3. To start the database, backend resource and frontend servers:
+3. Start the Docker app.
+
+4. To start the database, backend resource and frontend servers:
    ```
    cd backend
    make -j3 dev
@@ -34,11 +42,11 @@ https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang
    * Frontend server: will end with "Ready in xx.xx s"
 <br/>
 
-4. To start the backend authentication server, see other repo: https://github.com/udemy-go-1/banking-auth
+5. To start the backend authentication server, see other repo: https://github.com/udemy-go-1/banking-auth
 
-5. Navigate to https://localhost:3000/login to view the app.
+6. Navigate to https://localhost:3000/login to view the app.
 
-6. Alternatively, [Postman](https://www.postman.com/) can be used to send requests to the backend APIs. Sample requests:
+7. Alternatively, [Postman](https://www.postman.com/) can be used to send requests to the backend APIs. Sample requests:
 
     | Method | Backend API Endpoint                                | Authorization Header (Bearer Token)      | Body                                                    | Result                                                                                                                                                             |
     |--------|-----------------------------------------------------|------------------------------------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -48,7 +56,7 @@ https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang
     | POST   | https://localhost:8080/customers/2000/account/new   | (access token received after logging in) | {"account_type": "saving", <br/>"amount": 7000}         | Will open a new bank account containing $7000 for the customer with id 2000, then display the new bank account id                                                  |
     | POST   | https://localhost:8080/customers/2000/account/95470 | (access token received after logging in) | {"transaction_type": "withdrawal", <br/>"amount": 1000} | Will make a withdrawal of $1000 for the customer with id 2000 for the account with id 95470, then display the updated account balance and completed transaction id |
 
-7. To check changes made to the app database, open another tab in terminal and start an interactive shell in 
+8. To check changes made to the app database, open another tab in terminal and start an interactive shell in 
 the container for querying the db:
    ```
    docker exec -it mysql sh
@@ -60,7 +68,7 @@ the container for querying the db:
    mysql> select * from accounts;
    ```
 
-8. Run all unit tests each time changes have been made:
+9. Run all unit tests each time changes have been made:
    ```
    cd backend
    go test -v ./...

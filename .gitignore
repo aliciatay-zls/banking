@@ -8,10 +8,12 @@
 # npm
 /frontend/node_modules/
 
-# credentials
+# environment variables
+.env
+
+# development mode
 /backend/certificates/
 /frontend/certificates/
-.env
 
 # byproducts generated
 *.exe

@@ -34,6 +34,7 @@ export async function getServerSideProps(context) {
     return {
         props: {
             homepage: finalProps.props.homepage,
+            authServerAddress: finalProps.props.authServerAddress,
             customerRows: customerRows,
         }
     };
@@ -145,6 +146,7 @@ export default function CustomersPage(props) {
             isLoading={false}
             homepage={props.homepage}
             isPossibleTOB={false}
+            authServerAddress={props.authServerAddress}
             tabTitle={"Home"}
             headerTitle={"Customers"}
         >

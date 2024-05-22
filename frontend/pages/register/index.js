@@ -26,7 +26,15 @@ const stepFieldNames = {
 };
 const errorDefaultMessage = "Registration failed";
 
-export default function RegistrationPage() {
+export function getServerSideProps() {
+    return {
+        props: {
+            authServerAddress: process.env.AUTH_SERVER_ADDRESS,
+        },
+    };
+}
+
+export default function RegistrationPage(props) {
     const [activeStep, setActiveStep] = useState(0);
     const [fields, setFields] = useState({
         firstName: "",
@@ -107,7 +115,7 @@ export default function RegistrationPage() {
         };
 
         try {
-            const response = await fetch("https://127.0.0.1:8181/auth/register", request);
+            const response = await fetch(`https://${props.authServerAddress}/auth/register`, request);
             const data = await response.json();
 
             if (!response.ok) {
@@ -245,7 +253,7 @@ export default function RegistrationPage() {
                         </Fragment>
                     )}
                     {activeStep === 2 && (
-                        <EmailConfirmation details={successInfo} />
+                        <EmailConfirmation details={successInfo} authServerAddress={props.authServerAddress} />
                     )}
                 </Grid>
             </Box>

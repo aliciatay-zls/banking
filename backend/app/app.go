@@ -15,10 +15,15 @@ import (
 	"time"
 )
 
-func checkEnvVars(isModeProd bool) {
-	if isModeProd {
+func checkEnvVars() {
+	val, ok := os.LookupEnv("APP_ENV")
+	if !ok {
+		logger.Fatal("Environment variable APP_ENV not defined")
+	}
+
+	if val == "production" {
 		if err := godotenv.Load(".env"); err != nil {
-			logger.Fatal("Error loading .env file")
+			logger.Fatal("Error loading .env file (needed in production mode)")
 		}
 	}
 
@@ -27,6 +32,8 @@ func checkEnvVars(isModeProd bool) {
 		"SERVER_PORT",
 		"AUTH_SERVER_ADDRESS",
 		"AUTH_SERVER_PORT",
+		"FRONTEND_SERVER_ADDRESS",
+		"FRONTEND_SERVER_PORT",
 		"DB_USER",
 		"DB_PASSWORD",
 		"DB_HOST",
@@ -40,8 +47,8 @@ func checkEnvVars(isModeProd bool) {
 	}
 }
 
-func Start(isModeProd bool) {
-	checkEnvVars(isModeProd)
+func Start() {
+	checkEnvVars()
 
 	router := mux.NewRouter()
 
@@ -79,7 +86,7 @@ func Start(isModeProd bool) {
 	address := os.Getenv("SERVER_ADDRESS")
 	port := os.Getenv("SERVER_PORT")
 
-	if isModeProd { //Render provides TLS certs, HTTP requests will be redirected to HTTPS
+	if os.Getenv("APP_ENV") == "production" { //Render provides TLS certs, HTTP requests will be redirected to HTTPS
 		err := http.ListenAndServe(fmt.Sprintf("%s:%s", address, port), router)
 		if err != nil {
 			logger.Fatal(err.Error())

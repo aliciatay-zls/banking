@@ -32,6 +32,7 @@ export default async function handleFetchResource(currentPath, requestURL, reque
         //GET response error and refresh handling
         if (!response.ok) {
             if (response.status === 401) {
+                console.log(errorMessage);
                 if (errorMessage === "expired access token") { //NewAuthenticationErrorDueToExpiredAccessToken
                     return logErrorAndRedirect(
                         "Redirecting to refresh",
@@ -47,6 +48,7 @@ export default async function handleFetchResource(currentPath, requestURL, reque
                     );
                 }
             } else if (response.status === 403) {
+                console.log(errorMessage);
                 return logErrorAndRedirect(
                     "Redirecting to login",
                     `/login?errorMessage=${encodeURIComponent(errorMessage)}`,
@@ -78,6 +80,8 @@ export default async function handleFetchResource(currentPath, requestURL, reque
         }
 
     } catch (err) {
+        console.log("Error fetching resource: ");
+        console.log(err);
         return logErrorAndRedirect(
             err,
             '/500',

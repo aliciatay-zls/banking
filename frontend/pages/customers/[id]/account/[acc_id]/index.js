@@ -134,6 +134,7 @@ export default function TransactionPage(props) {
     return (
         <DefaultLayout
             homepage={homepage}
+            authServerAddress={props.authServerAddress}
             tabTitle={"New Transaction"}
             headerTitle={"What would you like to do today?"}
         >

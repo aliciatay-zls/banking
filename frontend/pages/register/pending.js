@@ -24,6 +24,7 @@ export async function getServerSideProps(context) {
     return {
         props: {
             tempToken: tempToken,
+            authServerAddress: process.env.AUTH_SERVER_ADDRESS,
         },
     };
 }
@@ -44,7 +45,7 @@ export default function PendingConfirmationPage(props) {
                 </Typography>
             </Grid>
             <Grid item xs={12} align="center">
-                <ResendEmailButton requestType={"UsingToken"} identifier={props.tempToken} />
+                <ResendEmailButton requestType={"UsingToken"} identifier={props.tempToken} authServerAddress={props.authServerAddress} />
             </Grid>
         </RegisterLayout>
     );

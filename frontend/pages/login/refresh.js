@@ -14,6 +14,7 @@ export function getServerSideProps(context) {
         props: {
             callbackURL: context.query.callbackURL || '',
             isFromLogin: context.query.isFromLogin || "false",
+            authServerAddress: process.env.AUTH_SERVER_ADDRESS,
         }
     };
 }
@@ -46,7 +47,7 @@ export default function TempRefreshPage(props) {
             };
 
             const tryRefresh = async () => {
-                const response = await fetch("https://127.0.0.1:8181/auth/refresh", newTokenRequest);
+                const response = await fetch(`https://${props.authServerAddress}/auth/refresh`, newTokenRequest);
                 const data = await response.json();
 
                 const newAccessToken = data?.new_access_token || '';
@@ -118,6 +119,7 @@ export default function TempRefreshPage(props) {
     return (
         <DefaultLayout
             isPossibleTOB={false}
+            authServerAddress={props.authServerAddress}
             tabTitle="Home"
         >
             <Box height="100vh" align="center">

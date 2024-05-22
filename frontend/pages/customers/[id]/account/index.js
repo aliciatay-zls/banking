@@ -19,6 +19,7 @@ export default function AccountsPage(props) {
     return (
         <DefaultLayout
             homepage={props.homepage}
+            authServerAddress={props.authServerAddress}
             tabTitle={"My Accounts"}
             headerTitle={"My Accounts"}
         >

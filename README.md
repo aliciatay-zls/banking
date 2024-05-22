@@ -9,30 +9,23 @@ https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang
 2. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
 3. Configure environment variables.
-   * Development: set values in `run.ps1` or `run.sh` if not using the dummy values
-   * Production: create a `backend/.env` file with the same keys as the above scripts
+   * Development:
+     * Backend: set values in the scripts in `backend/scripts/` if not using the dummy values
+     * Frontend: set values in the `frontend/.env.development` file if not using the dummy values
+   * Production: 
+     * Backend: create a `backend/.env` file with the same keys as the scripts in `backend/scripts/`
+     * Frontend: create a `frontend/.env.production` file with the same keys as `frontend/.env.development`
 
 4. Install or upgrade current version of Node.js and npm using the [Node.js installer](https://nodejs.org/en/download)
 
 ## Running the app (Development)
-1. If running for the first time, copy the self-signed certificates generated when starting the frontend server to 
-   `backend/certificates`:
-   ```
-   cd frontend
-   npm run dev
-   cp -r certificates/ ../backend
-   ```
+1. Start the Docker app.
 
-2. Change the `isModeProd` flag in `backend/main.go` to `false` to enter development mode.
-
-3. Start the Docker app.
-
-4. To start the database, backend resource and frontend servers:
+2. To start the database, backend resource and frontend servers:
    ```
-   cd backend
    make -j3 dev
    ```
-   In separate terminal, view logs for all three in real-time without them interleaving:
+   In separate terminal tab, view logs for all three in real-time without them interleaving:
    ```
     tail -f backend/db.log backend/backend.log frontend/frontend.log
    ```
@@ -41,11 +34,11 @@ https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang
    * Backend resource server: will be an info-level log with the message "Starting the app..."
    * Frontend server: will end with "Ready in xx.xx s"
 
-5. To start the backend authentication server, see other repo: https://github.com/udemy-go-1/banking-auth
+3. To start the backend authentication server, see other repo: https://github.com/udemy-go-1/banking-auth
 
-6. Navigate to https://localhost:3000/login to view the app.
+4. Navigate to https://localhost:3000/login to view the app.
 
-7. Alternatively, [Postman](https://www.postman.com/) can be used to send requests to the backend resource server APIs. Sample requests:
+5. Alternatively, [Postman](https://www.postman.com/) can be used to send requests to the backend resource server APIs. Sample requests:
 
     | Method | Backend API Endpoint                                | Authorization Header (Bearer Token)      | Body                                                    | Result                                                                                                                                                             |
     |--------|-----------------------------------------------------|------------------------------------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -55,7 +48,7 @@ https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang
     | POST   | https://localhost:8080/customers/2000/account/new   | (access token received after logging in) | {"account_type": "saving", <br/>"amount": 7000}         | Will open a new bank account containing $7000 for the customer with id 2000, then display the new bank account id                                                  |
     | POST   | https://localhost:8080/customers/2000/account/95470 | (access token received after logging in) | {"transaction_type": "withdrawal", <br/>"amount": 1000} | Will make a withdrawal of $1000 for the customer with id 2000 for the account with id 95470, then display the updated account balance and completed transaction id |
 
-8. To check changes made to the app database, open another tab in terminal and start an interactive shell in 
+6. To check changes made to the app database, open another tab in terminal and start an interactive shell in 
 the container for querying the db:
    ```
    docker exec -it mysql sh
@@ -67,13 +60,13 @@ the container for querying the db:
    mysql> select * from accounts;
    ```
 
-9. Run all unit tests each time changes have been made to the backend:
+7. Run all unit tests each time changes have been made to the backend:
    ```
    cd backend
    go test -v ./...
    ```
    
-10. Update all packages in the backend to the latest version periodically:
+8. Update all packages in the backend to the latest version periodically:
    ```
    go get -u all
    ```

@@ -13,7 +13,7 @@ const defaultSuccessMessage = {
     title: "A new confirmation link has been sent to the same email.",
 };
 
-export default function ResendEmailButton({requestType, identifier}) {
+export default function ResendEmailButton({requestType, identifier, authServerAddress}) {
     const router = useRouter();
 
     const [openOutcomeAlert, setOpenOutcomeAlert] = useState(false);
@@ -40,7 +40,7 @@ export default function ResendEmailButton({requestType, identifier}) {
         let response, responseErrorMsg;
         try {
             if (requestType === "UsingToken") {
-                response = await fetch(`https://127.0.0.1:8181/auth/register/resend?ott=${encodeURIComponent(identifier)}`);
+                response = await fetch(`https://${authServerAddress}/auth/register/resend?ott=${encodeURIComponent(identifier)}`);
             } else if (requestType === "UsingEmail") {
                 if (!validateEmail(identifier)) {
                     showError("Email is not valid", defaultErrorMessage);
@@ -51,7 +51,7 @@ export default function ResendEmailButton({requestType, identifier}) {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ "email": identifier })
                 };
-                response = await fetch("https://127.0.0.1:8181/auth/register/resend", request);
+                response = await fetch(`https://${authServerAddress}/auth/register/resend`, request);
             } else {
                 showError("Error while resending confirmation link: Unknown request type", defaultErrorMessage);
                 return;

@@ -19,9 +19,9 @@ export default async function getServerSideProps(context) {
     }
 
     const currentPath = context.resolvedUrl;
-    const requestURL = "https://127.0.0.1:8080".concat(currentPath);
+    const requestURL = `https://${process.env.RESC_SERVER_ADDRESS}`.concat(currentPath);
 
-    const checkLoggedInURL = "https://127.0.0.1:8181/auth/continue";
+    const checkLoggedInURL = `https://${process.env.AUTH_SERVER_ADDRESS}/auth/continue`;
     const request = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -49,6 +49,7 @@ export default async function getServerSideProps(context) {
             homepage: homepage,
             currentPath: currentPath,
             requestURL: requestURL,
+            authServerAddress: process.env.AUTH_SERVER_ADDRESS,
         },
     };
 }

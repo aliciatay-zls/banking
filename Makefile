@@ -25,11 +25,12 @@ dev: dev-db dev-backend dev-frontend
 dev-db:
 	cd backend/build/package && docker-compose up > ../../db.log 2>&1
 
+dev-frontend:
+	cd frontend && npm run dev > frontend.log 2>&1 &
+	cp -r frontend/certificates backend
+
 dev-backend:
 	cd backend && chmod +x scripts/run.sh && . ./scripts/run.sh > backend.log 2>&1
-
-dev-frontend:
-	cd frontend && npm run dev > frontend.log 2>&1
 
 # Remove any log files generated
 clean:

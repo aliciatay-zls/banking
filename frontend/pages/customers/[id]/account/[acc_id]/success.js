@@ -24,8 +24,8 @@ export async function getServerSideProps(context) {
 
     const customerID = context.params?.id || '';
     const accountID = context.params?.acc_id || '';
-    const beforeURL = `https://localhost:3000/customers/${customerID}/account/${accountID}`;
-    const myAccountsURL = `https://localhost:3000/customers/${customerID}/account`;
+    const beforeURL = `https://${process.env.SERVER_ADDRESS}/customers/${customerID}/account/${accountID}`;
+    const myAccountsURL = `https://${process.env.SERVER_ADDRESS}/customers/${customerID}/account`;
 
     return {
         props: {
@@ -33,6 +33,7 @@ export async function getServerSideProps(context) {
             accountID: accountID,
             beforeURL: beforeURL,
             myAccountsURL: myAccountsURL,
+            authServerAddress: initProps.props.authServerAddress,
         },
     };
 }
@@ -62,6 +63,7 @@ export default function TransactionSuccessPage(props) {
     return (
         <DefaultLayout
             homepage={props.homepage}
+            authServerAddress={props.authServerAddress}
             tabTitle={"Success"}
         >
             <Container className="container" component="main" maxWidth="sm">

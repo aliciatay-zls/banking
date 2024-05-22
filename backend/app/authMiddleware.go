@@ -1,11 +1,13 @@
 package app
 
 import (
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/udemy-go-1/banking-lib/errs"
 	"github.com/udemy-go-1/banking-lib/logger"
 	"github.com/udemy-go-1/banking/backend/domain"
 	"net/http"
+	"os"
 )
 
 type AuthMiddleware struct {
@@ -44,7 +46,10 @@ func (m AuthMiddleware) AuthMiddlewareHandler(next http.Handler) http.Handler {
 }
 
 func enableCORS(w http.ResponseWriter) {
-	w.Header().Add("Access-Control-Allow-Origin", "https://localhost:3000") //frontend domain
-	w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS")    //OPTIONS: preflight request method
+	address := os.Getenv("FRONTEND_SERVER_ADDRESS")
+	port := os.Getenv("FRONTEND_SERVER_PORT")
+
+	w.Header().Add("Access-Control-Allow-Origin", fmt.Sprintf("https://%s:%s", address, port)) //frontend domain
+	w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS")                       //OPTIONS: preflight request method
 	w.Header().Add("Access-Control-Allow-Headers", "Content-Type, Authorization")
 }

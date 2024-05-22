@@ -29,9 +29,10 @@ export async function getServerSideProps(context) {
         };
     }
 
+    const authServerAddress = process.env.AUTH_SERVER_ADDRESS;
     try {
         //send request to check token in url
-        const checkResponse = await fetch(`https://127.0.0.1:8181/auth${context.resolvedUrl}`);
+        const checkResponse = await fetch(`https://${authServerAddress}/auth${context.resolvedUrl}`);
         const checkData = await checkResponse.json();
 
         const responseMsg = checkData?.message || '';
@@ -43,6 +44,7 @@ export async function getServerSideProps(context) {
                 console.log(responseMsg);
                 return {
                     props: {
+                        authServerAddress: authServerAddress,
                         isExpired: true,
                         ott: ott,
                     }
@@ -69,7 +71,7 @@ export async function getServerSideProps(context) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ "one_time_token": ott }),
         };
-        const finishResponse = await fetch("https://127.0.0.1:8181/auth/register/finish", request);
+        const finishResponse = await fetch(`https://${authServerAddress}/auth/register/finish`, request);
         const finishData = await finishResponse.json();
 
         if (!finishResponse.ok) {
@@ -80,6 +82,7 @@ export async function getServerSideProps(context) {
                 console.log(errorMessage);
                 return {
                     props: {
+                        authServerAddress: authServerAddress,
                         isExpired: true,
                         ott: ott,
                     }
@@ -145,7 +148,7 @@ export default function CheckRegistrationPage(props) {
         >
             <Grid item xs={12} align="center">
                 { isExpired &&
-                    <ResendEmailButton requestType={"UsingToken"} identifier={ott} />
+                    <ResendEmailButton requestType={"UsingToken"} identifier={ott} authServerAddress={props.authServerAddress} />
                 }
                 { isOtherError &&
                     <Typography component="p" variant="body1">

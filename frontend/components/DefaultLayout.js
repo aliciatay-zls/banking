@@ -6,14 +6,14 @@ import BankFooter from "./Footer";
 import BankHead from "./Head";
 import {getRole} from "../src/authUtils";
 
-export default function DefaultLayout({ homepage, isPossibleTOB = true, tabTitle, headerTitle, children }) {
+export default function DefaultLayout({ homepage, isPossibleTOB = true, authServerAddress, tabTitle, headerTitle, children }) {
     const isTOB = isPossibleTOB && (getRole(homepage) === 'admin');
 
     return (
         <div>
             <BankHead title={tabTitle}/>
 
-            <DefaultAppBar homepage={homepage}/>
+            <DefaultAppBar homepage={homepage} authServerAddress={authServerAddress}/>
 
             { isTOB &&
                 <Alert severity="info">

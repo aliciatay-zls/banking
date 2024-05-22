@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export default function middleware(request) {
     const nonce = crypto.randomUUID().toString();
     const cspHeader = `
-        default-src 'self' https://127.0.0.1:8080 https://127.0.0.1:8181; 
+        default-src 'self' https://${process.env.RESC_SERVER_ADDRESS} https://${process.env.AUTH_SERVER_ADDRESS}; 
         style-src 'self' 'nonce-${nonce}';
         script-src 'self';
         navigate-to 'self';

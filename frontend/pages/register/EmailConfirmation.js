@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 
 import ResendEmailButton from "../../components/ResendEmailButton";
 
-export default function EmailConfirmation({details}) {
+export default function EmailConfirmation({details, authServerAddress}) {
     return(
         <Fragment>
             <Grid item xs={12}>
@@ -26,7 +26,7 @@ export default function EmailConfirmation({details}) {
                 </Typography>
             </Grid>
             <Grid item xs={12} align="center">
-                <ResendEmailButton requestType={"UsingEmail"} identifier={details.email} />
+                <ResendEmailButton requestType={"UsingEmail"} identifier={details.email} authServerAddress={authServerAddress} />
             </Grid>
         </Fragment>
     );

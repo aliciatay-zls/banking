@@ -43,6 +43,8 @@ export async function getServerSideProps(context) {
             homepage: initProps.props.homepage,
             currentPath: initProps.props.currentPath,
             requestURL: initProps.props.requestURL,
+            authServerAddress: initProps.props.authServerAddress,
+            serverAddress: process.env.SERVER_ADDRESS,
         }
     };
 }
@@ -52,7 +54,7 @@ export default function CreateAccountPage(props) {
 
     const accountTypeSaving = "saving";
     const accountTypeChecking = "checking";
-    const buttonLinkAccounts = `https://localhost:3000/customers/${props.customerId}/account`;
+    const buttonLinkAccounts = `https://${props.serverAddress}/customers/${props.customerId}/account`;
     const errorDefaultMessage = "Please try again later.";
 
     const [isLoading, setIsLoading] = useState(false);
@@ -137,6 +139,7 @@ export default function CreateAccountPage(props) {
     return (
         <DefaultLayout
             homepage={props.homepage}
+            authServerAddress={props.authServerAddress}
             tabTitle={"Account Opening"}
         >
             <Container className="container" component="main" maxWidth="sm">
@@ -201,7 +204,7 @@ export default function CreateAccountPage(props) {
                                     />
                                 </Grid>
                                 <Grid item xs={12} />
-                                <ButtonLinkToAllCustomers />
+                                <ButtonLinkToAllCustomers serverAddress={props.serverAddress} />
                                 <Grid className="button--grid right" item xs={6}>
                                     <Button className="button--submit" type="submit" variant="contained" disabled={isLoading}>
                                         {isLoading ? 'Loading...' : 'Submit'}
@@ -225,7 +228,7 @@ export default function CreateAccountPage(props) {
                                 </Typography>
                             </Grid>
                             <Grid item xs={12} />
-                            <ButtonLinkToAllCustomers />
+                            <ButtonLinkToAllCustomers serverAddress={props.serverAddress} />
                             <Grid className="button--grid right" item xs={6} >
                                 <Link href={buttonLinkAccounts}>
                                     <Button type="button" variant="no-caps" size="small" endIcon={<ArrowForwardIosIcon/>}>
@@ -256,8 +259,8 @@ export default function CreateAccountPage(props) {
     );
 }
 
-function ButtonLinkToAllCustomers() {
-    const buttonLinkAllCustomers = "https://localhost:3000/customers";
+function ButtonLinkToAllCustomers(serverAddress) {
+    const buttonLinkAllCustomers = `https://${serverAddress}/customers`;
 
     return (
         <Grid className="button--grid left" item xs={6}>

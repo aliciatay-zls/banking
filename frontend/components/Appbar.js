@@ -44,7 +44,7 @@ export function BaseAppBar({homepagePath = "/login", innerChildren, outerChildre
     );
 }
 
-export function DefaultAppBar({homepage}) {
+export function DefaultAppBar({homepage, authServerAddress}) {
     const router = useRouter();
 
     const [anchorEl, setAnchorEl] = useState(null);
@@ -64,7 +64,7 @@ export function DefaultAppBar({homepage}) {
                 body: JSON.stringify({ "refresh_token": refreshToken }),
             };
 
-            const response = await fetch("https://127.0.0.1:8181/auth/logout", request);
+            const response = await fetch(`https://${authServerAddress}/auth/logout`, request);
             const data = await response.json();
 
             if (!response.ok) {

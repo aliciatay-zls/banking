@@ -30,6 +30,7 @@ export default function CustomerHomePage(props) {
     return (
         <DefaultLayout
             homepage={props.homepage}
+            authServerAddress={props.authServerAddress}
             tabTitle={"Home"}
         >
             <Box className="profile__box">

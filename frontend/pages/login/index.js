@@ -16,11 +16,14 @@ import * as utils from "../../src/authUtils";
 
 export async function getServerSideProps(context) {
     const [isLoggedIn, accessToken, refreshToken] = utils.checkIsLoggedIn(context);
+    const authServerAddress = process.env.AUTH_SERVER_ADDRESS;
 
     //not logged in or failed to refresh, proceed to render form to make client log in again
     if (!isLoggedIn) {
         return {
-            props: {},
+            props: {
+                authServerAddress: authServerAddress,
+            },
         };
     }
 
@@ -32,7 +35,7 @@ export async function getServerSideProps(context) {
     let data = '';
 
     try {
-        const response = await fetch("https://127.0.0.1:8181/auth/continue", request);
+        const response = await fetch(`https://${requestURL}/auth/continue`, request);
         if (response.headers.get("Content-Type") !== "application/json") {
             console.log("Response is not json");
             return {
@@ -69,7 +72,9 @@ export async function getServerSideProps(context) {
         }
 
         return {
-            props: {},
+            props: {
+                authServerAddress: authServerAddress,
+            },
         };
 
     } catch (err) {
@@ -82,7 +87,7 @@ export async function getServerSideProps(context) {
     }
 }
 
-export default function LoginPage() {
+export default function LoginPage(props) {
     const router = useRouter();
 
     const [username, setUsername] = useState('');
@@ -126,7 +131,7 @@ export default function LoginPage() {
         };
 
         try {
-            const response = await fetch("https://127.0.0.1:8181/auth/login", request);
+            const response = await fetch(`https://${props.authServerAddress}/auth/login`, request);
             const data = await response.json();
 
             const errorMessage = data?.message || '';

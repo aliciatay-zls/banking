@@ -26,6 +26,7 @@ export default async function getServerSideProps(context) {
             homepage: initProps.props.homepage,
             responseData: finalProps.props.responseData,
             currentPath: finalProps.props.currentPath,
+            authServerAddress: initProps.props.authServerAddress,
         }
     }
 }

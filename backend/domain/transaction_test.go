@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"github.com/udemy-go-1/banking/backend/dto"
+	"github.com/aliciatay-zls/banking/backend/dto"
 	"testing"
 )
 

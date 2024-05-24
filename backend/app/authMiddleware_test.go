@@ -1,10 +1,10 @@
 package app
 
 import (
+	"github.com/aliciatay-zls/banking-lib/errs"
+	"github.com/aliciatay-zls/banking-lib/logger"
+	"github.com/aliciatay-zls/banking/backend/mocks/domain"
 	"github.com/gorilla/mux"
-	"github.com/udemy-go-1/banking-lib/errs"
-	"github.com/udemy-go-1/banking-lib/logger"
-	"github.com/udemy-go-1/banking/backend/mocks/domain"
 	"go.uber.org/mock/gomock"
 	"io"
 	"net/http"

@@ -2,12 +2,12 @@ package app
 
 import (
 	"bytes"
+	"github.com/aliciatay-zls/banking-lib/errs"
+	"github.com/aliciatay-zls/banking-lib/formValidator"
+	"github.com/aliciatay-zls/banking-lib/logger"
+	"github.com/aliciatay-zls/banking/backend/dto"
+	"github.com/aliciatay-zls/banking/backend/mocks/service"
 	"github.com/gorilla/mux"
-	"github.com/udemy-go-1/banking-lib/errs"
-	"github.com/udemy-go-1/banking-lib/formValidator"
-	"github.com/udemy-go-1/banking-lib/logger"
-	"github.com/udemy-go-1/banking/backend/dto"
-	"github.com/udemy-go-1/banking/backend/mocks/service"
 	"go.uber.org/mock/gomock"
 	"io"
 	"net/http"

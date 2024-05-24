@@ -1,8 +1,8 @@
 package domain
 
 import (
-	"github.com/udemy-go-1/banking-lib/errs"
-	"github.com/udemy-go-1/banking/backend/dto"
+	"github.com/aliciatay-zls/banking-lib/errs"
+	"github.com/aliciatay-zls/banking/backend/dto"
 )
 
 //Business Domain
@@ -42,7 +42,7 @@ func (c Customer) AsStatusName() string {
 
 //Server
 
-//go:generate mockgen -destination=../mocks/domain/mock_customerRepository.go -package=domain github.com/udemy-go-1/banking/backend/domain CustomerRepository
+//go:generate mockgen -destination=../mocks/domain/mock_customerRepository.go -package=domain github.com/aliciatay-zls/banking/backend/domain CustomerRepository
 type CustomerRepository interface { //repo (secondary port)
 	FindAll(string) ([]Customer, *errs.AppError)
 	FindById(string) (*Customer, *errs.AppError) //allows nil customer, useful for checking

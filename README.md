@@ -1,5 +1,8 @@
-# Go Banking Web App - Database, Backend Resource and Frontend Servers
-https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang/
+# Banking Web App
+This repo contains code for the frontend server, backend resource server and database server. 
+
+The backend resource server and auth server [(separate repo)](https://github.com/aliciatay-zls/banking-auth) were 
+built under the Udemy course ["REST based microservices API development in Golang"](https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang/).
 
 ## Setup
 1. Install Go
@@ -34,7 +37,7 @@ https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang
    * Backend resource server: will be an info-level log with the message "Starting the app..."
    * Frontend server: will end with "Ready in xx.xx s"
 
-3. To start the backend authentication server, see other repo: https://github.com/udemy-go-1/banking-auth
+3. To start the backend authentication server, see other repo: https://github.com/aliciatay-zls/banking-auth
 
 4. Navigate to https://localhost:3000/login to view the app.
 
@@ -66,9 +69,15 @@ the container for querying the db:
    go test -v ./...
    ```
    
-8. Update all packages in the backend to the latest version periodically:
+8. Update all packages periodically to the latest version:
+   * Backend:
    ```
    go get -u all
+   go mod tidy
+   ```
+   * Frontend:
+   ```
+   npm i next@latest react@latest react-dom@latest
    ```
 
 ## Udemy Course
@@ -97,15 +106,15 @@ REST handler `AccountHandler`, DTOs `NewAccountRequest` and `NewAccountResponse`
 DTOs `TransactionRequest` and `TransactionResponse`)
 14. (Extra) Create Authentication Server using hexagonal architecture:
     1. Add ability to log in a client: generate a token for the client which acts as a session token 
-    ([banking-auth repo](https://github.com/udemy-go-1/banking-auth))
+    ([banking-auth repo](https://github.com/aliciatay-zls/banking-auth))
     2. Add ability to verify client's right to access route: require the token from i. for requests to all routes 
     (middleware `AuthMiddlewareHandler`), verify the token and role privileges of the client 
-    ([banking-auth repo](https://github.com/udemy-go-1/banking-auth))
+    ([banking-auth repo](https://github.com/aliciatay-zls/banking-auth))
 15. Add state-based tests for domain objects, DTOs
 16. Test routes
 17. Test services
 18. (Extra) Test DB adapters, stub adapter
-19. Generate refresh token ([banking-auth repo](https://github.com/udemy-go-1/banking-auth))
+19. Generate refresh token ([banking-auth repo](https://github.com/aliciatay-zls/banking-auth))
 
 Other Notes:
 * Files in `build/package` taken from instructor's repo

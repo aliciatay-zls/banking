@@ -1,9 +1,9 @@
 package domain
 
 import (
-	"github.com/udemy-go-1/banking-lib/clock"
-	"github.com/udemy-go-1/banking-lib/errs"
-	"github.com/udemy-go-1/banking/backend/dto"
+	"github.com/aliciatay-zls/banking-lib/clock"
+	"github.com/aliciatay-zls/banking-lib/errs"
+	"github.com/aliciatay-zls/banking/backend/dto"
 )
 
 //Business Domain
@@ -46,7 +46,7 @@ func (a Account) CanWithdraw(withdrawalAmount float64) bool {
 
 //Server
 
-//go:generate mockgen -destination=../mocks/domain/mock_accountRepository.go -package=domain github.com/udemy-go-1/banking/backend/domain AccountRepository
+//go:generate mockgen -destination=../mocks/domain/mock_accountRepository.go -package=domain github.com/aliciatay-zls/banking/backend/domain AccountRepository
 type AccountRepository interface { //repo (secondary port)
 	Save(Account) (*Account, *errs.AppError)
 	FindAll(string) ([]Account, *errs.AppError)

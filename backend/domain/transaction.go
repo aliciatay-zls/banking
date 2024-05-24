@@ -1,8 +1,8 @@
 package domain
 
 import (
-	"github.com/udemy-go-1/banking-lib/clock"
-	"github.com/udemy-go-1/banking/backend/dto"
+	"github.com/aliciatay-zls/banking-lib/clock"
+	"github.com/aliciatay-zls/banking/backend/dto"
 )
 
 //Business Domain

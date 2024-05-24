@@ -15,6 +15,7 @@ import SnackbarAlert from "../../components/SnackbarAlert";
 import * as utils from "../../src/authUtils";
 
 export async function getServerSideProps(context) {
+    console.log(context.query);
     const [isLoggedIn, accessToken, refreshToken] = utils.checkIsLoggedIn(context);
     const authServerAddress = process.env.AUTH_SERVER_ADDRESS;
 
@@ -35,7 +36,7 @@ export async function getServerSideProps(context) {
     let data = '';
 
     try {
-        const response = await fetch(`https://${requestURL}/auth/continue`, request);
+        const response = await fetch(`https://${process.env.AUTH_SERVER_ADDRESS}/auth/continue`, request);
         if (response.headers.get("Content-Type") !== "application/json") {
             console.log("Response is not json");
             return {

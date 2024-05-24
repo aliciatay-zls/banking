@@ -87,7 +87,7 @@ function ProjectSubFooter() {
         <Typography variant="body2" color="text.secondary" align="center">
             {'© Copyright '}
             {new Date().getFullYear()}{' - '}
-            <Link color="inherit" href="https://github.com/udemy-go-1/banking">
+            <Link color="inherit" href="https://github.com/aliciatay-zls/banking">
                 View Github Project <GitHubIcon fontSize="inherit"/>
             </Link>
             <br/>

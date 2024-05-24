@@ -1,13 +1,13 @@
 package service
 
 import (
-	"github.com/udemy-go-1/banking-lib/clock"
-	"github.com/udemy-go-1/banking-lib/errs"
-	"github.com/udemy-go-1/banking-lib/formValidator"
-	"github.com/udemy-go-1/banking-lib/logger"
-	"github.com/udemy-go-1/banking/backend/domain"
-	"github.com/udemy-go-1/banking/backend/dto"
-	mocksDomain "github.com/udemy-go-1/banking/backend/mocks/domain"
+	"github.com/aliciatay-zls/banking-lib/clock"
+	"github.com/aliciatay-zls/banking-lib/errs"
+	"github.com/aliciatay-zls/banking-lib/formValidator"
+	"github.com/aliciatay-zls/banking-lib/logger"
+	"github.com/aliciatay-zls/banking/backend/domain"
+	"github.com/aliciatay-zls/banking/backend/dto"
+	mocksDomain "github.com/aliciatay-zls/banking/backend/mocks/domain"
 	"go.uber.org/mock/gomock"
 	"testing"
 )

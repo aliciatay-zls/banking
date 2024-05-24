@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/aliciatay-zls/banking-lib/logger"
+	"github.com/aliciatay-zls/banking/backend/dto"
 	"github.com/jmoiron/sqlx"
-	"github.com/udemy-go-1/banking-lib/logger"
-	"github.com/udemy-go-1/banking/backend/dto"
 	"testing"
 )
 

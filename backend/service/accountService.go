@@ -1,14 +1,14 @@
 package service
 
 import (
-	"github.com/udemy-go-1/banking-lib/clock"
-	"github.com/udemy-go-1/banking-lib/errs"
-	"github.com/udemy-go-1/banking-lib/logger"
-	"github.com/udemy-go-1/banking/backend/domain"
-	"github.com/udemy-go-1/banking/backend/dto"
+	"github.com/aliciatay-zls/banking-lib/clock"
+	"github.com/aliciatay-zls/banking-lib/errs"
+	"github.com/aliciatay-zls/banking-lib/logger"
+	"github.com/aliciatay-zls/banking/backend/domain"
+	"github.com/aliciatay-zls/banking/backend/dto"
 )
 
-//go:generate mockgen -destination=../mocks/service/mock_accountService.go -package=service github.com/udemy-go-1/banking/backend/service AccountService
+//go:generate mockgen -destination=../mocks/service/mock_accountService.go -package=service github.com/aliciatay-zls/banking/backend/service AccountService
 type AccountService interface { //service (primary port)
 	GetAllAccounts(string) ([]dto.AccountResponse, *errs.AppError)
 	CreateNewAccount(dto.NewAccountRequest) (*dto.NewAccountResponse, *errs.AppError)

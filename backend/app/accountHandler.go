@@ -2,11 +2,11 @@ package app
 
 import (
 	"encoding/json"
+	"github.com/aliciatay-zls/banking-lib/errs"
+	"github.com/aliciatay-zls/banking-lib/logger"
+	"github.com/aliciatay-zls/banking/backend/dto"
+	"github.com/aliciatay-zls/banking/backend/service"
 	"github.com/gorilla/mux"
-	"github.com/udemy-go-1/banking-lib/errs"
-	"github.com/udemy-go-1/banking-lib/logger"
-	"github.com/udemy-go-1/banking/backend/dto"
-	"github.com/udemy-go-1/banking/backend/service"
 	"net/http"
 )
 

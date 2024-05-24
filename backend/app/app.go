@@ -2,14 +2,14 @@ package app
 
 import (
 	"fmt"
+	"github.com/aliciatay-zls/banking-lib/clock"
+	"github.com/aliciatay-zls/banking-lib/logger"
+	"github.com/aliciatay-zls/banking/backend/domain"
+	"github.com/aliciatay-zls/banking/backend/service"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
-	"github.com/udemy-go-1/banking-lib/clock"
-	"github.com/udemy-go-1/banking-lib/logger"
-	"github.com/udemy-go-1/banking/backend/domain"
-	"github.com/udemy-go-1/banking/backend/service"
 	"net/http"
 	"os"
 	"time"

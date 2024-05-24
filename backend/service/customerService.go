@@ -2,13 +2,13 @@ package service
 
 import (
 	"fmt"
-	"github.com/udemy-go-1/banking-lib/errs"
-	"github.com/udemy-go-1/banking-lib/logger"
-	"github.com/udemy-go-1/banking/backend/domain"
-	"github.com/udemy-go-1/banking/backend/dto"
+	"github.com/aliciatay-zls/banking-lib/errs"
+	"github.com/aliciatay-zls/banking-lib/logger"
+	"github.com/aliciatay-zls/banking/backend/domain"
+	"github.com/aliciatay-zls/banking/backend/dto"
 )
 
-//go:generate mockgen -destination=../mocks/service/mock_customerService.go -package=service github.com/udemy-go-1/banking/backend/service CustomerService
+//go:generate mockgen -destination=../mocks/service/mock_customerService.go -package=service github.com/aliciatay-zls/banking/backend/service CustomerService
 type CustomerService interface { //service (primary port)
 	GetAllCustomers(string) ([]dto.CustomerResponse, *errs.AppError)
 	GetCustomer(string) (*dto.CustomerResponse, *errs.AppError)

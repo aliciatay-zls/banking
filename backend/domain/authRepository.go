@@ -3,8 +3,8 @@ package domain
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/udemy-go-1/banking-lib/errs"
-	"github.com/udemy-go-1/banking-lib/logger"
+	"github.com/aliciatay-zls/banking-lib/errs"
+	"github.com/aliciatay-zls/banking-lib/logger"
 	"net/http"
 	"net/url"
 	"os"
@@ -13,7 +13,7 @@ import (
 
 const AuthorizationHeaderPrefix = "Bearer "
 
-//go:generate mockgen -destination=../mocks/domain/mock_authRepository.go -package=domain github.com/udemy-go-1/banking/backend/domain AuthRepository
+//go:generate mockgen -destination=../mocks/domain/mock_authRepository.go -package=domain github.com/aliciatay-zls/banking/backend/domain AuthRepository
 type AuthRepository interface { //repo (secondary port)
 	IsAuthorized(string, string, map[string]string) *errs.AppError
 }

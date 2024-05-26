@@ -51,7 +51,7 @@ export default function RegistrationPage(props) {
     const [errorTitle, setErrorTitle] = useState(errorDefaultMessage);
     const [errorMsg, setErrorMsg] = useState('');
     const [openErrorAlert, setOpenErrorAlert] = useState(false);
-    const [successInfo, setSuccessInfo] = useState({});
+    const [successInfo, setSuccessInfo] = useState({created_on: '', email: ''});
 
     //record field value whenever it changes
     function handleChange(event) {
@@ -129,12 +129,20 @@ export default function RegistrationPage(props) {
                 }
 
                 setOpenErrorAlert(true);
-                return;
+            } else {
+                const registrationTime = data.created_on || '';
+                const registrationEmail = data.email || '';
+
+                if (registrationTime === '' || registrationEmail === '') {
+                    console.log("Missing information in response after sending registration request");
+                    setErrorMsg("Something went wrong on our end, please try again later.");
+                    setOpenErrorAlert(true);
+                    return;
+                }
+
+                setSuccessInfo({created_on: registrationTime, email: registrationEmail});
+                setActiveStep(activeStep + 1);
             }
-
-            setSuccessInfo(data);
-            setActiveStep(activeStep + 1);
-
         } catch (err) {
             console.log(err);
             setErrorMsg(err.message);

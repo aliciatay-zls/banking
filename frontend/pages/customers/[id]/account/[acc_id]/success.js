@@ -66,19 +66,16 @@ export default function TransactionSuccessPage(props) {
             authServerAddress={props.authServerAddress}
             tabTitle={"Success"}
         >
-            <Container className="container" component="main" maxWidth="sm">
-                <Backdrop className="backdrop" open={isLoading}>
-                    <CircularProgress color="inherit" />
-                </Backdrop>
-                { transactionID === '' || transactionDate === '' &&
-                    <Box height="100vh" align="center">
-                        <Backdrop className="backdrop" open={isLoading}>
-                            <CircularProgress color="inherit" />
-                        </Backdrop>
-                    </Box>
-                }
+            { transactionID === '' || transactionDate === '' &&
+                <Box height="100vh" align="center">
+                    <Backdrop className="backdrop" open={isLoading}>
+                        <CircularProgress color="inherit" />
+                    </Backdrop>
+                </Box>
+            }
 
-                { transactionID !== '' && transactionDate !== '' &&
+            { transactionID !== '' && transactionDate !== '' &&
+                <Container className="container" component="main" maxWidth="sm">
                     <Paper className="open-account__paper" variant="outlined">
                         <Box name="transaction-success-page" align="center">
                             <Grid container spacing={3}>
@@ -119,8 +116,8 @@ export default function TransactionSuccessPage(props) {
                             </Grid>
                         </Box>
                     </Paper>
-                }
-            </Container>
+                </Container>
+            }
         </DefaultLayout>
     );
 }

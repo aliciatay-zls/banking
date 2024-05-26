@@ -64,7 +64,7 @@ export default function CreateAccountPage(props) {
     const [errorMsg, setErrorMsg] = useState(errorDefaultMessage);
     const [openErrorAlert, setOpenErrorAlert] = useState(false);
     const [openConfirmation, setOpenConfirmation] = useState(false);
-    const [newAccountInfo, setNewAccountInfo] = useState('');
+    const [newAccountInfo, setNewAccountInfo] = useState({opening_date: '', account_id: ''});
 
     function handleSelect(e) {
         if (e.target.value !== accountTypeSaving && e.target.value !== accountTypeChecking) {
@@ -128,12 +128,22 @@ export default function CreateAccountPage(props) {
                 setErrorMsg("Something went wrong on our end, please try again later.");
                 setOpenErrorAlert(true);
             }
-            setIsLoading(false);
-            return;
-        }
 
-        setIsLoading(false);
-        setNewAccountInfo(responseData);
+            setIsLoading(false);
+        } else {
+            const openingDate = responseData.opening_date || '';
+            const accountId = responseData.account_id || '';
+
+            if (openingDate === '' || accountId === '') {
+                console.log("Missing information in response after sending new account request");
+                setErrorMsg("Something went wrong on our end, please try again later.");
+                setOpenErrorAlert(true);
+                return;
+            }
+
+            setIsLoading(false);
+            setNewAccountInfo({opening_date: openingDate, account_id: accountId});
+        }
     }
 
     return (

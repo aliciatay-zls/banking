@@ -6,7 +6,7 @@ import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
-import PasswordField from "../../components/PasswordField";
+import PasswordField from "./PasswordField";
 
 export default function LoginDetailsForm({handleChange, fields}) {
     return (

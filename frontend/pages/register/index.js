@@ -7,9 +7,9 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
 
-import EmailConfirmation from "./EmailConfirmation";
-import LoginDetailsForm from "./LoginDetailsForm";
-import PersonalDetailsForm from "./PersonalDetailsForm";
+import EmailConfirmation from "../../components/EmailConfirmation";
+import LoginDetailsForm from "../../components/LoginDetailsForm";
+import PersonalDetailsForm from "../../components/PersonalDetailsForm";
 import RegisterLayout from "../../components/RegisterLayout";
 import SnackbarAlert from "../../components/SnackbarAlert";
 import * as f from "../../src/formatUtils";

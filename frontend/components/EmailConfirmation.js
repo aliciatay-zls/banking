@@ -2,7 +2,7 @@ import { Fragment } from "react";
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
-import ResendEmailButton from "../../components/ResendEmailButton";
+import ResendEmailButton from "./ResendEmailButton";
 
 export default function EmailConfirmation({details, authServerAddress}) {
     return(

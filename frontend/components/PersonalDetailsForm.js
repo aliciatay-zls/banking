@@ -7,7 +7,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import TextField from "@mui/material/TextField";
 
-import { Countries } from "../../src/countries";
+import { Countries } from "../src/countries";
 
 export default function PersonalDetailsForm({handleChange, fields}) {
     return (

@@ -2,7 +2,6 @@ package domain
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/aliciatay-zls/banking-lib/errs"
 	"github.com/aliciatay-zls/banking-lib/logger"
 	"net/http"
@@ -59,11 +58,9 @@ func extractToken(tokenString string) string {
 }
 
 func buildURL(token string, routeName string, routeVars map[string]string) string {
-	addr := os.Getenv("AUTH_SERVER_ADDRESS")
-	port := os.Getenv("AUTH_SERVER_PORT")
 	verifyURL := url.URL{
 		Scheme: "https",
-		Host:   fmt.Sprintf("%s:%s", addr, port),
+		Host:   os.Getenv("AUTH_SERVER_DOMAIN"),
 		Path:   "auth/verify",
 	}
 

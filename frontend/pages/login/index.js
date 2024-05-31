@@ -15,7 +15,6 @@ import SnackbarAlert from "../../components/SnackbarAlert";
 import * as utils from "../../src/authUtils";
 
 export async function getServerSideProps(context) {
-    console.log(context.query);
     const [isLoggedIn, accessToken, refreshToken] = utils.checkIsLoggedIn(context);
     const authServerAddress = process.env.AUTH_SERVER_ADDRESS;
 

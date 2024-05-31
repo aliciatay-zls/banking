@@ -21,25 +21,30 @@ func checkEnvVars() {
 		logger.Fatal("Environment variable APP_ENV not defined")
 	}
 
-	if val == "production" {
-		if err := godotenv.Load(".env"); err != nil {
-			logger.Fatal("Error loading .env file (needed in production mode)")
-		}
-	}
-
 	envVars := []string{
 		"SERVER_ADDRESS",
 		"SERVER_PORT",
+		"SERVER_DOMAIN",
 		"AUTH_SERVER_ADDRESS",
-		"AUTH_SERVER_PORT",
+		"AUTH_SERVER_DOMAIN",
 		"FRONTEND_SERVER_ADDRESS",
-		"FRONTEND_SERVER_PORT",
+		"FRONTEND_SERVER_DOMAIN",
 		"DB_USER",
 		"DB_PASSWORD",
 		"DB_HOST",
 		"DB_PORT",
 		"DB_NAME",
 	}
+
+	if val == "production" {
+		err := godotenv.Load(".env")
+		if err != nil {
+			logger.Fatal("Error loading .env file (needed in production mode)")
+		}
+	} else {
+		envVars = append(envVars, "AUTH_SERVER_PORT", "FRONTEND_SERVER_PORT")
+	}
+
 	for _, key := range envVars {
 		if os.Getenv(key) == "" {
 			logger.Fatal(fmt.Sprintf("Environment variable %s was not defined", key))

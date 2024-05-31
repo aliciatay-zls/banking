@@ -25,18 +25,14 @@ var channelWaitForShutDown chan int
 var channelDoShutDown chan int
 var dummyRouteVars map[string]string
 
-const envVarAuthServerAddr = "AUTH_SERVER_ADDRESS"
-const envVarAuthServerPort = "AUTH_SERVER_PORT"
+const envVarAuthServerDomain = "AUTH_SERVER_DOMAIN"
 
 const verifyPath = "/auth/verify"
 const dummyToken = "header.payload.signature"
 const dummyRouteName = "SomeRouteName"
 
 func setupAuthRepositoryTest(t *testing.T) {
-	if err := os.Setenv(envVarAuthServerAddr, "localhost"); err != nil {
-		t.Fatal("Error during testing setup: " + err.Error())
-	}
-	if err := os.Setenv(envVarAuthServerPort, "8585"); err != nil {
+	if err := os.Setenv(envVarAuthServerDomain, "localhost:8585"); err != nil {
 		t.Fatal("Error during testing setup: " + err.Error())
 	}
 
@@ -63,8 +59,6 @@ func startDummyAuthServer(dummyVerifyAPIHandler func(http.ResponseWriter, *http.
 	router := mux.NewRouter()
 	router.HandleFunc(verifyPath, dummyVerifyAPIHandler)
 
-	address := os.Getenv(envVarAuthServerAddr)
-	port := os.Getenv(envVarAuthServerPort)
 	cert, loadErr := tls.LoadX509KeyPair("../certificates/localhost.pem", "../certificates/localhost-key.pem")
 	if loadErr != nil {
 		log.Fatal("Error when loading cert and private key: " + loadErr.Error())
@@ -72,7 +66,7 @@ func startDummyAuthServer(dummyVerifyAPIHandler func(http.ResponseWriter, *http.
 	config := &tls.Config{Certificates: []tls.Certificate{cert}}
 
 	dummyAuthServer := http.Server{
-		Addr:      fmt.Sprintf("%s:%s", address, port),
+		Addr:      os.Getenv(envVarAuthServerDomain),
 		Handler:   router,
 		TLSConfig: config,
 	}

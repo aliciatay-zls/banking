@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server';
 
 export default function middleware(request) {
+    const url = request.nextUrl.clone();
+    if (url.pathname === '/') {
+        url.pathname = '/login';
+        return NextResponse.redirect(url);
+    }
+
     const nonce = crypto.randomUUID().toString();
     const cspHeader = `
         default-src 'self' https://${process.env.RESC_SERVER_ADDRESS} https://${process.env.AUTH_SERVER_ADDRESS}; 

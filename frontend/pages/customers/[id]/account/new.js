@@ -154,7 +154,7 @@ export default function CreateAccountPage(props) {
         >
             <Container className="container" component="main" maxWidth="sm">
                 <Paper className="open-account__paper">
-                    { !newAccountInfo ? (
+                    { newAccountInfo.opening_date == '' || newAccountInfo.account_id == '' ? (
                         <Box
                             component="form"
                             name="create-account-form"

@@ -1,3 +1,5 @@
+import '../styles/global.css';
+
 import { forwardRef } from "react";
 import AlertTitle from "@mui/material/AlertTitle";
 import MuiAlert from "@mui/material/Alert";

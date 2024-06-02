@@ -1,3 +1,5 @@
+import '../../styles/global.css';
+
 import { parse } from "cookie";
 import Grid from '@mui/material/Grid';
 import Typography from "@mui/material/Typography";

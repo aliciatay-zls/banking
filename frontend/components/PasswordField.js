@@ -1,3 +1,5 @@
+import '../styles/global.css';
+
 import { useState } from "react";
 import FormControl from "@mui/material/FormControl";
 import IconButton from "@mui/material/IconButton";

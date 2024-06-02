@@ -1,3 +1,5 @@
+import '../../styles/global.css';
+
 import Link from "next/link";
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';

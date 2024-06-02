@@ -1,5 +1,3 @@
-import '../../styles/global.css';
-
 import Link from "next/link";
 import { Fragment } from "react";
 import Button from '@mui/material/Button';

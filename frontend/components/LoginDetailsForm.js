@@ -1,5 +1,3 @@
-import '../styles/global.css';
-
 import { Fragment } from "react";
 import Alert from "@mui/material/Alert";
 import Checkbox from "@mui/material/Checkbox";

@@ -1,5 +1,3 @@
-import '../styles/global.css';
-
 import { useRouter } from "next/router";
 import { Fragment, useEffect, useState } from "react";
 import Button from "@mui/material/Button";

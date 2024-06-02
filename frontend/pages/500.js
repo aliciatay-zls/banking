@@ -1,5 +1,3 @@
-import '../styles/global.css';
-
 import Box from '@mui/material/Box';
 import Typography from "@mui/material/Typography";
 

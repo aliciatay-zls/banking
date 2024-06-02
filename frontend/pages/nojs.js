@@ -1,5 +1,3 @@
-import '../styles/global.css';
-
 import Head from "next/head";
 
 export default function FallbackPage() {

@@ -1,5 +1,3 @@
-import '../../../../../styles/global.css';
-
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";

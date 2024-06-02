@@ -1,5 +1,3 @@
-import '../../styles/global.css';
-
 import { Fragment, useState } from "react";
 import isAscii from 'validator/lib/isAscii';
 import Box from '@mui/material/Box';

@@ -5,7 +5,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 
 import BankTheme from '../styles/theme';
-import '../styles/styles.css';
+import '../styles/global.css';
 
 export const DataToDisplayContext = createContext(null);
 

@@ -14,6 +14,21 @@ export function getReadableDate(dateStr) {
 }
 
 /**
+ * Converts a date time string into the local time if possible.
+ * @param {string} dateTimeStr The date time string, most likely in the ISO 8601 format "yyyy-mm-dd 15:04:05".
+ */
+export function getLocalTime(dateTimeStr) {
+    const date = new Date(dateTimeStr);
+    if (isNaN(date.valueOf())) {
+        return dateTimeStr;
+    }
+
+    const offsetMins = date.getTimezoneOffset();
+    date.setHours(date.getHours() - (offsetMins / 60));
+    return ""+date;
+}
+
+/**
  * Capitalizes each word in the input sentence.
  * @param {string} input The sentence.
  * @returns {string} The converted sentence or the original string if it was empty.

@@ -3,13 +3,14 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
 import ResendEmailButton from "./ResendEmailButton";
+import { getLocalTime } from "../src/formatUtils";
 
 export default function EmailConfirmation({details, authServerAddress}) {
     return(
         <Fragment>
             <Grid item xs={12}>
                 <Typography component="p" variant="caption" align="center">
-                    Time completed: {details.created_on}
+                    Time completed: {getLocalTime(details.created_on)}
                 </Typography>
             </Grid>
             <Grid item xs={12}>

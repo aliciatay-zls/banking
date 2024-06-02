@@ -18,6 +18,7 @@ import DefaultLayout from "../../../../components/DefaultLayout";
 import SnackbarAlert from "../../../../components/SnackbarAlert";
 import authServerSideProps from "../../../../src/authServerSideProps";
 import { getRole } from "../../../../src/authUtils";
+import { getLocalTime } from "../../../../src/formatUtils";
 import handleFetchResource from "../../../../src/handleFetchResource";
 import { validateFloat } from "../../../../src/validationUtils";
 
@@ -154,7 +155,7 @@ export default function CreateAccountPage(props) {
         >
             <Container className="container" component="main" maxWidth="sm">
                 <Paper className="open-account__paper">
-                    { newAccountInfo.opening_date == '' || newAccountInfo.account_id == '' ? (
+                    { newAccountInfo.opening_date === '' || newAccountInfo.account_id === '' ? (
                         <Box
                             component="form"
                             name="create-account-form"
@@ -234,7 +235,7 @@ export default function CreateAccountPage(props) {
                                     New Account No.: {newAccountInfo.account_id}
                                 </Typography>
                                 <Typography component="p"  variant="caption" align="center"  color="text.secondary">
-                                    Time completed: {newAccountInfo.opening_date}
+                                    Time completed: {getLocalTime(newAccountInfo.opening_date)}
                                 </Typography>
                             </Grid>
                             <Grid item xs={12} />
@@ -269,7 +270,8 @@ export default function CreateAccountPage(props) {
     );
 }
 
-function ButtonLinkToAllCustomers(serverAddress) {
+function ButtonLinkToAllCustomers({serverAddress}) {
+    console.log(serverAddress);
     const buttonLinkAllCustomers = `https://${serverAddress}/customers`;
 
     return (

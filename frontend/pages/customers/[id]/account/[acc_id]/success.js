@@ -15,6 +15,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { DataToDisplayContext } from "../../../../_app";
 import DefaultLayout from "../../../../../components/DefaultLayout";
 import authServerSideProps from "../../../../../src/authServerSideProps"
+import { getLocalTime } from "../../../../../src/formatUtils";
 
 export async function getServerSideProps(context) {
     const initProps = await authServerSideProps(context);
@@ -94,7 +95,7 @@ export default function TransactionSuccessPage(props) {
                                         Account No.: {props.accountID}
                                     </Typography>
                                     <Typography component="p" variant="caption" color="text.secondary">
-                                        Time completed: {transactionDate}
+                                        Time completed: {getLocalTime(transactionDate)}
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={12} />

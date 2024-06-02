@@ -282,7 +282,7 @@
 
 /* || APPBAR COMPONENT */
 
-.appbar--bgd {
+.MuiAppBar-root.appbar--bgd {
     background: #85011e;
 }
 

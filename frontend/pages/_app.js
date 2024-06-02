@@ -1,11 +1,11 @@
-import { Fragment, createContext, useState } from "react";
-import { CookiesProvider } from "react-cookie";
+import '../styles/global.css';
+import BankTheme from '../styles/theme';
 
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 
-import BankTheme from '../styles/theme';
-import '../styles/global.css';
+import { Fragment, createContext, useState } from "react";
+import { CookiesProvider } from "react-cookie";
 
 export const DataToDisplayContext = createContext(null);
 

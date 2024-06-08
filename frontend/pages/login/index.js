@@ -222,10 +222,10 @@ export default function LoginPage(props) {
                     onChange={(u) => setUsername(u.target.value)}
                 />
                 <PasswordField id={"login-password"} val={password} handler={handleSetPassword} />
-                <Button className="button" type="submit" fullWidth variant="contained bank-theme" disabled={isLoading}>
+                <Button className="button--style-bank" type="submit" variant="contained" fullWidth disabled={isLoading}>
                     {isLoading ? 'Loading...' : 'Login'}
                 </Button>
-                <Grid item align="right">
+                <Grid className="text--padding-above" item align="right">
                     <Typography variant="body2">
                         Don't have an account? <Link href={'/register'}>Sign up now</Link>
                     </Typography>

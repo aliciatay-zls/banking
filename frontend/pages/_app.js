@@ -1,8 +1,6 @@
 import '../styles/global.css';
-import BankTheme from '../styles/theme';
 
 import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider } from '@mui/material/styles';
 
 import { Fragment, createContext, useState } from "react";
 import { CookiesProvider } from "react-cookie";
@@ -18,12 +16,10 @@ export default function MyApp({ Component, pageProps }) {
     return (
         <CookiesProvider>
             <DataToDisplayContext.Provider value={{dataToDisplay: dataToDisplay, setDataToDisplay: setDataToDisplay}}>
-                <ThemeProvider theme={BankTheme}>
-                    <Fragment>
-                        <CssBaseline />
-                        <Component {...pageProps} />
-                    </Fragment>
-                </ThemeProvider>
+                <Fragment>
+                    <CssBaseline />
+                    <Component {...pageProps} />
+                </Fragment>
             </DataToDisplayContext.Provider>
         </CookiesProvider>
     );

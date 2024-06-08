@@ -34,7 +34,7 @@ function CustomerSupportGridColumn() {
     ];
     return (
         <Grid item xs={7} sm={2}>
-            <GridColumn header={header} rows={rows}/>
+            <GridColumn header={header} rows={rows} isLink={false}/>
         </Grid>
     );
 }
@@ -49,12 +49,12 @@ function HelpfulLinksGridColumn() {
     ];
     return (
         <Grid item xs={4} sm={2}>
-            <GridColumn header={header} rows={rows}/>
+            <GridColumn header={header} rows={rows} isLink={true}/>
         </Grid>
     );
 }
 
-function GridColumn({header, rows}) {
+function GridColumn({header, rows, isLink}) {
     return (
         <Stack spacing={1}>
             <Grid item key={"footer-column-header".concat("-", header.split(" ").join("-"))}>
@@ -62,7 +62,8 @@ function GridColumn({header, rows}) {
             </Grid>
             {rows.map((val) => (
                 <Grid item key={"footer-column-item".concat("-", val.split(" ").join("-"))}>
-                    <Typography variant="body2">{val}</Typography>
+                    {isLink && <Link className="link--dummy" href="#" underline="none"><Typography variant="body2">{val}</Typography></Link>}
+                    {!isLink && <Typography variant="body2">{val}</Typography>}
                 </Grid>
             ))}
         </Stack>
@@ -73,10 +74,10 @@ function SocialsGridColumn() {
     return (
         <Grid item xs={1} sm={1}>
             <Stack spacing={1}>
-                <FacebookIcon/>
-                <InstagramIcon/>
-                <LinkedInIcon/>
-                <YouTubeIcon/>
+                <Link className="link--dummy" href="#"><FacebookIcon/></Link>
+                <Link className="link--dummy" href="#"><InstagramIcon/></Link>
+                <Link className="link--dummy" href="#"><LinkedInIcon/></Link>
+                <Link className="link--dummy" href="#"><YouTubeIcon/></Link>
             </Stack>
         </Grid>
     );

@@ -125,7 +125,7 @@ function getHeaderTitle(isExpired, isOtherError) {
             <p>Email successfully confirmed.</p>
             <Typography component="div" variant="h4" align="right">
                 <Link href={'/login'}>
-                    <Button className="button--confirmed" type="button" variant="no-caps" size="small" endIcon={<ArrowForwardIosIcon/>}>
+                    <Button type="button" className="button--type-confirmed button--capitalization-off" size="small" endIcon={<ArrowForwardIosIcon/>}>
                         Login again
                     </Button>
                 </Link>

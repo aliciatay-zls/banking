@@ -87,7 +87,7 @@ export default function TransactionSuccessPage(props) {
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Typography variant="subtitle1" fontWeight={600}>
-                                        Balance: ${newBalance}
+                                        New Balance: ${newBalance}
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={12}>
@@ -100,16 +100,16 @@ export default function TransactionSuccessPage(props) {
                                 </Grid>
                                 <Grid item xs={12} />
                                 <Grid item xs={12} />
-                                <Grid className="button--grid left" item xs={12}>
+                                <Grid className="button--location-grid left" item xs={12}>
                                     <Link href={props.beforeURL}>
-                                        <Button type="button" variant="no-caps" size="small" startIcon={<ArrowBackIosIcon/>}>
+                                        <Button type="button" className="button--capitalization-off" size="small" startIcon={<ArrowBackIosIcon/>}>
                                             Make another transaction for this account
                                         </Button>
                                     </Link>
                                 </Grid>
-                                <Grid className="button--grid left" item xs={12}>
+                                <Grid className="button--location-grid left" item xs={12}>
                                     <Link href={props.myAccountsURL}>
-                                        <Button type="button" variant="no-caps" size="small" startIcon={<ArrowBackIosIcon/>}>
+                                        <Button type="button" className="button--capitalization-off" size="small" startIcon={<ArrowBackIosIcon/>}>
                                             Go back to my accounts
                                         </Button>
                                     </Link>

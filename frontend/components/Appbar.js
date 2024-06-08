@@ -165,7 +165,7 @@ export function DefaultAppBar({homepage, authServerAddress}) {
                 duration={null}
                 isError={true}
                 title="Logout failed"
-                msg={<span>Please try again later or <Button className="button--link" onClick={() => {
+                msg={<span>Please try again later or <Button className="button--type-link" onClick={() => {
                     setOpenErrorAlert(false);
                     router.replace('/login');
                 }}>login again.</Button></span>}

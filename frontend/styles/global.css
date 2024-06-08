@@ -1,19 +1,49 @@
+/* || GENERAL */
+
+html,
+body,
+[class*="Mui"] {
+    font-family:
+            "General Sans",
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            Roboto,
+            "Helvetica Neue",
+            Arial,
+            sans-serif,
+            "Apple Color Emoji",
+            "Segoe UI Emoji",
+            "Segoe UI Symbol";
+}
+
 /* || UTILITIES */
 
 .error {
     color: #d32f2f !important;
 }
 
-.text--bold {
-    font-size: 30px;
-    font-weight: 500;
-}
-
-.text--center {
+.text--align-center {
     text-align: center;
 }
 
+.text--align-right {
+    text-align: right;
+}
+
+.text--font-bold {
+    font-weight: 300;
+}
+
+.text--padding-above {
+    padding-top: 5px;
+}
+
 /* || SITEWIDE */
+
+.MuiAlert-icon {
+    margin-right: 6px;
+}
 
 .alert {
     width: 100%;
@@ -30,23 +60,47 @@
     margin-bottom: 16px;
 }
 
-.button--confirmed {
-    margin-top: -1rem;
+.button--capitalization-off {
+    text-transform: none;
+    text-align: left;
+    line-height: 1.2;
+    font-weight: 500;
+    color: #85011e;
 }
 
-.button--grid {
+.button--location-grid {
     display: flex;
 }
 
-.button--grid.left {
+.button--location-grid.left {
     justify-content: flex-start;
 }
 
-.button--grid.right {
+.button--location-grid.right {
     justify-content: flex-end;
 }
 
-.button--link {
+.button--style-bank {
+    color: #FFFFFF;
+    background-color: #85011e;
+}
+
+.button--style-bank:hover {
+    background-color: #9D1A38FF;
+    border-color: #85011e;
+    box-shadow: none;
+}
+
+.button--style-bank.disabled {
+    color: #FFFFFF;
+    background-color: #B0BEC5;
+}
+
+.button--type-confirmed {
+    margin-top: -1rem;
+}
+
+.button--type-link {
     padding: 0;
     margin-bottom: 4px;
     font-weight: normal;
@@ -54,27 +108,27 @@
     text-decoration: underline;
 }
 
-.button--link:hover {
+.button--type-link:hover {
     text-decoration: underline;
 }
 
-.button--option {
+.button--type-option {
     min-height: 45px;
     line-height: 1.2;
     text-transform: none;
 }
 
-.button--option.error {
+.button--type-option.error {
     border-color: #d32f2f;
 }
 
-.button--resend {
+.button--type-resend {
     margin-top: 2px;
     margin-bottom: 2px;
     text-transform: none;
 }
 
-.button--submit {
+.button--type-submit {
     max-height: 40px;
 }
 
@@ -119,6 +173,14 @@
 
 .icon--success {
     color: green;
+}
+
+.link--dummy {
+    color: black;
+}
+
+.link--dummy:hover {
+    color: royalblue;
 }
 
 .typography--notice {
@@ -171,7 +233,7 @@
 }
 
 .login__field {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 #login-password__adornment {
@@ -282,7 +344,7 @@
 
 /* || APPBAR COMPONENT */
 
-.MuiAppBar-root.appbar--bgd {
+.appbar--bgd {
     background: #85011e;
 }
 

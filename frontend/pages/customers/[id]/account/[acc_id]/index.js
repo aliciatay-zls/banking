@@ -156,7 +156,7 @@ export default function TransactionPage(props) {
                                             value="deposit"
                                             control={
                                                 <Button
-                                                    className={isTypeInvalid ? "button--option error" : "button--option"}
+                                                    className={isTypeInvalid ? "button--type-option error" : "button--type-option"}
                                                     variant={selectedType === transactionTypeDeposit ? "contained" : "outlined"}
                                                     size="large"
                                                     onClick={handleSelect}
@@ -172,7 +172,7 @@ export default function TransactionPage(props) {
                                             value="withdrawal"
                                             control={
                                                 <Button
-                                                    className={isTypeInvalid ? "button--option error" : "button--option"}
+                                                    className={isTypeInvalid ? "button--type-option error" : "button--type-option"}
                                                     variant={selectedType === transactionTypeWithdrawal ? "contained" : "outlined"}
                                                     size="large"
                                                     onClick={handleSelect}
@@ -186,7 +186,7 @@ export default function TransactionPage(props) {
                                 </RadioGroup>
                             </FormControl>
                             { isTypeInvalid &&
-                                <FormHelperText className="text--center" error>
+                                <FormHelperText className="text--align-center" error>
                                     Please select an option.
                                 </FormHelperText>
                             }
@@ -211,15 +211,15 @@ export default function TransactionPage(props) {
                                 onChange={e => checkInputAmount(e.target.value)}
                             />
                         </Grid>
-                        <Grid className="button--grid left" item xs={6}>
+                        <Grid className="button--location-grid left" item xs={6}>
                             <Link href={`/customers/${router.query.id}/account`}>
-                                <Button type="button" variant="no-caps" size="small" startIcon={<ArrowBackIosIcon/>}>
+                                <Button type="button" className="button--capitalization-off" size="small" startIcon={<ArrowBackIosIcon/>}>
                                     Go back to my accounts
                                 </Button>
                             </Link>
                         </Grid>
-                        <Grid className="button--grid right" item xs={6}>
-                            <Button className="button--submit" type="submit" variant="contained" disabled={isLoading}>
+                        <Grid className="button--location-grid right" item xs={6}>
+                            <Button className="button--type-submit" type="submit" variant="contained" disabled={isLoading}>
                                 {isLoading ? 'Loading...' : 'Submit'}
                             </Button>
                         </Grid>

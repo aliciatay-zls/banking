@@ -216,8 +216,8 @@ export default function CreateAccountPage(props) {
                                 </Grid>
                                 <Grid item xs={12} />
                                 <ButtonLinkToAllCustomers serverAddress={props.serverAddress} />
-                                <Grid className="button--grid right" item xs={6}>
-                                    <Button className="button--submit" type="submit" variant="contained" disabled={isLoading}>
+                                <Grid className="button--location-grid right" item xs={6}>
+                                    <Button className="button--type-submit" type="submit" variant="contained" disabled={isLoading}>
                                         {isLoading ? 'Loading...' : 'Submit'}
                                     </Button>
                                 </Grid>
@@ -240,9 +240,9 @@ export default function CreateAccountPage(props) {
                             </Grid>
                             <Grid item xs={12} />
                             <ButtonLinkToAllCustomers serverAddress={props.serverAddress} />
-                            <Grid className="button--grid right" item xs={6} >
+                            <Grid className="button--location-grid right" item xs={6} >
                                 <Link href={buttonLinkAccounts}>
-                                    <Button type="button" variant="no-caps" size="small" endIcon={<ArrowForwardIosIcon/>}>
+                                    <Button type="button" className="button--capitalization-off" size="small" endIcon={<ArrowForwardIosIcon/>}>
                                         Go to accounts for this customer
                                     </Button>
                                 </Link>
@@ -275,9 +275,9 @@ function ButtonLinkToAllCustomers({serverAddress}) {
     const buttonLinkAllCustomers = `https://${serverAddress}/customers`;
 
     return (
-        <Grid className="button--grid left" item xs={6}>
+        <Grid className="button--location-grid left" item xs={6}>
             <Link href={buttonLinkAllCustomers}>
-                <Button type="button" variant="no-caps" size="small" startIcon={<ArrowBackIosIcon/>}>
+                <Button type="button" className="button--capitalization-off" size="small" startIcon={<ArrowBackIosIcon/>}>
                     Back to customers
                 </Button>
             </Link>

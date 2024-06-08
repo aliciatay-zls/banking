@@ -11,21 +11,23 @@ import PasswordField from "./PasswordField";
 export default function LoginDetailsForm({handleChange, fields}) {
     return (
         <Fragment>
-            <Alert className="alert--notice" severity="info">
-                <Grid container direction="row">
-                    <Grid item>
+            <Grid className="alert--notice" container direction="column">
+                <Grid item>
+                    <Alert severity="info">
                         <Typography className="typography--notice-title" variant="subtitle2">
                             Username requirements:
                         </Typography>
                         <Typography className="typography--notice-content" component="div" variant="caption">
                             <ul>
-                                <li>Minimum of 6 characters and maximum of 20 characters long</li>
+                                <li>Must be 6 to 20 characters long</li>
                                 <li>Begins with an alphabet</li>
                                 <li>Only alphabets and underscore allowed</li>
                             </ul>
                         </Typography>
-                    </Grid>
-                    <Grid item>
+                    </Alert>
+                </Grid>
+                <Grid item>
+                    <Alert severity="info">
                         <Typography className="typography--notice-title" variant="subtitle2">
                             Password requirements:
                         </Typography>
@@ -38,9 +40,9 @@ export default function LoginDetailsForm({handleChange, fields}) {
                                 <li>At least 1 special character (!, @, #, $, etc)</li>
                             </ul>
                         </Typography>
-                    </Grid>
+                    </Alert>
                 </Grid>
-            </Alert>
+                </Grid>
             <Grid item xs={12}>
                 <TextField
                     required

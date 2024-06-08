@@ -243,7 +243,7 @@ export default function RegistrationPage(props) {
                         <Fragment>
                             <PersonalDetailsForm handleChange={handleChange} fields={fields} />
 
-                            <Grid className="button--grid right" item xs={12}>
+                            <Grid className="button--location-grid right" item xs={12}>
                                 <NavButton text={"Next"} handler={handleNext}/>
                             </Grid>
                         </Fragment>
@@ -252,10 +252,10 @@ export default function RegistrationPage(props) {
                         <Fragment>
                             <LoginDetailsForm handleChange={handleChange} fields={fields} />
 
-                            <Grid className="button--grid left" item xs={6}>
+                            <Grid className="button--location-grid left" item xs={6}>
                                 <NavButton text={"Back"} handler={handleBack}/>
                             </Grid>
-                            <Grid className="button--grid right" item xs={6}>
+                            <Grid className="button--location-grid right" item xs={6}>
                                 <SubmitButton />
                             </Grid>
                         </Fragment>

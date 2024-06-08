@@ -60,9 +60,9 @@ function BankAccount({acc, currentPath}) {
             <Typography className="accounts--individual-amount" component="p" variant="h6">
                 ${accountAmount}
             </Typography>
-            <div className="text--center">
+            <div className="text--align-right">
                 <Link href={currentPath.concat("/", accountId)}>
-                    <Button variant="no-caps" endIcon={<ArrowForwardIosIcon/>}>
+                    <Button className="button--capitalization-off" endIcon={<ArrowForwardIosIcon/>}>
                         Make a transaction
                     </Button>
                 </Link>

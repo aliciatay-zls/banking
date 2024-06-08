@@ -18,7 +18,7 @@ export default function LoginLayout({ children }) {
                 <Grid className="login__decoration" item xs={false} sm={4} md={7}/>
                 <Grid item xs={12} sm={8} md={5} component={Paper} elevation={0} square>
                     <Box className="login__box">
-                        <Typography className="text--bold" variant="h2" align="center" marginTop={5}>
+                        <Typography className="text--font-bold" variant="h3" align="center" marginTop={5}>
                             Welcome Back
                         </Typography>
                         {children}

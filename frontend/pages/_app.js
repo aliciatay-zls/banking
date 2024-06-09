@@ -1,5 +1,7 @@
 import '../styles/global.css';
 
+import { StyledEngineProvider } from '@mui/material/styles';
+
 import CssBaseline from '@mui/material/CssBaseline';
 
 import { Fragment, createContext, useState } from "react";
@@ -16,10 +18,12 @@ export default function MyApp({ Component, pageProps }) {
     return (
         <CookiesProvider>
             <DataToDisplayContext.Provider value={{dataToDisplay: dataToDisplay, setDataToDisplay: setDataToDisplay}}>
-                <Fragment>
-                    <CssBaseline />
-                    <Component {...pageProps} />
-                </Fragment>
+                <StyledEngineProvider injectFirst>
+                    <Fragment>
+                        <CssBaseline />
+                        <Component {...pageProps} />
+                    </Fragment>
+                </StyledEngineProvider>
             </DataToDisplayContext.Provider>
         </CookiesProvider>
     );

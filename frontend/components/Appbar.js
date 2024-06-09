@@ -106,12 +106,12 @@ export function DefaultAppBar({homepage, authServerAddress}) {
         setAnchorEl(null);
     }
 
-    function handleNavigateHomepage() {
-        router.replace(homepage);
+    function handleNavigateProfile() {
+        router.replace(`${homepage}/profile`);
     }
 
-    function handleNavigateAccount() {
-        router.replace(`${homepage}/account`);
+    function handleNavigateHomepage() {
+        router.replace(`${homepage}`);
     }
 
     return (
@@ -144,8 +144,8 @@ export function DefaultAppBar({homepage, authServerAddress}) {
                     >
                         { getRole(homepage) === 'user' &&
                             <div>
-                                <MenuItem onClick={handleNavigateHomepage}>My Profile</MenuItem>
-                                <MenuItem onClick={handleNavigateAccount}>My Accounts</MenuItem>
+                                <MenuItem onClick={handleNavigateProfile}>My Profile</MenuItem>
+                                <MenuItem onClick={handleNavigateHomepage}>My Accounts</MenuItem>
                                 <Divider/>
                             </div>
                         }

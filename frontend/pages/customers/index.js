@@ -56,7 +56,7 @@ const columns = [
         editable: false,
         renderCell: (params) =>
             <span>
-                <Link href={`/customers/${params.row.id}`}>
+                <Link href={`/customers/${params.row.id}/profile`}>
                     <Tooltip title="View profile">
                         <IconButton size="small" touchRippleRef={null}>
                             <AccountCircleIcon/>
@@ -119,7 +119,7 @@ const columns = [
         type: 'actions',
         renderCell: ({row}) => [
             <span key="customers-table-transact-button">
-                <Link href={`/customers/${row.id}/account`}>
+                <Link href={`/customers/${row.id}`}>
                     <Tooltip title="Transact on behalf">
                         <IconButton size="small" touchRippleRef={null}>
                             <CurrencyExchangeIcon />

@@ -22,7 +22,7 @@ func (h CustomerHandlers) customersHandler(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-func (h CustomerHandlers) customerIdHandler(w http.ResponseWriter, r *http.Request) {
+func (h CustomerHandlers) customerProfileHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	customer, err := h.customerService.GetCustomer(vars["customer_id"])
 	if err != nil {

@@ -1,8 +1,7 @@
 import '../styles/global.css';
 
-import { StyledEngineProvider } from '@mui/material/styles';
-
 import CssBaseline from '@mui/material/CssBaseline';
+import { StyledEngineProvider } from '@mui/material/styles';
 
 import { Fragment, createContext, useState } from "react";
 import { CookiesProvider } from "react-cookie";

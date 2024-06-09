@@ -27,8 +27,8 @@ var ch CustomerHandlers
 var dummyCustomers []dto.CustomerResponse
 
 const customersPath = "/customers"
-const customerIdPath = "/customers/{customer_id:[0-9]+}"
-const dummyCustomerIdPath = "/customers/2"
+const customerProfilePath = "/customers/{customer_id:[0-9]+}/profile"
+const dummyCustomerProfilePath = "/customers/2/profile"
 
 // setupCustomerHandlersTest initializes the above variables and returns a function that should be called at the end
 // of each test to reset the variables and other cleanup tasks. setup takes in a path string for building request.
@@ -103,11 +103,11 @@ func TestCustomerHandlers_customersHandler_respondsWith_errorStatusCode_when_ser
 	}
 }
 
-func TestCustomerHandlers_customerIdHandler_respondsWith_customerAndStatusCode200_when_service_succeeds(t *testing.T) {
+func TestCustomerHandlers_customerProfileHandler_respondsWith_customerAndStatusCode200_when_service_succeeds(t *testing.T) {
 	//Arrange
-	teardown := setupCustomerHandlersTest(t, dummyCustomerIdPath)
+	teardown := setupCustomerHandlersTest(t, dummyCustomerProfilePath)
 	defer teardown()
-	router.HandleFunc(customerIdPath, ch.customerIdHandler)
+	router.HandleFunc(customerProfilePath, ch.customerProfileHandler)
 
 	dummyCustomer := dummyCustomers[1]
 	mockCustomerService.EXPECT().GetCustomer(dummyCustomerId).Return(&dummyCustomer, nil)
@@ -126,11 +126,11 @@ func TestCustomerHandlers_customerIdHandler_respondsWith_customerAndStatusCode20
 	}
 }
 
-func TestCustomerHandlers_customerIdHandler_respondsWith_errorStatusCode_when_service_fails(t *testing.T) {
+func TestCustomerHandlers_customerProfileHandler_respondsWith_errorStatusCode_when_service_fails(t *testing.T) {
 	//Arrange
-	teardown := setupCustomerHandlersTest(t, dummyCustomerIdPath)
+	teardown := setupCustomerHandlersTest(t, dummyCustomerProfilePath)
 	defer teardown()
-	router.HandleFunc(customerIdPath, ch.customerIdHandler)
+	router.HandleFunc(customerProfilePath, ch.customerProfileHandler)
 
 	dummyAppError := errs.NewUnexpectedError("some error message")
 	mockCustomerService.EXPECT().GetCustomer(dummyCustomerId).Return(nil, dummyAppError)

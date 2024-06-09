@@ -55,7 +55,7 @@ export default function CreateAccountPage(props) {
 
     const accountTypeSaving = "saving";
     const accountTypeChecking = "checking";
-    const buttonLinkAccounts = `https://${props.serverAddress}/customers/${props.customerId}/account`;
+    const buttonLinkAccounts = `https://${props.serverAddress}/customers/${props.customerId}`;
     const errorDefaultMessage = "Please try again later.";
 
     const [isLoading, setIsLoading] = useState(false);

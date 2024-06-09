@@ -26,7 +26,7 @@ export async function getServerSideProps(context) {
     const customerID = context.params?.id || '';
     const accountID = context.params?.acc_id || '';
     const beforeURL = `https://${process.env.SERVER_ADDRESS}/customers/${customerID}/account/${accountID}`;
-    const myAccountsURL = `https://${process.env.SERVER_ADDRESS}/customers/${customerID}/account`;
+    const myAccountsURL = `https://${process.env.SERVER_ADDRESS}/customers/${customerID}`;
 
     return {
         props: {

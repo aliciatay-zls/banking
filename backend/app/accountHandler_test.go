@@ -27,8 +27,8 @@ var dummyTransactionType = dto.TransactionTypeDeposit
 
 const dummyDate = "2006-01-02 15:04:05"
 
-const getAccountsPath = "/customers/{customer_id:[0-9]+}/account"
-const dummyGetAccountsPath = "/customers/2/account"
+const getAccountsPath = "/customers/{customer_id:[0-9]+}"
+const dummyGetAccountsPath = "/customers/2"
 
 const newAccountPath = "/customers/{customer_id:[0-9]+}/account/new"
 const dummyNewAccountPath = "/customers/2/account/new"

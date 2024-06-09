@@ -212,7 +212,7 @@ export default function TransactionPage(props) {
                             />
                         </Grid>
                         <Grid className="button--location-grid left" item xs={6}>
-                            <Link href={`/customers/${router.query.id}/account`}>
+                            <Link href={`/customers/${router.query.id}`}>
                                 <Button type="button" className="button--capitalization-off" size="small" startIcon={<ArrowBackIosIcon/>}>
                                     Go back to my accounts
                                 </Button>

@@ -44,6 +44,7 @@ export default function PasswordField({isLoginPage = true, id, name = "password"
                         </IconButton>
                     </InputAdornment>
                 }
+                autoComplete={isLoginPage ? "current-password" : "new-password"}
                 inputProps={{ maxLength: 64 }}
                 value={val}
                 onChange={e => handler(e)}

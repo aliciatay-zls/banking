@@ -8,7 +8,7 @@ import Typography from "@mui/material/Typography";
 
 import PasswordField from "./PasswordField";
 
-export default function LoginDetailsForm({handleChange, fields}) {
+export default function RegistrationLoginDetailsForm({handleChange, fields}) {
     return (
         <Fragment>
             <Grid className="alert--notice" container direction="column">
@@ -49,7 +49,7 @@ export default function LoginDetailsForm({handleChange, fields}) {
                     id="register-username"
                     name="username"
                     label="Username"
-                    autoComplete="off"
+                    autoComplete="username"
                     fullWidth
                     size="small"
                     autoFocus

@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import ResendEmailButton from "./ResendEmailButton";
 import { getLocalTime } from "../src/formatUtils";
 
-export default function EmailConfirmation({details, authServerAddress}) {
+export default function RegistrationEmailConfirmation({details, authServerAddress}) {
     return(
         <Fragment>
             <Grid item xs={12}>

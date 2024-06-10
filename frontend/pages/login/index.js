@@ -142,7 +142,8 @@ export default function LoginPage(props) {
 
             //login unsuccessful
             if (!response.ok) {
-                showError({message: "HTTP error during login: " + errorMessage});
+                console.log("HTTP error during login");
+                showError({message: errorMessage});
                 return;
             }
 
@@ -206,7 +207,7 @@ export default function LoginPage(props) {
                     name="username"
                     className="login__field"
                     label="Username"
-                    autoComplete="name"
+                    autoComplete="username"
                     autoFocus
                     variant="standard"
                     margin="normal"

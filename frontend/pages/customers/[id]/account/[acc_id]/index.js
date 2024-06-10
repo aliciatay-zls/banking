@@ -196,6 +196,7 @@ export default function TransactionPage(props) {
                                 required
                                 id="input-transaction-amount"
                                 label="Amount"
+                                autoComplete="off"
                                 variant="standard"
                                 size="large"
                                 InputProps={{

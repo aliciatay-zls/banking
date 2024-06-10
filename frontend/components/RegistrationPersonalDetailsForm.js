@@ -9,7 +9,7 @@ import TextField from "@mui/material/TextField";
 
 import { Countries } from "../src/countries";
 
-export default function PersonalDetailsForm({handleChange, fields}) {
+export default function RegistrationPersonalDetailsForm({handleChange, fields}) {
     return (
         <Fragment>
             <Grid item xs={12} sm={6}>

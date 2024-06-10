@@ -175,6 +175,7 @@ export default function CreateAccountPage(props) {
                                         disabled
                                         id="display-customer-id"
                                         label="Customer ID"
+                                        autoComplete="off"
                                         fullWidth
                                         variant="standard"
                                         value={props.customerId}
@@ -206,6 +207,7 @@ export default function CreateAccountPage(props) {
                                         required
                                         id="input-account-amount"
                                         label="Initial Amount"
+                                        autoComplete="off"
                                         fullWidth
                                         variant="standard"
                                         inputProps={{ maxLength: 13 }}

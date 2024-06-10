@@ -7,10 +7,10 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
 
-import EmailConfirmation from "../../components/EmailConfirmation";
-import LoginDetailsForm from "../../components/LoginDetailsForm";
-import PersonalDetailsForm from "../../components/PersonalDetailsForm";
 import RegisterLayout from "../../components/RegisterLayout";
+import RegistrationEmailConfirmation from "../../components/RegistrationEmailConfirmation";
+import RegistrationLoginDetailsForm from "../../components/RegistrationLoginDetailsForm";
+import RegistrationPersonalDetailsForm from "../../components/RegistrationPersonalDetailsForm";
 import SnackbarAlert from "../../components/SnackbarAlert";
 import * as f from "../../src/formatUtils";
 import * as v from "../../src/validationUtils";
@@ -241,7 +241,7 @@ export default function RegistrationPage(props) {
                 <Grid container spacing={3}>
                     {activeStep === 0 &&
                         <Fragment>
-                            <PersonalDetailsForm handleChange={handleChange} fields={fields} />
+                            <RegistrationPersonalDetailsForm handleChange={handleChange} fields={fields} />
 
                             <Grid className="button--location-grid right" item xs={12}>
                                 <NavButton text={"Next"} handler={handleNext}/>
@@ -250,7 +250,7 @@ export default function RegistrationPage(props) {
                     }
                     {activeStep === 1 && (
                         <Fragment>
-                            <LoginDetailsForm handleChange={handleChange} fields={fields} />
+                            <RegistrationLoginDetailsForm handleChange={handleChange} fields={fields} />
 
                             <Grid className="button--location-grid left" item xs={6}>
                                 <NavButton text={"Back"} handler={handleBack}/>
@@ -261,7 +261,7 @@ export default function RegistrationPage(props) {
                         </Fragment>
                     )}
                     {activeStep === 2 && (
-                        <EmailConfirmation details={successInfo} authServerAddress={props.authServerAddress} />
+                        <RegistrationEmailConfirmation details={successInfo} authServerAddress={props.authServerAddress} />
                     )}
                 </Grid>
             </Box>

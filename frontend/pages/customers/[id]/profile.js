@@ -44,6 +44,7 @@ export default function CustomerProfilePage(props) {
                     <TextField
                         id="profile-name"
                         label="NAME"
+                        autoComplete="off"
                         defaultValue={props.responseData["full_name"]}
                         InputProps={textFieldProps.input}
                         InputLabelProps={textFieldProps.label}
@@ -52,6 +53,7 @@ export default function CustomerProfilePage(props) {
                     <TextField
                         id="profile-dob"
                         label="DATE OF BIRTH"
+                        autoComplete="off"
                         defaultValue={getReadableDate(props.responseData["date_of_birth"])}
                         InputProps={textFieldProps.input}
                         InputLabelProps={textFieldProps.label}
@@ -60,6 +62,7 @@ export default function CustomerProfilePage(props) {
                     <TextField
                         id="profile-email"
                         label="EMAIL"
+                        autoComplete="off"
                         defaultValue={props.responseData["email"]}
                         InputProps={textFieldProps.input}
                         InputLabelProps={textFieldProps.label}
@@ -68,6 +71,7 @@ export default function CustomerProfilePage(props) {
                     <TextField
                         id="profile-country"
                         label="COUNTRY"
+                        autoComplete="off"
                         defaultValue={props.responseData["country"]}
                         InputProps={textFieldProps.input}
                         InputLabelProps={textFieldProps.label}
@@ -76,6 +80,7 @@ export default function CustomerProfilePage(props) {
                     <TextField
                         id="profile-zip"
                         label="ZIP CODE"
+                        autoComplete="off"
                         defaultValue={props.responseData["zipcode"]}
                         InputProps={textFieldProps.input}
                         InputLabelProps={textFieldProps.label}

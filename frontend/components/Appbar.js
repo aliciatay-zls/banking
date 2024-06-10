@@ -68,7 +68,7 @@ export function DefaultAppBar({homepage, authServerAddress}) {
             const data = await response.json();
 
             if (!response.ok) {
-                showError("HTTP error during logout: " + (data?.message || ''));
+                logErrorAndAlertUser("HTTP error during logout: " + (data?.message || ''));
             }
 
             removeCookie('access_token', {
@@ -89,11 +89,11 @@ export function DefaultAppBar({homepage, authServerAddress}) {
             await router.replace('/login');
 
         } catch (err) {
-            showError(err);
+            logErrorAndAlertUser(err);
         }
     }
 
-    function showError(err) {
+    function logErrorAndAlertUser(err) {
         console.log(err);
         setOpenErrorAlert(true);
     }

@@ -1,7 +1,7 @@
 import '../styles/global.css';
 
-import CssBaseline from '@mui/material/CssBaseline';
 import { StyledEngineProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 
 import { Fragment, createContext, useState } from "react";
 import { CookiesProvider } from "react-cookie";
@@ -15,15 +15,15 @@ export default function MyApp({ Component, pageProps }) {
     });
 
     return (
-        <CookiesProvider>
-            <DataToDisplayContext.Provider value={{dataToDisplay: dataToDisplay, setDataToDisplay: setDataToDisplay}}>
-                <StyledEngineProvider injectFirst>
+        <StyledEngineProvider injectFirst>
+            <CookiesProvider>
+                <DataToDisplayContext.Provider value={{dataToDisplay: dataToDisplay, setDataToDisplay: setDataToDisplay}}>
                     <Fragment>
                         <CssBaseline />
                         <Component {...pageProps} />
                     </Fragment>
-                </StyledEngineProvider>
-            </DataToDisplayContext.Provider>
-        </CookiesProvider>
+                </DataToDisplayContext.Provider>
+            </CookiesProvider>
+        </StyledEngineProvider>
     );
 }

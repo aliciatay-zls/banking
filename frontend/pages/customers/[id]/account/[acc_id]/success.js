@@ -67,15 +67,13 @@ export default function TransactionSuccessPage(props) {
             authServerAddress={props.authServerAddress}
             tabTitle={"Success"}
         >
-            { transactionID === '' || transactionDate === '' &&
+            {isLoading ? (
                 <Box height="100vh" align="center">
                     <Backdrop className="backdrop" open={isLoading}>
                         <CircularProgress color="inherit" />
                     </Backdrop>
                 </Box>
-            }
-
-            { transactionID !== '' && transactionDate !== '' &&
+            ) : (
                 <Container className="container" component="main" maxWidth="sm">
                     <Paper className="open-account__paper" variant="outlined">
                         <Box name="transaction-success-page" align="center">
@@ -118,7 +116,7 @@ export default function TransactionSuccessPage(props) {
                         </Box>
                     </Paper>
                 </Container>
-            }
+            )}
         </DefaultLayout>
     );
 }

@@ -122,17 +122,19 @@ export default function TempRefreshPage(props) {
             authServerAddress={props.authServerAddress}
             tabTitle="Home"
         >
-            <Box height="100vh" align="center">
-                <Backdrop className="backdrop" open={isLoading}>
-                    <CircularProgress color="inherit" />
-                </Backdrop>
+            {isLoading &&
+                <Box height="100vh" align="center">
+                    <Backdrop className="backdrop" open={isLoading}>
+                        <CircularProgress color="inherit" />
+                    </Backdrop>
 
-                { error &&
-                    <Typography className="`error" variant="h5">
-                        <ErrorIcon fontSize="inherit"/> {error}
-                    </Typography>
-                }
-            </Box>
+                    { error &&
+                        <Typography className="`error" variant="h5">
+                            <ErrorIcon fontSize="inherit"/> {error}
+                        </Typography>
+                    }
+                </Box>
+            }
         </DefaultLayout>
     );
 }

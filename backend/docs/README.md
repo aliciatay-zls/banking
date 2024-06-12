@@ -5,7 +5,7 @@
 [Postman](https://www.postman.com/) can be used to send requests to the backend resource server API endpoints. Sample requests:
 
    | Method | Backend API Endpoint                                | Authorization Header (Bearer Token)      | Body                                                    | Result                                                                                                                                                             |
-       |--------|-----------------------------------------------------|------------------------------------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+   |--------|-----------------------------------------------------|------------------------------------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
    | GET    | https://localhost:8080/customers                    | (access token received after logging in) |                                                         | Will display details of customers with id 2000 to 2005                                                                                                             |
    | GET    | https://localhost:8080/customers/2000               | (access token received after logging in) |                                                         | Will display details of bank accounts belonging to customer with id 2000                                                                                           |
    | GET    | https://localhost:8080/customers/2000/profile       | (access token received after logging in) |                                                         | Will display details of the customer with id 2000                                                                                                                  |
@@ -13,6 +13,16 @@
    | POST   | https://localhost:8080/customers/2000/account/95470 | (access token received after logging in) | {"transaction_type": "withdrawal", <br/>"amount": 1000} | Will make a withdrawal of $1000 for the customer with id 2000 for the account with id 95470, then display the updated account balance and completed transaction id |
 
 ## Udemy Course
+
+Course name: ["REST based microservices API development in Golang"](https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang/)
+
+Parts of [the code](../../README.md#repositories) that were done under the guidance of this course:
+* Backend resource server
+* Database server
+* Most of the backend auth server (added some features)
+* Some of the custom Go library (added some packages)
+
+The frontend server was built on my own.
 
 Below is a list of the main tasks in the Udemy course.
 1. Start and run server, create routes: GET `greet`, GET `customers`
@@ -51,4 +61,4 @@ Below is a list of the main tasks in the Udemy course.
 
 ## Notes
 
-* Files in `build/package` taken from instructor's repo
+* Files in `build/package` taken from instructor's repo (database server code)

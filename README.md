@@ -1,7 +1,8 @@
 # Banking Web App
 
-A simplified online banking app built using Go, React, MUI and Next.js. Visit the site here: 
-https://banking-app-pi.vercel.app 🏦
+A simplified online banking app built using Go, React, MUI and Next.js. 
+
+Visit the site here: https://banking-app-pi.vercel.app 🏦
 
 Once you have registered, 2 bank accounts will be opened for you automatically. This is for demonstration purposes.
 
@@ -25,6 +26,7 @@ If you would like to skip the registration process and try out the app immediate
 This was a learning project to: 
 * add completeness to the Udemy course the backend was based on: ["REST based microservices API development in Golang"](https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang/)
 * further familiarise myself with full-stack web development
+* implement [security features](#security-features) on a web app
 
 Feedback through GitHub or other channels will be much appreciated 😊 as this project was done independently. 
 My personal email is <alicia_tay@outlook.com>.

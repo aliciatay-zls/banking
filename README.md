@@ -1,127 +1,177 @@
 # Banking Web App
-This repo contains code for the frontend server, backend resource server and database server. 
 
-The backend resource server and auth server [(separate repo)](https://github.com/aliciatay-zls/banking-auth) were 
-built under the Udemy course ["REST based microservices API development in Golang"](https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang/).
+A simplified online banking app built using Go, React, MUI and Next.js. Visit the site here: 
+https://banking-app-pi.vercel.app 🏦
 
-## Setup
-1. Install Go
-   * Uninstall previous Go (if any): https://go.dev/doc/manage-install under section “Uninstalling Go” 
-   * Download installer for newest Go version and follow steps to install: https://go.dev/doc/install
+Once you have registered, 2 bank accounts will be opened for you automatically. This is for demonstration purposes.
 
-2. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+If you would like to skip the registration process and try out the app immediately, log in to any of these dummy accounts:
 
-3. Configure environment variables.
-   * Development:
-     * Backend: set values in the scripts in `backend/scripts/` if not using the dummy values
-     * Frontend: set values in the `frontend/.env.development` file if not using the dummy values
-   * Production: 
-     * Backend: create a `backend/.env` file with the same keys as the scripts in `backend/scripts/`
-     * Frontend: create a `frontend/.env.production` file with the same keys as `frontend/.env.development`
+| Account Type | Username | Password |
+|--------------|----------|----------|
+| User         | 2000     | abc123   |
+| User         | 2001     | abc123   |
+| Admin        | admin    | abc123   |
 
-4. Install or upgrade current version of Node.js and npm using the [Node.js installer](https://nodejs.org/en/download)
+## More Docs
 
-## Running the app (Development)
-1. Start the Docker app.
+* [Developer guide](backend/docs/developer_guide.md)
+* [Backend resource server/Udemy course docs](backend/docs/README.md)
 
-2. To start the database, backend resource and frontend servers:
-   ```
-   make -j3 dev
-   ```
-   In separate terminal tab, view logs for all three in real-time without them interleaving:
-   ```
-    tail -f backend/db.log backend/backend.log frontend/frontend.log
-   ```
-   On success, logs printed:
-   * Database: will end with "ready for connections."
-   * Backend resource server: will be an info-level log with the message "Starting the app..."
-   * Frontend server: will end with "Ready in xx.xx s"
+## Overview
 
-3. To start the backend authentication server, see other repo: https://github.com/aliciatay-zls/banking-auth
+### Purpose
 
-4. Navigate to https://localhost:3000/login to view the app.
+This was a learning project to: 
+* add completeness to the Udemy course the backend was based on: ["REST based microservices API development in Golang"](https://www.udemy.com/course/rest-based-microservices-api-development-in-go-lang/)
+* further familiarise myself with full-stack web development
 
-5. Alternatively, [Postman](https://www.postman.com/) can be used to send requests to the backend resource server APIs. Sample requests:
+Feedback through GitHub or other channels will be much appreciated 😊 as this project was done independently. 
+My personal email is <alicia_tay@outlook.com>.
 
-    | Method | Backend API Endpoint                                | Authorization Header (Bearer Token)      | Body                                                    | Result                                                                                                                                                             |
-    |--------|-----------------------------------------------------|------------------------------------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-    | GET    | https://localhost:8080/customers                    | (access token received after logging in) |                                                         | Will display details of customers with id 2000 to 2005                                                                                                             |
-    | GET    | https://localhost:8080/customers/2000               | (access token received after logging in) |                                                         | Will display details of the customer with id 2000                                                                                                                  |
-    | GET    | https://localhost:8080/customers/2000/account       | (access token received after logging in) |                                                         | Will display details of bank accounts belonging to customer with id 2000                                                                                           |
-    | POST   | https://localhost:8080/customers/2000/account/new   | (access token received after logging in) | {"account_type": "saving", <br/>"amount": 7000}         | Will open a new bank account containing $7000 for the customer with id 2000, then display the new bank account id                                                  |
-    | POST   | https://localhost:8080/customers/2000/account/95470 | (access token received after logging in) | {"transaction_type": "withdrawal", <br/>"amount": 1000} | Will make a withdrawal of $1000 for the customer with id 2000 for the account with id 95470, then display the updated account balance and completed transaction id |
+### Repositories
 
-6. To check changes made to the app database, open another tab in terminal and start an interactive shell in 
-the container for querying the db:
-   ```
-   docker exec -it mysql sh
-   # mysql -u root -p
-   Enter password: (enter password "codecamp")
-   mysql> show databases;
-   mysql> use banking;
-   mysql> show tables;
-   mysql> select * from accounts;
-   ```
+This repo contains code for:
+* Frontend server
+* Backend resource server
+* Database server 
 
-7. Run all unit tests each time changes have been made to the backend:
-   ```
-   cd backend
-   go test -v ./...
-   ```
-   
-8. Update all packages periodically to the latest version:
-   * Backend:
-   ```
-   go get -u all
-   go mod tidy
-   ```
-   * Frontend:
-   ```
-   npm i next@latest react@latest react-dom@latest
-   ```
+In addition, there are separate repos for:
+* Backend authentication/authorisation server, Mail server: https://github.com/aliciatay-zls/banking-auth
+* Custom Go library: https://github.com/aliciatay-zls/banking-lib
 
-## Udemy Course
-Below is a list of the main tasks in the Udemy course. 
-1. Start and run server, create routes: GET `greet`, GET `customers`
-2. JSON or XML encoding of response for GET `customers` route, depending on request header
-3. Replace standard library request multiplexer: `gorilla/mux`
-4. Create routes: GET `customers/{id}`,  POST `customers`
-5. Restructure code into hexagonal architecture (and into packages): add ability to find customers
-   1. business domain objects `Customer` and `DefaultCustomerService`
-   2. repo/secondary port `CustomerRepository`
-   3. stub/adapter `CustomerRepositoryStub`
-   4. service/primary port `CustomerService`
-   5. REST handler/adapter `CustomerHandlers`
-   6. DB/adapter `CustomerRepositoryDb`
-6. Add ability to handle errors: `errs` package
-7. Enhance route: GET `customers?status=...`
-8. Replace standard library logger with structured leveled logging: `logger` package, `zap`
-9. Replace standard library SQL database package: `sqlx`
-10. Add DTO to separate data used within Domain-Server layers and data exposed to User layer
-11. Use environment variables
-12. Add ability to open bank account (domain objects `Account` and `DefaultAccountService`, 
-repo `AccountRepository`, DB/adapter `AccountRepositoryDb`, service `AccountService`, 
-REST handler `AccountHandler`, DTOs `NewAccountRequest` and `NewAccountResponse`)
-13. Add ability to make transaction in a bank account (domain object `Transaction`, 
-DTOs `TransactionRequest` and `TransactionResponse`)
-14. (Extra) Create Authentication Server using hexagonal architecture:
-    1. Add ability to log in a client: generate a token for the client which acts as a session token 
-    ([banking-auth repo](https://github.com/aliciatay-zls/banking-auth))
-    2. Add ability to verify client's right to access route: require the token from i. for requests to all routes 
-    (middleware `AuthMiddlewareHandler`), verify the token and role privileges of the client 
-    ([banking-auth repo](https://github.com/aliciatay-zls/banking-auth))
-15. Add state-based tests for domain objects, DTOs
-16. Test routes
-17. Test services
-18. (Extra) Test DB adapters, stub adapter
-19. Generate refresh token ([banking-auth repo](https://github.com/aliciatay-zls/banking-auth))
+## App Features
 
-Other Notes:
-* Files in `build/package` taken from instructor's repo
+1. Anyone can:
+   * register for a user account
 
+2. Users can:
+   * login, log out
+   * view bank accounts
+   * view profile
+   * make a deposit or withdrawal on an account (does not involve real payments)
 
-## Frontend
-Key dependencies:
-* react, react-dom, next
-* [cookie](https://www.npmjs.com/package/cookie?activeTab=readme)
-* [react-cookie](https://www.npmjs.com/package/react-cookie?activeTab=readme)
+3. Admins can:
+   * login, log out
+   * view all users
+   * open a bank account for a user
+   * do all in 2. on behalf of a user
+
+## Security Features
+
+### JWE (Encrypted JWT)
+
+* All tokens used are signed-then-encrypted to protect the information stored in the tokens during transit.
+   * [Backend auth server](https://github.com/aliciatay-zls/banking-auth/blob/f468bfd5a3b4a61c6dd27938e7b975e7c30b912d/domain/tokenRepository.go)
+   * Due to the length of JWEs, refresh tokens had to be hashed into 64 byte strings before storing in db
+
+1. Access token: included in every request to the backend resource server
+   * [Backend resource server middleware](https://github.com/aliciatay-zls/banking/blob/23801295c3db4f01b43093182ac1d6025fcc6710/backend/app/authMiddleware.go),
+     backend auth server `/verify` route
+   * Login: create new access token, stored on client side as a cookie
+   * Logout: remove on client side
+   * Authentication: used by server to verify that the request is being made by the claimed user
+   * Authorization: used by server to verify that the user has access to the resource or action
+   * Relies on security of JWT: only server’s secret key could have generated the token signature, and only server
+     has this key, so this token must have been generated by the server
+
+2. Refresh token
+   * Backend auth server `/refresh` route
+   1. Login: create new refresh token, stored in db
+   2. Logout: delete from db
+   3. Every request to backend resource server: goes through middleware which sends request to backend auth server
+      to verify access token claims, token expiry, token signature, whether client can access this resource
+      1. If expired: frontend server sends refresh token to backend auth server to get new access token (refresh process)
+         * If refresh process failed: frontend server forces client to login again (back to i. again)
+
+3. One-time token
+   * Backend auth server `/check`, `/resend`, `/finish` routes
+   1. Registration: create new OTT, email to registered user as a link
+   2. Link is visited
+      1. If expired or invalid: registered user needs to log in to request a new one
+      2. If already confirmed previously: frontend redirects to login page
+   3. Link is not visited, registered user tries to log in directly: check their email or request a new one
+
+### Password protection
+
+* Hash and salt password before storing in db
+   * [Registration](https://github.com/aliciatay-zls/banking-auth/blob/f468bfd5a3b4a61c6dd27938e7b975e7c30b912d/domain/cryptoUtils.go)
+
+* [Password strength controls](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html#implement-proper-password-strength-controls)
+  * `frontend/components/RegistrationLoginDetailsForm.js`
+  * `frontend/src/validationUtils.js`
+
+* TLS
+   * Between browser and frontend server (during development the
+     [experimental Next.js flag](https://github.com/vercel/next.js/discussions/10935#discussioncomment-7055469) is used)
+   * Between frontend server and backend resource server (HTTPS)
+   * Between frontend server and backend auth server (HTTPS)
+   * Between backend resource server and auth servers (HTTPS)
+
+### DoS Prevention
+
+* Rate limiting: every request received by the backend auth server
+   * [Backend auth server middleware](https://github.com/aliciatay-zls/banking-auth/blob/f468bfd5a3b4a61c6dd27938e7b975e7c30b912d/app/rateLimitingMiddleware.go)
+
+* If a given username is not even in the db, do not proceed to check the given password
+   * [Login](https://github.com/aliciatay-zls/banking-auth/blob/f468bfd5a3b4a61c6dd27938e7b975e7c30b912d/domain/authRepository.go)
+
+### XSS Attack Prevention
+
+* React automatically escapes all user input that is embedded in JSX before rendering
+   * e.g. [My Profile page](https://github.com/aliciatay-zls/banking/blob/23801295c3db4f01b43093182ac1d6025fcc6710/frontend/pages/customers/%5Bid%5D/profile.js):
+     Full Name, Email, etc are all in JSX { }
+
+* Avoidance of [unsafe methods in the frontend](https://medium.com/@jurouhlar/quick-devnotes-xss-vulnerabilities-in-react-45d9f683a7d2)
+
+### Input Validation
+
+#### Backend (focus)
+
+* Go struct validation using [go-playground/validator package](https://github.com/go-playground/validator)
+   * [Resource server DTOs](https://github.com/aliciatay-zls/banking/tree/23801295c3db4f01b43093182ac1d6025fcc6710/backend/dto)
+     and [auth server DTOs](https://github.com/aliciatay-zls/banking-auth/tree/f468bfd5a3b4a61c6dd27938e7b975e7c30b912d/dto)
+   * [formValidator custom library](https://github.com/aliciatay-zls/banking-lib/tree/6ebc20daa01e6a6f7de34c67a0e1f5ddf1af4613/formValidator)
+
+#### Frontend (more for user's convenience)
+
+* [validator package](https://www.npmjs.com/package/validator): password strength, character set, length, valid date, valid email, valid postal code, float inputs
+  (money)
+
+* `frontend/src/validationUtils.js`
+
+* Standardised list of country to country code mappings used by all servers
+   * Frontend: `frontend/src/countries.js`
+   * Backend: [formValidator custom library](https://github.com/aliciatay-zls/banking-lib/tree/6ebc20daa01e6a6f7de34c67a0e1f5ddf1af4613/formValidator)
+
+### Security Guidelines Referenced
+
+* https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html
+   * e.g. [Prevent leaking information through error messages from backend](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html#authentication-and-error-messages), 
+  especially during login and registration form submissions
+* https://cheatsheetseries.owasp.org/cheatsheets/Transport_Layer_Security_Cheat_Sheet.html
+
+## Limitations
+
+* `float64` is being used to store money which is probably not realistic.
+   * Could use Decimal type instead: https://pkg.go.dev/github.com/shopspring/decimal
+
+* Only ASCII characters allowed.
+   * No support for international languages (only English)
+   * Certain fields that would benefit from wider range of characters cannot do so e.g. password cannot contain
+     unicode as a result
+      * e.g. [OWASP guideline](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html#implement-proper-password-strength-controls) violated:
+        "Allow usage of all characters including unicode and whitespace. There should be no password composition rules
+        limiting the type of characters permitted."
+
+* Postal code entered is not being checked against country entered.
+
+## Acknowledgements
+
+* App logo created using: https://logo.com/
+* Favicon created using: https://favicon.io/
+* Login side background picture source: https://en.wikipedia.org/wiki/Central_Area,_Singapore
+* `frontend/pages/login/index.js`: [MUI sign-in side template](https://github.com/mui/material-ui/tree/77f606ba73bb5439d66871177772f54196044450/docs/data/material/getting-started/templates/sign-in-side)
+* `frontend/pages/customers/[id]/account/new.js` form, sub-footer: [MUI checkout template](https://github.com/mui/material-ui/tree/77f606ba73bb5439d66871177772f54196044450/docs/data/material/getting-started/templates/checkout)
+* `frontend/components/Footer.js`: [MUI sticky footer template](https://github.com/mui/material-ui/tree/77f606ba73bb5439d66871177772f54196044450/docs/data/material/getting-started/templates/sticky-footer)
+* `frontend/pages/customers/[id]/index.js`: [MUI dashboard template](https://github.com/mui/material-ui/tree/77f606ba73bb5439d66871177772f54196044450/docs/data/material/getting-started/templates/dashboard)

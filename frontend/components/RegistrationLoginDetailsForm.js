@@ -33,12 +33,20 @@ export default function RegistrationLoginDetailsForm({handleChange, fields}) {
                         </Typography>
                         <Typography className="typography--notice-content" component="div" variant="caption">
                             <ul>
-                                <li>12 to 64 characters long</li>
+                                <li>Must be 12 to 64 characters long</li>
                                 <li>At least 1 digit</li>
                                 <li>At least 1 uppercase letter</li>
                                 <li>At least 1 lowercase letter</li>
                                 <li>At least 1 special character (!, @, #, $, etc)</li>
                             </ul>
+                        </Typography>
+                    </Alert>
+                </Grid>
+                <Grid item>
+                    <Alert severity="info">
+                        <Typography variant="subtitle2">
+                            Password also <b>should not</b> contain easily-guessable information
+                            (e.g. name, username, email)
                         </Typography>
                     </Alert>
                 </Grid>

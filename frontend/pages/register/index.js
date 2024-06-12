@@ -48,6 +48,7 @@ export default function RegistrationPage(props) {
         confirmPassword: "",
         tcCheckbox: false,
     });
+    const [canSubmit, setCanSubmit] = useState(true);
     const [errorTitle, setErrorTitle] = useState(errorDefaultMessage);
     const [errorMsg, setErrorMsg] = useState('');
     const [openErrorAlert, setOpenErrorAlert] = useState(false);
@@ -88,14 +89,17 @@ export default function RegistrationPage(props) {
 
     async function handleSubmit(event) {
         event.preventDefault();
+        setCanSubmit(false);
         resetErrorAlert();
 
         //do all checks for previous form again
         if (!isFieldsFilledAndAscii(activeStep - 1) || !validatePersonalDetails()) {
+            setCanSubmit(true);
             return;
         }
         //do checks for current form
         if (!isFieldsFilledAndAscii(activeStep) || !validateLoginDetails()) {
+            setCanSubmit(true);
             return;
         }
 
@@ -129,6 +133,7 @@ export default function RegistrationPage(props) {
                 }
 
                 setOpenErrorAlert(true);
+                setCanSubmit(true);
             } else {
                 const registrationTime = data.created_on || '';
                 const registrationEmail = data.email || '';
@@ -147,6 +152,7 @@ export default function RegistrationPage(props) {
             console.log(err);
             setErrorMsg(err.message);
             setOpenErrorAlert(true);
+            setCanSubmit(true);
         }
     }
 
@@ -256,7 +262,7 @@ export default function RegistrationPage(props) {
                                 <NavButton text={"Back"} handler={handleBack}/>
                             </Grid>
                             <Grid className="button--location-grid right" item xs={6}>
-                                <SubmitButton />
+                                <SubmitButton canSubmit={canSubmit} />
                             </Grid>
                         </Fragment>
                     )}
@@ -289,12 +295,13 @@ export function NavButton({text, handler}) {
     );
 }
 
-export function SubmitButton() {
+export function SubmitButton({canSubmit}) {
     return(
         <Button
             className="button"
             variant="contained"
             type="submit"
+            disabled={!canSubmit}
         >
             Finish
         </Button>

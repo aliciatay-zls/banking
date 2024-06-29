@@ -1,13 +1,33 @@
 # Developer Guide
 
-## Environment
+## Architecture
+
+The app architecture follows the [OAuth 2.0 framework](https://www.oauth.com/oauth2-servers/the-resource-server/). 
+
+The backend comprises 2 servers: the resource server and the [authentication/authorisation server](https://github.com/aliciatay-zls/banking-auth). 
+
+The resource server serves and has access to customer resources that are not needed for auth (such as bank accounts and 
+transactions). The auth server provides security mechanisms like token management and role-based access control and 
+therefore has access to login credentials, refresh tokens and other data needed for auth.
+
+The frontend consists of the frontend server.
+
+To perform a CRUD (Create/Read/Update/Delete) operation on a customer resource, the resource server requires an access 
+token to be included in the request so that the auth server can use it to verify if the request is valid and 
+authorised. Hence, the frontend server sends a request to the resource server, which in turn sends a request to the 
+auth server to verify the frontend's request. If successful, the resource server proceeds to perform the operation 
+(for example send the requested customer resource to the frontend in a Read operation).
+
+To fulfil logins or logouts, get a new access token, or check if the client is already logged in, the frontend server 
+sends a request to the auth server directly.
+
+During development, there is also a mail server (in the form of MailHog, which also acts as the client).
 
 ### Production
 
 * [Vercel](https://vercel.com/): frontend code deployed here
 * [Render](https://render.com/): backend code (resource server, auth server) deployed here
-  * As publicly accessible web services, since frontend needs to communicate with both backend servers but is not
-    hosted on Render
+  * As publicly accessible web services
 * [Aiven](https://aiven.io/): database hosted here
 * Gmail SMTP: acts as remote mail server
 

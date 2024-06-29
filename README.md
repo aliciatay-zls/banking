@@ -1,10 +1,8 @@
 # Banking Web App
 
-A simplified online banking app built using Go, React, MUI and Next.js. 
-
 Visit the site here: https://banking-app-pi.vercel.app 🏦
 
-Once you have registered, 2 bank accounts will be opened for you automatically. This is for demonstration purposes.
+A simplified online banking app built using Go, React, MUI and Next.js. 
 
 If you would like to skip the registration process and try out the app immediately, log in to any of these dummy accounts:
 
@@ -13,6 +11,8 @@ If you would like to skip the registration process and try out the app immediate
 | User         | 2000     | abc123   |
 | User         | 2001     | abc123   |
 | Admin        | admin    | abc123   |
+
+If you registered instead, 2 bank accounts will be opened for you automatically. This is for demonstration purposes.
 
 ## More Docs
 
@@ -153,20 +153,30 @@ In addition, there are separate repos for:
   especially during login and registration form submissions
 * https://cheatsheetseries.owasp.org/cheatsheets/Transport_Layer_Security_Cheat_Sheet.html
 
+## Testing
+
+Unit testing was done for the backend resource server (this repo, `/backend` directory). 
+See [Developer Guide](/backend/docs/developer_guide.md#running-the-app) for more details.
+
 ## Limitations
+
+* Backend servers are publicly accessible.
+   * As mentioned in the [Developer Guide](backend/docs/developer_guide.md#production)
+   * Wanted to try out deploying frontend code to Vercel, at the same time reduce the number of paid servers (Render's 
+  free tier is not very useful) as this is just a learning project. However, in order for the frontend server to 
+  communicate with the backend servers which are on a different host, the backend servers had to be deployed as 
+  publicly accessible web services instead of private services. This is probably not realistic and safe.
 
 * `float64` is being used to store money which is probably not realistic.
    * Could use Decimal type instead: https://pkg.go.dev/github.com/shopspring/decimal
 
-* Only ASCII characters allowed.
+* Only ASCII characters allowed, not conventional UTF-8.
    * No support for international languages (only English)
    * Certain fields that would benefit from wider range of characters cannot do so e.g. password cannot contain
      unicode as a result
       * e.g. [OWASP guideline](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html#implement-proper-password-strength-controls) violated:
         "Allow usage of all characters including unicode and whitespace. There should be no password composition rules
         limiting the type of characters permitted."
-
-* Postal code entered is not being checked against country entered.
 
 ## Acknowledgements
 
